@@ -1,0 +1,20 @@
+# Папки Unity (генерируются автоматически)
+Library/
+Temp/
+Logs/
+obj/
+Build/
+Builds/
+UserSettings/
+
+# Файлы Visual Studio
+*.csproj
+*.sln
+*.suo
+*.user
+
+# Файлы macOS
+.DS_Store
+
+# Файлы Windows
+Thumbs.db

@@ -1,0 +1,11 @@
+=== DIAGNOSIS ===
+Format errors:
+- TEXT AFTER TOOL CALL: You have 2 line(s) of text AFTER the tool call block. After the tool name and its arguments, you MUST STOP. Do NOT write anything else. Extra text found:
+C:\Users\vovanchik\Documents\Zelen\Assets
+5000
+
+=== CONTENT ===
+Shell
+dir *.inputactions /S /B
+C:\Users\vovanchik\Documents\Zelen\Assets
+5000
