@@ -9,6 +9,10 @@ using UnityEngine.EventSystems;
 // Вверх/вниз - следующий/предыдущий элемент списка
 // Влево/вправо - если выбран слайдер, двигает его значение на шаг
 // Клик стика - если выбрана кнопка, нажимает её
+//
+// ВАЖНО: этот скрипт также является "арбитром" для отключения локомоции.
+// Он один (в LateUpdate) включает/выключает komponentPovorota и
+// komponentPeredvizheniya в зависимости от того, открыто ли ЛЮБОЕ из меню.
 public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
 {
     [Header("Панель инвентаря целиком (чтобы понять, открыта ли она)")]
@@ -20,8 +24,11 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
     [Header("Шаг изменения слайдера за один наклон влево/вправо")]
     public float shagSlaidera = 0.1f;
 
-    [Header("Компонент поворота камеры, который нужно выключать, пока инвентарь открыт")]
+    [Header("Компонент поворота камеры, который нужно выключать, пока любое меню открыто")]
     public Behaviour komponentPovorota;
+
+    [Header("Компонент передвижения персонажа, который нужно выключать, пока любое меню открыто")]
+    public Behaviour komponentPeredvizheniya;
 
     [Header("Весь asset с действиями")]
     public InputActionAsset naborDeistvii;
@@ -120,10 +127,9 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
     {
         bool menyuOtkryto = panelMenu != null && panelMenu.activeInHierarchy;
 
-        if (komponentPovorota != null)
-        {
-            komponentPovorota.enabled = !menyuOtkryto;
-        }
+        // Пишем своё состояние в общий "флаг". Не трогаем enabled напрямую -
+        // этим займётся LateUpdate ниже, чтобы не было гонки со вторым скриптом.
+        SostoyanieMenyu.InventoryOpen = menyuOtkryto;
 
         if (!menyuOtkryto)
         {
@@ -137,8 +143,7 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
         {
             VybratElementPoIndeksu(NaytiPervyiDostupniyIndeks());
         }
-        // Если выделение сбросилось само по себе (например, модуль ввода очистил его) -
-        // восстанавливаем ТЕКУЩИЙ индекс, а не откатываемся на первый элемент
+        // Если выделение сбросилось само по себе - восстанавливаем ТЕКУЩИЙ индекс
         else if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == null)
         {
             VybratElementPoIndeksu(tekushiyIndeks);
@@ -147,8 +152,24 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
         panelByloOtkrytoProshlyiKadr = menyuOtkryto;
     }
 
+    // LateUpdate гарантированно идёт после ВСЕХ Update, поэтому к этому моменту
+    // оба скрипта уже записали своё состояние в SostoyanieMenyu.
+    void LateUpdate()
+    {
+        bool blokirovat = SostoyanieMenyu.AnyMenuOpen;
+
+        if (komponentPovorota != null)
+        {
+            komponentPovorota.enabled = !blokirovat;
+        }
+
+        if (komponentPeredvizheniya != null)
+        {
+            komponentPeredvizheniya.enabled = !blokirovat;
+        }
+    }
+
     // Вызывается Input System'ой именно в тот момент, когда появляется значение
-    // (важно для действий вроде Snap Turn, где значение живёт только один кадр)
     private void SobytieDzhoystika(InputAction.CallbackContext context)
     {
         bool menyuOtkryto = panelMenu != null && panelMenu.activeInHierarchy;
@@ -281,5 +302,23 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
         {
             knopka.onClick.Invoke();
         }
+    }
+}
+
+// Общий "флаг состояния меню". Оба скрипта навигации пишут сюда своё состояние,
+// а скрипт инвентаря в LateUpdate читает AnyMenuOpen и переключает локомоцию.
+public static class SostoyanieMenyu
+{
+    public static bool InventoryOpen;
+    public static bool ToolsMenuOpen;
+
+    public static bool AnyMenuOpen => InventoryOpen || ToolsMenuOpen;
+
+    // Сбрасываем флаги при старте игры (важно при "Enter Play Mode Options" с отключённым Domain Reload)
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Sbrosit()
+    {
+        InventoryOpen = false;
+        ToolsMenuOpen = false;
     }
 }

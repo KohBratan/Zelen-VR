@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 // Пока меню открыто, левый джойстик перестаёт двигать персонажа
 // и начинает управлять списком категорий и списком видов внутри категории.
@@ -8,6 +9,10 @@ using UnityEngine.InputSystem;
 // Вправо     - зайти внутрь выбранной категории
 // Влево      - выйти обратно к списку категорий
 // Клик стика - подтвердить выбранный вид
+//
+// ВАЖНО: этот скрипт НЕ трогает enabled компонентов локомоции напрямую -
+// он только сообщает своё состояние в SostoyanieMenyu. Переключением
+// занимается DzhoystikNavigatsiyaInventarya (в LateUpdate).
 public class DzhoystikNavigatsiyaMenu : MonoBehaviour
 {
     [Header("Панель меню целиком (используется, чтобы понять, открыто ли меню)")]
@@ -19,15 +24,12 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
     [Header("Меню видов внутри каждой категории (тот же порядок, что и категории)")]
     public MenuVkladki[] menuVidovPoKategoriyam;
 
-    [Header("Компонент передвижения персонажа, который нужно выключать, пока меню открыто")]
-    public Behaviour komponentPeredvizheniya;
-
     [Header("Весь asset с действиями")]
     public InputActionAsset naborDeistvii;
 
-    [Header("Карта и имя действия для самого джойстика (Vector2)")]
-    public string imyaKartyDzhoystika = "XRI Left Locomotion";
-    public string imyaDeistviyaDzhoystika = "Move";
+    [Header("Карта и имя действия для самого джойстика (Vector2, без посторонних Interactions)")]
+    public string imyaKartyDzhoystika = "XRI Left Interaction";
+    public string imyaDeistviyaDzhoystika = "MenuJoystick";
 
     [Header("Карта и имя действия для клика стиком (кнопка)")]
     public string imyaKartyKlika = "XRI Left Interaction";
@@ -36,8 +38,11 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
     [Header("Порог наклона, после которого засчитывается шаг")]
     public float porogNaklona = 0.5f;
 
-    [Header("Порог возврата в нейтраль, после которого можно наклонять снова")]
-    public float porogVozvrata = 0.3f;
+    [Header("Диагностика: показывать сырые значения джойстика в консоли")]
+    public bool pokazyvatSyrieZnacheniya = false;
+
+    [Header("Шаг изменения слайдера за один наклон влево/вправо")]
+    public float shagSlaidera = 0.1f;
 
     private InputAction deistvieDzhoystika;
     private InputAction deistvieKlika;
@@ -69,10 +74,18 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
         {
             Debug.LogWarning("DzhoystikNavigatsiyaMenu: действие '" + imyaDeistviyaDzhoystika + "' не найдено в карте '" + imyaKartyDzhoystika + "'.");
         }
+        else
+        {
+            Debug.Log("DzhoystikNavigatsiyaMenu: действие джойстика '" + imyaDeistviyaDzhoystika + "' найдено успешно.");
+        }
 
         if (deistvieKlika == null)
         {
             Debug.LogWarning("DzhoystikNavigatsiyaMenu: действие '" + imyaDeistviyaKlika + "' не найдено в карте '" + imyaKartyKlika + "'.");
+        }
+        else
+        {
+            Debug.Log("DzhoystikNavigatsiyaMenu: действие клика '" + imyaDeistviyaKlika + "' найдено успешно.");
         }
     }
 
@@ -80,6 +93,8 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
     {
         if (deistvieDzhoystika != null)
         {
+            deistvieDzhoystika.performed += SobytieDzhoystika;
+            deistvieDzhoystika.canceled += SobytieDzhoystikaSbros;
             deistvieDzhoystika.Enable();
         }
 
@@ -92,6 +107,12 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
 
     void OnDisable()
     {
+        if (deistvieDzhoystika != null)
+        {
+            deistvieDzhoystika.performed -= SobytieDzhoystika;
+            deistvieDzhoystika.canceled -= SobytieDzhoystikaSbros;
+        }
+
         if (deistvieKlika != null)
         {
             deistvieKlika.performed -= NazhatieKlika;
@@ -102,19 +123,55 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
     {
         bool menyuOtkryto = panelMenu != null && panelMenu.activeInHierarchy;
 
-        // Пока меню открыто - выключаем обычное передвижение
-        if (komponentPeredvizheniya != null)
-        {
-            komponentPeredvizheniya.enabled = !menyuOtkryto;
-        }
+        // Сообщаем своё состояние. Реальное переключение локомоции делает
+        // DzhoystikNavigatsiyaInventarya в своём LateUpdate.
+        SostoyanieMenyu.ToolsMenuOpen = menyuOtkryto;
 
-        if (!menyuOtkryto || deistvieDzhoystika == null)
+        if (!menyuOtkryto)
         {
             zhdyomNeytral = false;
             return;
         }
 
-        Vector2 znachenie = deistvieDzhoystika.ReadValue<Vector2>();
+        // Если выделение сбросилось само по себе - восстанавливаем подсветку
+        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == null)
+        {
+            VosstanovitPodsvetku();
+        }
+    }
+
+    private void VosstanovitPodsvetku()
+    {
+        if (vnutriKategorii)
+        {
+            MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();
+            if (tekushieVidy != null)
+            {
+                tekushieVidy.OtkrytVkladku(tekushieVidy.TekushayaVkladka);
+            }
+        }
+        else if (menuKategoriy != null)
+        {
+            menuKategoriy.OtkrytVkladku(menuKategoriy.TekushayaVkladka);
+        }
+    }
+
+    private void SobytieDzhoystika(InputAction.CallbackContext context)
+    {
+        bool menyuOtkryto = panelMenu != null && panelMenu.activeInHierarchy;
+
+        Vector2 znachenie = context.ReadValue<Vector2>();
+
+        if (pokazyvatSyrieZnacheniya)
+        {
+            Debug.Log("ToolsMenu: событие джойстика, значение = " + znachenie + " (меню открыто: " + menyuOtkryto + ")");
+        }
+
+        if (!menyuOtkryto)
+        {
+            return;
+        }
+
         float velichina = znachenie.magnitude;
 
         if (!zhdyomNeytral && velichina > porogNaklona)
@@ -122,10 +179,11 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
             ObrabotatNaklon(znachenie);
             zhdyomNeytral = true;
         }
-        else if (zhdyomNeytral && velichina < porogVozvrata)
-        {
-            zhdyomNeytral = false;
-        }
+    }
+
+    private void SobytieDzhoystikaSbros(InputAction.CallbackContext context)
+    {
+        zhdyomNeytral = false;
     }
 
     private void ObrabotatNaklon(Vector2 napravlenie)
@@ -134,6 +192,16 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
 
         if (eto_gorizontalniy_naklon)
         {
+            if (vnutriKategorii)
+            {
+                MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();
+                if (tekushieVidy != null && tekushieVidy.TekushiyElementEstSlider())
+                {
+                    tekushieVidy.IzmenitSlaiderEsliVybran(napravlenie.x > 0 ? shagSlaidera : -shagSlaidera);
+                    return;
+                }
+            }
+
             if (napravlenie.x > 0)
             {
                 VoytiVKategoriyu();
@@ -161,6 +229,12 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
         if (!vnutriKategorii && menuKategoriy != null)
         {
             vnutriKategorii = true;
+
+            MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();
+            if (tekushieVidy != null)
+            {
+                tekushieVidy.OtkrytVkladku(tekushieVidy.TekushayaVkladka);
+            }
         }
     }
 
@@ -169,6 +243,11 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
         if (vnutriKategorii)
         {
             vnutriKategorii = false;
+
+            if (menuKategoriy != null)
+            {
+                menuKategoriy.OtkrytVkladku(menuKategoriy.TekushayaVkladka);
+            }
         }
     }
 
