@@ -1,2 +1,128 @@
-Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
+Картошка, запечённая с сосисками, помидорами и сыром
+
+Продукты (на 4 порции)
+
+Картофель (некрупный) - 450 г (5 шт.)
+
+Сосиски - 200 г (4 шт.)
+
+Помидоры - 270 г (2 шт.)
+
+Сыр твёрдый - 90 г
+
+Майонез - 100 г
+
+Чеснок - 1 зубчик
+
+Паприка молотая - 0,5 ч. ложки
+
+Соль - 0,75 ч. ложки (по вкусу)
+
+Перец чёрный молотый - щепотка (по вкусу)
+
+\*
+
+Масло подсолнечное (для смазывания формы) - 2 ч. ложки
+
+Укроп свежий (для украшения, по желанию) - 5 г (1-2 веточки)
+
+
+
+
+
+
+
+Подготовьте необходимые ингредиенты.
+
+Я использовала подкопчённые сосиски, но можно взять любые другие.
+
+Включите духовку, пусть разогревается до 190 градусов.
+
+
+
+
+
+Очищенный картофель обсушите с помощью бумажного полотенца и нарежьте кубиками среднего размера.
+
+
+
+
+
+Сосиски очистите от оболочки и нарежьте кружочками.
+
+
+
+
+
+Помидоры промойте, удалите места прикрепления плодоножек. Нарежьте помидоры некрупными кубиками.
+
+
+
+
+
+В глубокой миске соедините картофель, сосиски и помидоры.
+
+
+
+
+
+Добавьте майонез, соль, чёрный молотый перец и молотую паприку.
+
+Чеснок очистите, мелко нарежьте и тоже отправьте в миску.
+
+
+
+
+
+Аккуратно всё перемешайте.
+
+
+
+
+
+Дно формы для запекания (или противень) смажьте небольшим количеством подсолнечного масла. Переложите в форму картошку с сосисками и помидорами.
+
+
+
+
+
+Поместите форму с заготовкой в предварительно разогретую до 190 градусов духовку на 40 минут, почти до полной готовности картофеля (зависит от сорта и размера кусочков картошки, а также от особенностей вашей духовки).
+
+
+
+
+
+По истечении времени достаньте форму из духовки.
+
+Твёрдый сыр натрите на крупной тёрке и распределите поверх картофеля с сосисками и помидорами.
+
+
+
+
+
+Верните овощи с сосисками и сыром в духовку и запекайте ещё 10 минут при той же температуре, до расплавления сыра.
+
+
+
+
+
+Укроп или другую зелень мелко нарежьте и посыпьте готовое блюдо.
+
+
+
+
+
+Картошка, запечённая с сосисками, помидорами и сыром, готова.
+
+
+
+
+
+Подавайте запечённую картошку с сосисками, помидорами и сыром в горячем виде на обед или ужин.
+
+
+
+
+
+Приятного аппетита!
 
