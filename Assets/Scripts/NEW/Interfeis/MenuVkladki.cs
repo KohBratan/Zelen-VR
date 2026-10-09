@@ -15,6 +15,9 @@ public class MenuVkladki : MonoBehaviour
     [Header("Номер элемента, который выбран при старте")]
     public int nachalnayaVkladka = 0;
 
+    [Header("Сколько колонок, если элементы лежат сеткой (0 или 1 = обычный список столбиком)")]
+    public int kolonokVSetke = 1;
+
     private int tekushayaVkladka;
 
     // Позволяет другим скриптам узнать, какой элемент сейчас выбран
@@ -99,6 +102,103 @@ public class MenuVkladki : MonoBehaviour
         if (vsego == 0) return;
 
         int noviyNomer = (tekushayaVkladka - 1 + vsego) % vsego;
+        OtkrytVkladku(noviyNomer);
+    }
+
+    // Есть ли у этого меню сетка (больше одной колонки)
+    public bool EToSetka()
+    {
+        return kolonokVSetke > 1;
+    }
+
+    // Шаг вниз. В обычном списке - следующий элемент, в сетке - вниз по колонке (по кругу)
+    public void ShagVniz()
+    {
+        if (!EToSetka())
+        {
+            SleduyuschayaVkladka();
+            return;
+        }
+
+        ShagPoKolonke(1);
+    }
+
+    // Шаг вверх. В обычном списке - предыдущий элемент, в сетке - вверх по колонке (по кругу)
+    public void ShagVverkh()
+    {
+        if (!EToSetka())
+        {
+            PredydushayaVkladka();
+            return;
+        }
+
+        ShagPoKolonke(-1);
+    }
+
+    // Шаг вправо по ряду. Возвращает true, если курсор реально сдвинулся
+    public bool ShagVpravo()
+    {
+        int vsego = KolichestvoVkladok();
+        if (!EToSetka() || vsego == 0)
+        {
+            return false;
+        }
+
+        int kolonka = tekushayaVkladka % kolonokVSetke;
+        bool est_kuda_idti = (kolonka < kolonokVSetke - 1) && (tekushayaVkladka + 1 < vsego);
+        if (est_kuda_idti)
+        {
+            OtkrytVkladku(tekushayaVkladka + 1);
+            return true;
+        }
+
+        return false;
+    }
+
+    // Шаг влево по ряду. Возвращает true, если курсор реально сдвинулся
+    // (false = стоим в левой колонке, сдвигаться некуда - значит, можно выходить из категории)
+    public bool ShagVlevo()
+    {
+        if (!EToSetka() || KolichestvoVkladok() == 0)
+        {
+            return false;
+        }
+
+        int kolonka = tekushayaVkladka % kolonokVSetke;
+        if (kolonka > 0)
+        {
+            OtkrytVkladku(tekushayaVkladka - 1);
+            return true;
+        }
+
+        return false;
+    }
+
+    // Движение по колонке вверх/вниз по кругу (napravlenie = 1 вниз, -1 вверх)
+    private void ShagPoKolonke(int napravlenie)
+    {
+        int vsego = KolichestvoVkladok();
+        if (vsego == 0) return;
+
+        int kolonka = tekushayaVkladka % kolonokVSetke;
+        int stroka = tekushayaVkladka / kolonokVSetke;
+        int strokVsego = (vsego + kolonokVSetke - 1) / kolonokVSetke;
+
+        int noviyNomer = tekushayaVkladka;
+
+        // Если в последней строке не хватает ячейки в нашей колонке - перескакиваем её
+        for (int popytka = 0; popytka < strokVsego; popytka++)
+        {
+            stroka = (stroka + napravlenie + strokVsego) % strokVsego;
+            int kandidat = stroka * kolonokVSetke + kolonka;
+
+            if (kandidat < vsego)
+            {
+                noviyNomer = kandidat;
+                break;
+            }
+        }
+
         OtkrytVkladku(noviyNomer);
     }
 

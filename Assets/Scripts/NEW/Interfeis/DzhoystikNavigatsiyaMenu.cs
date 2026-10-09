@@ -5,9 +5,9 @@ using UnityEngine.EventSystems;
 // Пока меню открыто, левый джойстик перестаёт двигать персонажа
 // и начинает управлять списком категорий и списком видов внутри категории.
 //
-// Вверх/вниз - листание текущего списка
-// Вправо     - зайти внутрь выбранной категории
-// Влево      - выйти обратно к списку категорий
+// Вверх/вниз - листание текущего списка (в сетке - по колонке)
+// Вправо     - зайти внутрь выбранной категории (в сетке внутри категории - шаг вправо по ряду)
+// Влево      - в сетке шаг влево по ряду; из левой колонки (или из обычного списка) - выйти к списку категорий
 // Клик стика - подтвердить выбранный вид
 //
 // ВАЖНО: этот скрипт НЕ трогает enabled компонентов локомоции напрямую -
@@ -192,24 +192,7 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
 
         if (eto_gorizontalniy_naklon)
         {
-            if (vnutriKategorii)
-            {
-                MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();
-                if (tekushieVidy != null && tekushieVidy.TekushiyElementEstSlider())
-                {
-                    tekushieVidy.IzmenitSlaiderEsliVybran(napravlenie.x > 0 ? shagSlaidera : -shagSlaidera);
-                    return;
-                }
-            }
-
-            if (napravlenie.x > 0)
-            {
-                VoytiVKategoriyu();
-            }
-            else
-            {
-                VyytiIzKategorii();
-            }
+            ObrabotatGorizontalniyNaklon(napravlenie.x > 0);
         }
         else
         {
@@ -221,6 +204,51 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
             {
                 SleduyuschiyElement();
             }
+        }
+    }
+
+    // Что делает наклон влево/вправо - зависит от того, где мы сейчас
+    private void ObrabotatGorizontalniyNaklon(bool vpravo)
+    {
+        if (vnutriKategorii)
+        {
+            MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();
+
+            if (tekushieVidy != null)
+            {
+                // 1. Выбран слайдер - двигаем его значение
+                if (tekushieVidy.TekushiyElementEstSlider())
+                {
+                    tekushieVidy.IzmenitSlaiderEsliVybran(vpravo ? shagSlaidera : -shagSlaidera);
+                    return;
+                }
+
+                // 2. Вправо внутри категории: в сетке - шаг вправо, в списке - ничего
+                if (vpravo)
+                {
+                    tekushieVidy.ShagVpravo();
+                    return;
+                }
+
+                // 3. Влево: в сетке - шаг влево; если сдвинуться некуда (левая колонка
+                //    или обычный список) - выходим из категории
+                bool sdvinulis = tekushieVidy.ShagVlevo();
+                if (!sdvinulis)
+                {
+                    VyytiIzKategorii();
+                }
+
+                return;
+            }
+        }
+
+        if (vpravo)
+        {
+            VoytiVKategoriyu();
+        }
+        else
+        {
+            VyytiIzKategorii();
         }
     }
 
@@ -258,7 +286,7 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
             MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();
             if (tekushieVidy != null)
             {
-                tekushieVidy.SleduyuschayaVkladka();
+                tekushieVidy.ShagVniz();
             }
         }
         else if (menuKategoriy != null)
@@ -274,7 +302,7 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
             MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();
             if (tekushieVidy != null)
             {
-                tekushieVidy.PredydushayaVkladka();
+                tekushieVidy.ShagVverkh();
             }
         }
         else if (menuKategoriy != null)

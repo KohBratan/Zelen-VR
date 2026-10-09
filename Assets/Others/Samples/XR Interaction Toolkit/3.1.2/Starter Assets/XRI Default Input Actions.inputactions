@@ -993,6 +993,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "MenuConfirm",
+                    "type": "Button",
+                    "id": "a52bdc80-8249-4388-aa93-0150413d926a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1345,6 +1354,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "MenuJoystick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3b17b174-582b-4705-a041-c2dd224f2112",
+                    "path": "<XRSimulatedController>{LeftHand}/primary2DAxisClick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MenuConfirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1b8f5688-5e67-4b3c-8107-4c829e2e9dbd",
+                    "path": "<XRController>{LeftHand}/{Primary2DAxisClick}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MenuConfirm",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
