@@ -59,6 +59,12 @@ public class InventarDeystviy : MonoBehaviour
         {
             tekstNazvaniyaObyekta.text = tekushiyObyekt.vidNasazhdeniya;
 
+            // Слайдер показывает текущий размер относительно исходного (без изменения самого объекта)
+            if (tekushiyObyekt.ishodnyiRazmer.x > 0.0001f)
+            {
+                slaiderRazmer.SetValueWithoutNotify(tekushiyObyekt.transform.localScale.x / tekushiyObyekt.ishodnyiRazmer.x);
+            }
+
             bool eto_gazon_ili_klumba = (tekushiyObyekt.kategoriya == "Газон" || tekushiyObyekt.kategoriya == "Клумбы");
             knopkaRastyanut.gameObject.SetActive(eto_gazon_ili_klumba);
 
@@ -83,7 +89,7 @@ public class InventarDeystviy : MonoBehaviour
     {
         if (tekushiyObyekt != null)
         {
-            tekushiyObyekt.transform.localScale = Vector3.one * znachenie;
+            tekushiyObyekt.transform.localScale = tekushiyObyekt.ishodnyiRazmer * znachenie;
         }
     }
 

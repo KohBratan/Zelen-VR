@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 1133892893835681909}
   - component: {fileID: 2428298347281218304}
   - component: {fileID: -4413977491118706296}
+  - component: {fileID: 2963083616976480299}
   m_Layer: 0
   m_Name: lipa
   m_TagString: Untagged
@@ -157,6 +158,30 @@ MonoBehaviour:
   vidNasazhdeniya: "\u041B\u0438\u043F\u0430"
   kategoriya: "\u0414\u0435\u0440\u0435\u0432\u044C\u044F"
   zafiksirovano: 0
+  ishodnyiRazmer: {x: 1, y: 1, z: 1}
+--- !u!136 &2963083616976480299
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2455748928451717727}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.8581342
+  m_Height: 7.0937896
+  m_Direction: 1
+  m_Center: {x: -0.35813427, y: 3.0468965, z: 0}
 --- !u!1 &7369744214039166665
 GameObject:
   m_ObjectHideFlags: 0

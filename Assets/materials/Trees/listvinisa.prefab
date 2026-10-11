@@ -177,8 +177,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8050809124918245745}
   - component: {fileID: 3066512401415261818}
-  - component: {fileID: 8698454144992667327}
   - component: {fileID: -8838923118656121329}
+  - component: {fileID: 6490385104682898215}
   m_Layer: 0
   m_Name: listvinisa
   m_TagString: Untagged
@@ -226,8 +226,24 @@ LODGroup:
     renderers:
     - renderer: {fileID: 2556275285004802313}
   m_Enabled: 1
---- !u!65 &8698454144992667327
-BoxCollider:
+--- !u!114 &-8838923118656121329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4782266828888180893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b6113e3aa8b5f4181ab3f8d33d2329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidNasazhdeniya: "\u041B\u0438\u0441\u0442\u0432\u0435\u043D\u043D\u0438\u0446\u0430"
+  kategoriya: "\u0414\u0435\u0440\u0435\u0432\u044C\u044F"
+  zafiksirovano: 0
+  ishodnyiRazmer: {x: 1, y: 1, z: 1}
+--- !u!136 &6490385104682898215
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -244,21 +260,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.42, y: 8.261887, z: 0.41}
-  m_Center: {x: 0, y: 3.6309435, z: -0.15}
---- !u!114 &-8838923118656121329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4782266828888180893}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13b6113e3aa8b5f4181ab3f8d33d2329, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vidNasazhdeniya: "\u041B\u0438\u0441\u0442\u0432\u0435\u043D\u043D\u0438\u0446\u0430"
-  kategoriya: "\u0414\u0435\u0440\u0435\u0432\u044C\u044F"
-  zafiksirovano: 0
+  serializedVersion: 2
+  m_Radius: 0.99
+  m_Height: 8.927788
+  m_Direction: 1
+  m_Center: {x: 0, y: 4.061494, z: 0}

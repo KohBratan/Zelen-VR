@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 147998567487597977}
   - component: {fileID: 3195648979301942353}
-  - component: {fileID: 7714320348911026695}
   - component: {fileID: -337825935911897312}
+  - component: {fileID: 65785020640866691}
   m_Layer: 0
   m_Name: boyarishnik
   m_TagString: Untagged
@@ -59,8 +59,24 @@ LODGroup:
     renderers:
     - renderer: {fileID: 5325825988399811784}
   m_Enabled: 1
---- !u!65 &7714320348911026695
-BoxCollider:
+--- !u!114 &-337825935911897312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 277862369306619786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b6113e3aa8b5f4181ab3f8d33d2329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidNasazhdeniya: "\u0411\u043E\u044F\u0440\u044B\u0448\u043D\u0438\u043A"
+  kategoriya: "\u0414\u0435\u0440\u0435\u0432\u044C\u044F"
+  zafiksirovano: 0
+  ishodnyiRazmer: {x: 1, y: 1, z: 1}
+--- !u!136 &65785020640866691
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -77,24 +93,11 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.29, y: 7.9, z: 0.57}
-  m_Center: {x: 0, y: 3.6, z: 0}
---- !u!114 &-337825935911897312
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 277862369306619786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13b6113e3aa8b5f4181ab3f8d33d2329, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vidNasazhdeniya: "\u0411\u043E\u044F\u0440\u044B\u0448\u043D\u0438\u043A"
-  kategoriya: "\u0414\u0435\u0440\u0435\u0432\u044C\u044F"
-  zafiksirovano: 0
+  serializedVersion: 2
+  m_Radius: 0.69405127
+  m_Height: 7.882112
+  m_Direction: 1
+  m_Center: {x: 0.19405144, y: 3.4410493, z: 0}
 --- !u!1 &1569648952101259821
 GameObject:
   m_ObjectHideFlags: 0

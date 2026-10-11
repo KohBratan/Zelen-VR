@@ -12,4 +12,14 @@ public class Nasazhdenie : MonoBehaviour
 
     [Header("Зафиксирован ли объект")]
     public bool zafiksirovano = false;
+
+    // Размер объекта в момент появления на сцене. Слайдер размера в инвентаре
+    // меняет размер ОТНОСИТЕЛЬНО него (1 = как при посадке)
+    [HideInInspector]
+    public Vector3 ishodnyiRazmer = Vector3.one;
+
+    void Awake()
+    {
+        ishodnyiRazmer = transform.localScale;
+    }
 }

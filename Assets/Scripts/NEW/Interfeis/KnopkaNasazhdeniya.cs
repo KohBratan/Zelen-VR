@@ -12,6 +12,9 @@ public class KnopkaNasazhdeniya : MonoBehaviour
     [Header("Метка 'выбрано' (галочка или рамка), необязательно")]
     public GameObject metkaVybrano;
 
+    [Header("Забывать выбор, когда панель скрывается (смена категории или закрытие меню)")]
+    public bool sbrasyvatPriSkrytii = true;
+
     private Button knopka;
 
     void Awake()
@@ -32,6 +35,19 @@ public class KnopkaNasazhdeniya : MonoBehaviour
     void Update()
     {
         ObnovitMetku();
+    }
+
+    // Вызывается, когда кнопка выключается: например, ушли в другую категорию
+    // (панель "Деревья" спряталась) или закрыли всё меню
+    void OnDisable()
+    {
+        bool eto_vybrannoe = prefabNasazhdeniya != null && VyborInstrumenta.TekushiyPrefab == prefabNasazhdeniya;
+
+        if (sbrasyvatPriSkrytii && eto_vybrannoe)
+        {
+            VyborInstrumenta.TekushiyPrefab = null;
+            Debug.Log("Выбор сброшен: " + prefabNasazhdeniya.name);
+        }
     }
 
     private void Vybrat()
