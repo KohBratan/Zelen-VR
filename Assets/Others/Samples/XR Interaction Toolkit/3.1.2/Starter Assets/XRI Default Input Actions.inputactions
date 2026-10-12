@@ -2237,6 +2237,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MoveTool",
+                    "type": "Button",
+                    "id": "ce076365-41d6-42d0-a509-51c45a38036e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -2633,6 +2642,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "PickTool",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f3c905f3-393c-4bc0-95bd-0411c098f698",
+                    "path": "<XRSimulatedController>{RightHand}/gripButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveTool",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "19c7009e-091c-4f2a-a24f-e406caad1978",
+                    "path": "<XRController>{RightHand}/{GripButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveTool",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

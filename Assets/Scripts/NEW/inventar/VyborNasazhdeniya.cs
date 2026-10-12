@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 // Вешается на пустой объект внутри Right Controller (LineRenderer добавится сам).
 // Пока инвентарь открыт: рисует луч от правой руки, наведённое посаженное
 // насаждение подсвечивается, правый триггер выбирает его в инвентаре.
+// Правый Grip: если наведён на насаждение - начинает его перемещать по террейну.
 [RequireComponent(typeof(LineRenderer))]
 public class VyborNasazhdeniya : MonoBehaviour
 {
@@ -13,13 +14,16 @@ public class VyborNasazhdeniya : MonoBehaviour
     [Header("Откуда идёт луч (если пусто - сам этот объект)")]
     public Transform tochkaStarta;
 
-    [Header("Какие слои луч может задеть")]
+    [Header("Какие слои луч может задеть (для наведения и подсветки)")]
     public LayerMask maskaPoiska = ~0;
+
+    [Header("Слой террейна (для перемещения объекта по земле)")]
+    public LayerMask maskaTerreina;
 
     [Header("Длина луча")]
     public float dlinaLucha = 30f;
 
-    [Header("Материал луча (необязательно, лучше URP/Unlit) и красный материал подсветки")]
+    [Header("Материал луча (необязательно) и красный материал подсветки")]
     public Material materialLucha;
     public Material materialPodsvetki;
 
@@ -30,16 +34,22 @@ public class VyborNasazhdeniya : MonoBehaviour
     [Header("Весь asset с действиями")]
     public InputActionAsset naborDeistvii;
 
-    [Header("Карта и имя действия правого триггера (Button)")]
+    [Header("Карта и имя действия правого триггера (выбор объекта)")]
     public string imyaKarty = "XRI Right Interaction";
     public string imyaDeistviya = "PickTool";
+
+    [Header("Карта и имя действия правого Grip (перемещение объекта)")]
+    public string imyaKartyGrip = "XRI Right Interaction";
+    public string imyaDeistviyaGrip = "MoveTool";
 
     private LineRenderer luch;
     private Material materialLuchaKopiya;
     private InputAction deistvieTriggera;
+    private InputAction deistvieGrip;
 
     private Nasazhdenie navedennoe;
     private Nasazhdenie vybrannoe;
+    private Nasazhdenie peremeshchaemyi;
 
     void Awake()
     {
@@ -89,6 +99,12 @@ public class VyborNasazhdeniya : MonoBehaviour
             deistvieTriggera = karta.FindAction(imyaDeistviya);
         }
 
+        var kartaGrip = naborDeistvii.FindActionMap(imyaKartyGrip);
+        if (kartaGrip != null)
+        {
+            deistvieGrip = kartaGrip.FindAction(imyaDeistviyaGrip);
+        }
+
         if (deistvieTriggera == null)
         {
             Debug.LogWarning("VyborNasazhdeniya: действие '" + imyaDeistviya + "' не найдено в карте '" + imyaKarty + "'.");
@@ -96,6 +112,15 @@ public class VyborNasazhdeniya : MonoBehaviour
         else
         {
             Debug.Log("VyborNasazhdeniya: действие '" + imyaDeistviya + "' найдено успешно.");
+        }
+
+        if (deistvieGrip == null)
+        {
+            Debug.LogWarning("VyborNasazhdeniya: действие '" + imyaDeistviyaGrip + "' не найдено в карте '" + imyaKartyGrip + "'.");
+        }
+        else
+        {
+            Debug.Log("VyborNasazhdeniya: действие '" + imyaDeistviyaGrip + "' найдено успешно.");
         }
     }
 
@@ -106,6 +131,13 @@ public class VyborNasazhdeniya : MonoBehaviour
             deistvieTriggera.performed += NazhatieTriggera;
             deistvieTriggera.Enable();
         }
+
+        if (deistvieGrip != null)
+        {
+            deistvieGrip.performed += NazhatieGrip;
+            deistvieGrip.canceled += OtpuskanieGrip;
+            deistvieGrip.Enable();
+        }
     }
 
     void OnDisable()
@@ -115,21 +147,23 @@ public class VyborNasazhdeniya : MonoBehaviour
             deistvieTriggera.performed -= NazhatieTriggera;
         }
 
+        if (deistvieGrip != null)
+        {
+            deistvieGrip.performed -= NazhatieGrip;
+            deistvieGrip.canceled -= OtpuskanieGrip;
+        }
+
         if (luch != null)
         {
             luch.enabled = false;
         }
+
+        peremeshchaemyi = null;
     }
 
     // LateUpdate - чтобы позиция контроллера уже обновилась в этом кадре
     void LateUpdate()
     {
-        // Объект могли удалить кнопкой "Удалить" - тогда ссылки станут пустыми
-        if (vybrannoe == null)
-        {
-            vybrannoe = null;
-        }
-
         if (!SostoyanieMenyu.InventoryOpen)
         {
             ZakrytInventar();
@@ -141,8 +175,26 @@ public class VyborNasazhdeniya : MonoBehaviour
         Vector3 napravlenie = start.forward;
         Vector3 konets = nachalo + napravlenie * dlinaLucha;
 
-        Nasazhdenie naydennoe = null;
+        // Режим перемещения: объект приклеен к террейну под лучом
+        if (peremeshchaemyi != null)
+        {
+            RaycastHit popadanieTerreina;
+            if (Physics.Raycast(nachalo, napravlenie, out popadanieTerreina, dlinaLucha, maskaTerreina, QueryTriggerInteraction.Ignore))
+            {
+                konets = popadanieTerreina.point;
+                // Меняем только позицию. Rotation и scale не трогаем.
+                peremeshchaemyi.transform.position = popadanieTerreina.point;
+            }
 
+            luch.enabled = true;
+            luch.SetPosition(0, nachalo);
+            luch.SetPosition(1, konets);
+            UstanovitTsvetLucha(tsvetNaNasazhdenii);
+            return;
+        }
+
+        // Обычное наведение: ищем насаждение под лучом
+        Nasazhdenie naydennoe = null;
         RaycastHit popadanie;
         if (Physics.Raycast(nachalo, napravlenie, out popadanie, dlinaLucha, maskaPoiska, QueryTriggerInteraction.Ignore))
         {
@@ -162,10 +214,17 @@ public class VyborNasazhdeniya : MonoBehaviour
     private void ZakrytInventar()
     {
         luch.enabled = false;
+        SbrositVydelenie();
+    }
 
+    // Вызывается снаружи (кнопкой "Зафиксировать" в InventarDeystviy):
+    // снимаем подсветку, забываем выбор и перемещение
+    public void SbrositVydelenie()
+    {
         SnyatPodsvetku(navedennoe);
         SnyatPodsvetku(vybrannoe);
         navedennoe = null;
+        peremeshchaemyi = null;
 
         if (vybrannoe != null)
         {
@@ -184,7 +243,6 @@ public class VyborNasazhdeniya : MonoBehaviour
             return;
         }
 
-        // Убираем подсветку со старого (кроме выбранного - оно остаётся красным)
         if (navedennoe != null && navedennoe != vybrannoe)
         {
             SnyatPodsvetku(navedennoe);
@@ -201,7 +259,6 @@ public class VyborNasazhdeniya : MonoBehaviour
             return;
         }
 
-        // Старое выбранное перестаёт быть красным (если на него не наведён луч)
         if (vybrannoe != null && vybrannoe != navedennoe)
         {
             SnyatPodsvetku(vybrannoe);
@@ -215,6 +272,26 @@ public class VyborNasazhdeniya : MonoBehaviour
         }
 
         Debug.Log("Выбрано насаждение: " + vybrannoe.vidNasazhdeniya);
+    }
+
+    private void NazhatieGrip(InputAction.CallbackContext context)
+    {
+        if (!SostoyanieMenyu.InventoryOpen || navedennoe == null)
+        {
+            return;
+        }
+
+        peremeshchaemyi = navedennoe;
+        Debug.Log("Начато перемещение: " + peremeshchaemyi.vidNasazhdeniya);
+    }
+
+    private void OtpuskanieGrip(InputAction.CallbackContext context)
+    {
+        if (peremeshchaemyi != null)
+        {
+            Debug.Log("Перемещение завершено.");
+            peremeshchaemyi = null;
+        }
     }
 
     private void Podsvetit(Nasazhdenie nasazhdenie)

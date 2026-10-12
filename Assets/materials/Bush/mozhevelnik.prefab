@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 761691373947994582}
   - component: {fileID: 618572107565316769}
   - component: {fileID: 5670229376838471474}
+  - component: {fileID: -8979415742564736338}
+  - component: {fileID: 5115365522113548830}
   m_Layer: 0
-  m_Name: BushDry_B
+  m_Name: mozhevelnik
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +33,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &618572107565316769
 MeshFilter:
@@ -83,3 +85,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &-8979415742564736338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2945449235464250264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b6113e3aa8b5f4181ab3f8d33d2329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidNasazhdeniya: "\u041C\u043E\u0436\u0436\u0435\u0432\u0435\u043B\u044C\u043D\u0438\u043A"
+  kategoriya: "\u041A\u0443\u0441\u0442\u044B"
+  zafiksirovano: 0
+  ishodnyiRazmer: {x: 1, y: 1, z: 1}
+  sourcePrefab: {fileID: 0}
+--- !u!65 &5115365522113548830
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2945449235464250264}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1988468, y: 1.1067033, z: 1.0728226}
+  m_Center: {x: -0.0000009536743, y: 0.5402875, z: 0}

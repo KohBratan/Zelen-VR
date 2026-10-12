@@ -185,6 +185,14 @@ public class PosadkaDereva : MonoBehaviour
         }
 
         GameObject novoe = Instantiate(prefab, tochkaPopadaniya, Quaternion.identity, kontejnerDerevev);
+
+        // Запоминаем, из какого префаба выращено дерево - пригодится для "Заменить вид"
+        Nasazhdenie nasazhdenie = novoe.GetComponent<Nasazhdenie>();
+        if (nasazhdenie != null)
+        {
+            nasazhdenie.sourcePrefab = prefab;
+        }
+
         Debug.Log("Посажено: " + novoe.name);
     }
 
@@ -207,7 +215,6 @@ public class PosadkaDereva : MonoBehaviour
 
     private void PokazatPrizrak(GameObject prefab, Vector3 pozitsiya)
     {
-        // Выбрали другое дерево - делаем новый призрак
         if (prefabPrizraka != prefab)
         {
             UnichtozhitPrizrak();
@@ -235,14 +242,12 @@ public class PosadkaDereva : MonoBehaviour
         prizrak = Instantiate(prefab);
         prizrak.name = prefab.name + " (prizrak)";
 
-        // У призрака не должно быть коллайдеров, чтобы он ни с чем не взаимодействовал
         Collider[] kollajdery = prizrak.GetComponentsInChildren<Collider>(true);
         for (int i = 0; i < kollajdery.Length; i++)
         {
             kollajdery[i].enabled = false;
         }
 
-        // Заменяем все материалы на один прозрачный
         if (materialPrizraka != null)
         {
             Renderer[] otrisovshiki = prizrak.GetComponentsInChildren<Renderer>(true);

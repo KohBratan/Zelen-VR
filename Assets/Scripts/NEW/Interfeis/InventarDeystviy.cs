@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Панель контекстных действий над выбранным объектом.
-// Пока без логики хватания — tekushiyObyekt можно назначить вручную в инспекторе
-// для теста, позже сюда будет приходить объект из скрипта захвата.
 public class InventarDeystviy : MonoBehaviour
 {
     [Header("Текущий выбранный объект (null, если ничего не выбрано)")]
@@ -29,6 +27,28 @@ public class InventarDeystviy : MonoBehaviour
     [Header("Шаг растягивания за одно нажатие кнопки")]
     public float shagRastyagivaniya = 0.2f;
 
+    [Header("Во сколько раз можно менять размер в каждую сторону (слайдер по центру = обычный размер)")]
+    public float maksimalnoeIzmenenieRazmera = 3f;
+
+    [Header("Текст на кнопке 'Повернуть' (необязательно) - показывает, что режим поворота включён")]
+    public Text tekstKnopkiPovernut;
+
+    [Header("Скрипт выбора насаждения (для сброса подсветки)")]
+    public VyborNasazhdeniya vybor;
+
+    [Header("Переключатель панели инвентаря (для закрытия по 'Зафиксировать')")]
+    public PanelPereklyuchatel pereklyuchatelInventarya;
+
+    [Header("Навигатор инвентаря (открывает панель замены вида)")]
+    public DzhoystikNavigatsiyaInventarya navigator;
+
+    private bool rezhimVrascheniya = false;
+
+    public bool RezhimVrascheniya
+    {
+        get { return rezhimVrascheniya; }
+    }
+
     void Start()
     {
         knopkaPovernut.onClick.AddListener(Povernut);
@@ -37,15 +57,19 @@ public class InventarDeystviy : MonoBehaviour
         knopkaUdalit.onClick.AddListener(Udalit);
         knopkaZamenitVid.onClick.AddListener(ZamenitVid);
 
+        slaiderRazmer.minValue = 0f;
+        slaiderRazmer.maxValue = 1f;
+        slaiderRazmer.wholeNumbers = false;
+        slaiderRazmer.SetValueWithoutNotify(0.5f);
         slaiderRazmer.onValueChanged.AddListener(IzmenitRazmer);
 
         UstanovitTekushiyObyekt(tekushiyObyekt);
     }
 
-    // Вызывается снаружи (позже — из скрипта захвата), когда меняется выбранный объект
     public void UstanovitTekushiyObyekt(Nasazhdenie novyiObyekt)
     {
         tekushiyObyekt = novyiObyekt;
+        ZakonchitVrashenie();
 
         bool chto_to_vybrano = (tekushiyObyekt != null);
 
@@ -59,10 +83,14 @@ public class InventarDeystviy : MonoBehaviour
         {
             tekstNazvaniyaObyekta.text = tekushiyObyekt.vidNasazhdeniya;
 
-            // Слайдер показывает текущий размер относительно исходного (без изменения самого объекта)
-            if (tekushiyObyekt.ishodnyiRazmer.x > 0.0001f)
+            if (tekushiyObyekt.ishodnyiRazmer.x > 0.0001f && maksimalnoeIzmenenieRazmera > 1.0001f)
             {
-                slaiderRazmer.SetValueWithoutNotify(tekushiyObyekt.transform.localScale.x / tekushiyObyekt.ishodnyiRazmer.x);
+                float mnozhitel = tekushiyObyekt.transform.localScale.x / tekushiyObyekt.ishodnyiRazmer.x;
+                if (mnozhitel > 0.0001f)
+                {
+                    float polozhenie = 0.5f + Mathf.Log(mnozhitel, maksimalnoeIzmenenieRazmera) / 2f;
+                    slaiderRazmer.SetValueWithoutNotify(Mathf.Clamp01(polozhenie));
+                }
             }
 
             bool eto_gazon_ili_klumba = (tekushiyObyekt.kategoriya == "Газон" || tekushiyObyekt.kategoriya == "Клумбы");
@@ -79,9 +107,34 @@ public class InventarDeystviy : MonoBehaviour
 
     private void Povernut()
     {
-        if (tekushiyObyekt != null)
+        if (tekushiyObyekt == null)
         {
-            tekushiyObyekt.transform.Rotate(Vector3.up, 45f);
+            return;
+        }
+
+        rezhimVrascheniya = !rezhimVrascheniya;
+        ObnovitTekstPovernut();
+    }
+
+    public void Vrashat(float gradusy)
+    {
+        if (tekushiyObyekt != null && rezhimVrascheniya)
+        {
+            tekushiyObyekt.transform.Rotate(Vector3.up, gradusy, Space.World);
+        }
+    }
+
+    public void ZakonchitVrashenie()
+    {
+        rezhimVrascheniya = false;
+        ObnovitTekstPovernut();
+    }
+
+    private void ObnovitTekstPovernut()
+    {
+        if (tekstKnopkiPovernut != null)
+        {
+            tekstKnopkiPovernut.text = rezhimVrascheniya ? "Поворот: стик" : "Повернуть";
         }
     }
 
@@ -89,7 +142,8 @@ public class InventarDeystviy : MonoBehaviour
     {
         if (tekushiyObyekt != null)
         {
-            tekushiyObyekt.transform.localScale = tekushiyObyekt.ishodnyiRazmer * znachenie;
+            float mnozhitel = Mathf.Pow(maksimalnoeIzmenenieRazmera, (znachenie - 0.5f) * 2f);
+            tekushiyObyekt.transform.localScale = tekushiyObyekt.ishodnyiRazmer * mnozhitel;
         }
     }
 
@@ -102,12 +156,26 @@ public class InventarDeystviy : MonoBehaviour
         }
     }
 
+    // "Зафиксировать" теперь: сбрасываем подсветку и закрываем инвентарь
     private void PereklyuchitFiksatsiyu()
     {
-        if (tekushiyObyekt != null)
+        if (tekushiyObyekt == null)
         {
-            tekushiyObyekt.zafiksirovano = !tekushiyObyekt.zafiksirovano;
-            ObnovitTekstFiksatsii();
+            return;
+        }
+
+        if (vybor != null)
+        {
+            vybor.SbrositVydelenie();
+        }
+
+        if (pereklyuchatelInventarya != null)
+        {
+            pereklyuchatelInventarya.Zakryt();
+        }
+        else
+        {
+            Debug.LogWarning("InventarDeystviy: pereklyuchatelInventarya не назначен - не могу закрыть инвентарь.");
         }
     }
 
@@ -129,8 +197,20 @@ public class InventarDeystviy : MonoBehaviour
         }
     }
 
+    // "Заменить вид" открывает отдельную панель со списком видов
     private void ZamenitVid()
     {
-        Debug.Log("Замена вида пока не реализована — здесь позже откроется каталог насаждений.");
+        if (tekushiyObyekt == null)
+        {
+            return;
+        }
+
+        if (navigator == null)
+        {
+            Debug.LogWarning("InventarDeystviy: navigator не назначен - не могу открыть панель замены.");
+            return;
+        }
+
+        navigator.OtkrytPanelZameny(tekushiyObyekt);
     }
 }

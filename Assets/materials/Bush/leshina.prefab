@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 2661034487272744599}
   - component: {fileID: 889703896196033399}
   - component: {fileID: 5938235295911414715}
+  - component: {fileID: 7537266094646165483}
+  - component: {fileID: 2382368138447297451}
   m_Layer: 0
-  m_Name: Bush_B
+  m_Name: leshina
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +33,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &889703896196033399
 MeshFilter:
@@ -83,3 +85,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7537266094646165483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920622854391424263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b6113e3aa8b5f4181ab3f8d33d2329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidNasazhdeniya: "\u041B\u0435\u0449\u0438\u043D\u0430"
+  kategoriya: "\u041A\u0443\u0441\u0442\u044B"
+  zafiksirovano: 0
+  ishodnyiRazmer: {x: 1, y: 1, z: 1}
+  sourcePrefab: {fileID: 0}
+--- !u!65 &2382368138447297451
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920622854391424263}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8233242, y: 0.7455326, z: 0.7346916}
+  m_Center: {x: 0, y: 0.43492177, z: 0.0000019073486}

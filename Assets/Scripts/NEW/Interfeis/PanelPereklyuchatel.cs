@@ -84,4 +84,27 @@ public class PanelPereklyuchatel : MonoBehaviour
             panel.SetActive(panelOtkryta);
         }
     }
+    public void Zakryt()
+    {
+        if (panelOtkryta)
+        {
+            panelOtkryta = false;
+            if (panel != null)
+            {
+                panel.SetActive(false);
+            }
+        }
+    }
+
+    public void Otkryt()
+    {
+        if (!panelOtkryta)
+        {
+            panelOtkryta = true;
+            if (panel != null)
+            {
+                panel.SetActive(true);
+            }
+        }
+    }
 }

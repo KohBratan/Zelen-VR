@@ -18,6 +18,11 @@ public class Nasazhdenie : MonoBehaviour
     [HideInInspector]
     public Vector3 ishodnyiRazmer = Vector3.one;
 
+    // Префаб, из которого был создан этот объект. Нужен для панели
+    // "Заменить вид" - чтобы понять, какой вид сейчас у дерева.
+    [HideInInspector]
+    public GameObject sourcePrefab;
+
     void Awake()
     {
         ishodnyiRazmer = transform.localScale;
