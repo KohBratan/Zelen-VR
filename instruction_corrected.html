@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Зелёные насаждения в VR — прототип интерфейса</title>
+  <style>
+    :root {
+      --ink: #23352d;
+      --muted: #66766d;
+      --line: #d8e2da;
+      --paper: #ffffff;
+      --page: #f2f6f2;
+      --green: #2f7652;
+      --green-dark: #20543a;
+      --green-pale: #e8f3ea;
+      --orange: #f3b65b;
+      --shadow: 0 12px 32px rgba(34, 66, 47, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--page);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+    }
+    .page { max-width: 1180px; margin: 0 auto; padding: 30px 22px 44px; }
+    .topline { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; }
+    .project-label { display: flex; align-items: center; gap: 10px; color: var(--green); font-size: 13px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+    .leaf-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; background: #dceee0; font-size: 20px; }
+    .version { color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; font-size: 12px; white-space: nowrap; }
+    h1 { font-size: clamp(28px, 4vw, 42px); line-height: 1.1; margin: 0 0 10px; letter-spacing: -.03em; }
+    .intro { max-width: 750px; color: var(--muted); margin: 0; font-size: 16px; }
+    .hero { padding: 8px 0 28px; }
+    .section { margin-top: 28px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin: 0 0 14px; }
+    h2 { margin: 0; font-size: 23px; letter-spacing: -.02em; }
+    .section-note { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .controllers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .controller-card { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 20px; box-shadow: var(--shadow); }
+    .controller-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid #edf1ed; padding-bottom: 13px; }
+    .controller-head h3 { margin: 0; font-size: 18px; }
+    .hand-tag { font-size: 12px; font-weight: 700; color: var(--green); background: var(--green-pale); padding: 5px 9px; border-radius: 999px; }
+    .controller-content { display: grid; grid-template-columns: 155px minmax(0, 1fr); align-items: center; gap: 18px; padding-top: 16px; }
+    .controller-art { width: 100%; max-width: 155px; margin: 0 auto; display: block; }
+    .mapping { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+    .mapping li { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 9px; align-items: start; font-size: 13px; }
+    .key { display: inline-block; background: #f1f5f2; border: 1px solid #d8e2da; border-radius: 7px; padding: 4px 6px; text-align: center; font-weight: 700; color: #294a37; font-size: 12px; }
+    .map-desc { color: #46574d; padding-top: 3px; }
+    .game-card { overflow: hidden; border-radius: 22px; border: 1px solid #cbd9ce; background: #fff; box-shadow: var(--shadow); }
+    .game-topbar { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; background: #203f30; color: white; }
+    .game-title { display: flex; gap: 10px; align-items: center; font-weight: 700; font-size: 14px; }
+    .live-dot { width: 8px; height: 8px; background: #8cdda4; border-radius: 50%; box-shadow: 0 0 0 4px rgba(140,221,164,.15); }
+    .game-state { color: #d6e8d9; font-size: 12px; }
+    .game-layout { display: grid; grid-template-columns: 178px minmax(0, 1fr) 190px; min-height: 420px; }
+    .side-panel { padding: 15px 13px; background: #fbfdfb; }
+    .side-panel.left { border-right: 1px solid #e1e9e2; }
+    .side-panel.right { border-left: 1px solid #e1e9e2; }
+    .panel-title { margin: 0 0 11px; color: #506157; text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+    .tool-list { display: grid; gap: 6px; }
+    .tool-button, .item-button { width: 100%; border: 1px solid transparent; background: transparent; color: var(--ink); font: inherit; cursor: pointer; border-radius: 10px; text-align: left; transition: background .15s, border-color .15s, transform .15s; }
+    .tool-button { display: flex; align-items: center; gap: 9px; padding: 9px 8px; font-size: 12px; }
+    .tool-button:hover, .item-button:hover { background: #f0f6f0; }
+    .tool-button.active, .item-button.active { background: #e5f3e8; border-color: #acd1b5; color: #1c5b35; font-weight: 700; }
+    .tool-icon { width: 29px; height: 29px; display: grid; place-items: center; border-radius: 8px; background: #edf3ee; font-size: 17px; flex: 0 0 29px; }
+    .tool-button.active .tool-icon { background: #d1ead7; }
+    .scene { min-width: 0; position: relative; overflow: hidden; min-height: 420px; background: linear-gradient(#b9e2f3 0%, #e7f5ec 48%, #a8d48b 48%, #7cb76a 100%); cursor: crosshair; }
+    .sun { position: absolute; top: 25px; right: 34px; width: 45px; height: 45px; border-radius: 50%; background: #ffe5a0; box-shadow: 0 0 0 12px rgba(255,229,160,.23); }
+    .cloud { position: absolute; width: 78px; height: 22px; background: rgba(255,255,255,.78); border-radius: 40px; top: 55px; left: 11%; }
+    .cloud:before, .cloud:after { content: ''; position: absolute; background: inherit; border-radius: 50%; }
+    .cloud:before { width: 30px; height: 30px; left: 13px; top: -14px; }
+    .cloud:after { width: 37px; height: 37px; left: 34px; top: -18px; }
+    .hill { position: absolute; width: 75%; height: 125px; bottom: 35%; left: -12%; background: #8dc58a; border-radius: 50% 50% 0 0; transform: rotate(7deg); opacity: .78; }
+    .hill.two { width: 68%; height: 100px; left: 52%; bottom: 34%; background: #6eae78; transform: rotate(-8deg); }
+    .ground-line { position: absolute; left: 0; right: 0; height: 2px; bottom: 36%; background: rgba(255,255,255,.45); }
+    .tree { position: absolute; bottom: 37%; font-size: clamp(37px, 5vw, 66px); filter: drop-shadow(0 5px 2px rgba(40,76,44,.14)); user-select: none; }
+    .tree.t1 { left: 12%; bottom: 39%; font-size: 55px; }
+    .tree.t2 { left: 72%; bottom: 37%; font-size: 66px; }
+    .tree.t3 { left: 84%; bottom: 39%; font-size: 42px; }
+    .path { position: absolute; bottom: -25px; left: 40%; width: 30%; height: 185px; background: #d9c6a1; clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%); opacity: .95; }
+    .bed { position: absolute; bottom: 22%; left: 24%; width: 110px; height: 44px; border-radius: 50%; background: #6d4937; border: 5px solid #9f7450; box-shadow: 0 8px 0 rgba(63,87,49,.12); }
+    .bed-flower { position: absolute; bottom: 26%; left: 27%; font-size: 20px; letter-spacing: 2px; white-space: nowrap; }
+    .crosshair { position: absolute; left: 50%; top: 48%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border: 2px solid rgba(255,255,255,.95); border-radius: 50%; box-shadow: 0 0 0 1px rgba(32,67,44,.35); pointer-events: none; }
+    .crosshair:before, .crosshair:after { content: ''; position: absolute; background: white; box-shadow: 0 0 0 1px rgba(32,67,44,.18); }
+    .crosshair:before { width: 2px; height: 29px; left: 7px; top: -6px; }
+    .crosshair:after { height: 2px; width: 29px; top: 7px; left: -6px; }
+    .scene-hint { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: rgba(30,57,40,.78); color: #fff; padding: 7px 12px; border-radius: 8px; font-size: 11px; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; }
+    .placed-object { position: absolute; font-size: 28px; z-index: 3; transform: translate(-50%, -50%); filter: drop-shadow(0 2px 1px rgba(35,65,35,.2)); user-select: none; pointer-events: none; }
+    .items-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .item-button { padding: 10px 4px 8px; border-color: #e0e8e1; text-align: center; display: flex; min-height: 70px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 11px; }
+    .item-emoji { font-size: 23px; line-height: 1; }
+    .small-help { margin: 12px 1px 0; color: #68796e; font-size: 11px; line-height: 1.45; }
+    .action-strip { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; background: #f7faf7; border-top: 1px solid #e1e9e2; }
+    .action-keys { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 15px; color: #57685d; font-size: 11px; }
+    .action-keys span { display: inline-flex; align-items: center; gap: 6px; }
+    .reset-button { border: 1px solid #cbdace; background: white; border-radius: 9px; color: #345340; padding: 8px 11px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .reset-button:hover { background: var(--green-pale); }
+    .explanation { margin-top: 18px; background: #eaf3eb; border: 1px solid #d5e6d8; padding: 14px 16px; border-radius: 14px; color: #45604d; font-size: 13px; }
+    .explanation strong { color: #275438; }
+    footer { margin-top: 28px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: #78877d; font-size: 11px; }
+    @media (max-width: 850px) {
+      .controllers { grid-template-columns: 1fr; }
+      .game-layout { grid-template-columns: 150px minmax(0, 1fr); }
+      .side-panel.right { grid-column: 1 / -1; border-left: 0; border-top: 1px solid #e1e9e2; }
+      .items-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .scene { min-height: 360px; }
+    }
+    @media (max-width: 570px) {
+      .page { padding: 20px 12px 28px; }
+      .topline { align-items: flex-start; }
+      .version { font-size: 10px; }
+      .controller-card { padding: 15px; }
+      .controller-content { grid-template-columns: 100px minmax(0,1fr); gap: 12px; }
+      .mapping li { grid-template-columns: 68px minmax(0,1fr); font-size: 12px; gap: 7px; }
+      .key { font-size: 10px; }
+      .game-layout { grid-template-columns: 1fr; }
+      .side-panel.left { border-right: 0; border-bottom: 1px solid #e1e9e2; }
+      .tool-list { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .tool-button { padding: 7px 6px; }
+      .scene { min-height: 330px; }
+      .side-panel.right { grid-column: auto; }
+      .items-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .action-strip { align-items: flex-start; flex-direction: column; }
+      .tree.t2 { left: 65%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline">
+      <div class="project-label"><span class="leaf-mark">🌿</span><span>VR-проект · интерфейс</span></div>
+      <div class="version">Прототип управления · v1.0</div>
+    </div>
+
+    <header class="hero">
+      <h1>Зелёные насаждения в VR</h1>
+      <p class="intro">Прототип интерфейса для обустройства виртуального зелёного пространства. Ниже показаны назначения кнопок двух VR-контроллеров и элементы, которые игрок видит во время работы в сцене.</p>
+    </header>
+
+    <section class="section" aria-labelledby="controllers-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="controllers-title">1. Управление контроллерами</h2>
+          <p class="section-note">Кнопки подписаны; действия указаны для этого проекта.</p>
+        </div>
+      </div>
+      <div class="controllers">
+        <article class="controller-card">
+          <div class="controller-head"><h3>Левый контроллер</h3><span class="hand-tag">LEFT</span></div>
+          <div class="controller-content">
+            <svg class="controller-art" viewBox="0 0 180 250" role="img" aria-label="Схема левого VR-контроллера с джойстиком, X, Y, Grip и Trigger">
+              <defs>
+                <linearGradient id="bodyL" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#f8fbf8"/><stop offset="1" stop-color="#dce6df"/></linearGradient>
+              </defs>
+              <path d="M57 20 Q42 20 37 37 L30 72 Q27 91 40 103 L61 120 L73 220 Q74 236 91 238 L112 238 Q128 237 127 220 L119 119 L143 103 Q156 91 152 72 L145 37 Q141 20 125 20 Z" fill="url(#bodyL)" stroke="#8fa397" stroke-width="2.5"/>
+              <path d="M64 111 L116 111 L124 221 Q124 231 113 232 L91 232 Q82 231 81 220 Z" fill="#cbd8ce" opacity=".72"/>
+              <ellipse cx="90" cy="76" rx="37" ry="29" fill="#eaf0eb" stroke="#9aaa9f" stroke-width="2"/>
+              <circle cx="67" cy="69" r="17" fill="#35463c" stroke="#7e9184" stroke-width="4"/>
+              <circle cx="67" cy="69" r="8" fill="#6d8073"/>
+              <circle cx="116" cy="59" r="11" fill="#fdfefd" stroke="#99aa9d" stroke-width="1.7"/>
+              <text x="116" y="63" font-size="10" font-weight="700" text-anchor="middle" fill="#31543d">Y</text>
+              <circle cx="132" cy="83" r="11" fill="#fdfefd" stroke="#99aa9d" stroke-width="1.7"/>
+              <text x="132" y="87" font-size="10" font-weight="700" text-anchor="middle" fill="#31543d">X</text>
+              <rect x="49" y="36" width="23" height="8" rx="4" fill="#b8c7bc"/>
+              <rect x="112" y="36" width="23" height="8" rx="4" fill="#b8c7bc"/>
+              <circle cx="91" cy="117" r="5" fill="#9cad9f"/>
+              <path d="M48 99 Q32 103 36 119 L44 138" fill="none" stroke="#8fa397" stroke-width="3" stroke-linecap="round"/>
+              <text x="90" y="177" font-size="9" font-weight="700" text-anchor="middle" fill="#667a6b">GRIP</text>
+              <text x="103" y="18" font-size="9" font-weight="700" text-anchor="middle" fill="#526b5a">TRIGGER</text>
+            </svg>
+            <ul class="mapping">
+              <li><span class="key">Джойстик</span><span class="map-desc">Передвижение по сцене</span></li>
+              <li><span class="key">X</span><span class="map-desc">Открыть меню инструментов</span></li>
+              <li><span class="key">Y</span><span class="map-desc">Присесть / встать</span></li>
+              <li><span class="key">Grip</span><span class="map-desc">Взять или переместить объект</span></li>
+              <li><span class="key">Trigger</span><span class="map-desc">Выбрать инструмент / подтвердить действие</span></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="controller-card">
+          <div class="controller-head"><h3>Правый контроллер</h3><span class="hand-tag">RIGHT</span></div>
+          <div class="controller-content">
+            <svg class="controller-art" viewBox="0 0 180 250" role="img" aria-label="Схема правого VR-контроллера с джойстиком, A, B, Grip и Trigger">
+              <defs>
+                <linearGradient id="bodyR" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#f8fbf8"/><stop offset="1" stop-color="#dce6df"/></linearGradient>
+              </defs>
+              <path d="M57 20 Q42 20 37 37 L30 72 Q27 91 40 103 L61 120 L73 220 Q74 236 91 238 L112 238 Q128 237 127 220 L119 119 L143 103 Q156 91 152 72 L145 37 Q141 20 125 20 Z" fill="url(#bodyR)" stroke="#8fa397" stroke-width="2.5"/>
+              <path d="M64 111 L116 111 L124 221 Q124 231 113 232 L91 232 Q82 231 81 220 Z" fill="#cbd8ce" opacity=".72"/>
+              <ellipse cx="90" cy="76" rx="37" ry="29" fill="#eaf0eb" stroke="#9aaa9f" stroke-width="2"/>
+              <circle cx="67" cy="69" r="17" fill="#35463c" stroke="#7e9184" stroke-width="4"/>
+              <circle cx="67" cy="69" r="8" fill="#6d8073"/>
+              <circle cx="116" cy="59" r="11" fill="#fdfefd" stroke="#99aa9d" stroke-width="1.7"/>
+              <text x="116" y="63" font-size="10" font-weight="700" text-anchor="middle" fill="#31543d">A</text>
+              <circle cx="132" cy="83" r="11" fill="#fdfefd" stroke="#99aa9d" stroke-width="1.7"/>
+              <text x="132" y="87" font-size="10" font-weight="700" text-anchor="middle" fill="#31543d">B</text>
+              <rect x="49" y="36" width="23" height="8" rx="4" fill="#b8c7bc"/>
+              <rect x="112" y="36" width="23" height="8" rx="4" fill="#b8c7bc"/>
+              <circle cx="91" cy="117" r="5" fill="#9cad9f"/>
+              <path d="M48 99 Q32 103 36 119 L44 138" fill="none" stroke="#8fa397" stroke-width="3" stroke-linecap="round"/>
+              <text x="90" y="177" font-size="9" font-weight="700" text-anchor="middle" fill="#667a6b">GRIP</text>
+              <text x="103" y="18" font-size="9" font-weight="700" text-anchor="middle" fill="#526b5a">TRIGGER</text>
+            </svg>
+            <ul class="mapping">
+              <li><span class="key">Джойстик</span><span class="map-desc">Поворот взгляда / камеры</span></li>
+              <li><span class="key">A</span><span class="map-desc">Телепортация в выбранную точку</span></li>
+              <li><span class="key">B</span><span class="map-desc">Открыть инвентарь растений</span></li>
+              <li><span class="key">Grip</span><span class="map-desc">Взять или повернуть объект</span></li>
+              <li><span class="key">Trigger</span><span class="map-desc">Разместить выбранный объект</span></li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="hud-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="hud-title">2. Интерфейс во время игры (HUD)</h2>
+          <p class="section-note">Пример игрового экрана: инструменты, инвентарь и подсказки управления расположены поверх сцены.</p>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="game-topbar">
+          <div class="game-title"><span class="live-dot"></span><span>РЕДАКТОР ЗЕЛЁНОЙ ЗОНЫ</span></div>
+          <div class="game-state" id="gameState">Режим: размещение объектов</div>
+        </div>
+        <div class="game-layout">
+          <aside class="side-panel left" aria-label="Панель инструментов">
+            <h3 class="panel-title">Инструменты</h3>
+            <div class="tool-list" id="toolList">
+              <button class="tool-button active" data-tool="Клумба" data-icon="🌼"><span class="tool-icon">🌼</span><span>Клумба</span></button>
+              <button class="tool-button" data-tool="Газон" data-icon="🟩"><span class="tool-icon">🟩</span><span>Газон</span></button>
+              <button class="tool-button" data-tool="Дерево" data-icon="🌳"><span class="tool-icon">🌳</span><span>Дерево</span></button>
+              <button class="tool-button" data-tool="Куст" data-icon="🌿"><span class="tool-icon">🌿</span><span>Куст</span></button>
+              <button class="tool-button" data-tool="Цветок" data-icon="🌷"><span class="tool-icon">🌷</span><span>Одиночный цветок</span></button>
+              <button class="tool-button" data-tool="Кисть" data-icon="🖌️"><span class="tool-icon">🖌️</span><span>Кисть для травы</span></button>
+              <button class="tool-button" data-tool="Ластик" data-icon="🧽"><span class="tool-icon">🧽</span><span>Ластик</span></button>
+            </div>
+          </aside>
+
+          <div class="scene" id="scene" aria-label="Игровая сцена. Нажмите, чтобы разместить выбранный объект.">
+            <div class="sun"></div><div class="cloud"></div><div class="hill"></div><div class="hill two"></div><div class="ground-line"></div>
+            <div class="tree t1">🌳</div><div class="tree t2">🌳</div><div class="tree t3">🌲</div>
+            <div class="path"></div><div class="bed"></div><div class="bed-flower">🌼 🌷 🌼</div>
+            <div class="crosshair"></div>
+            <div class="scene-hint" id="sceneHint">Выбрано: Клумба · нажмите на участок, чтобы разместить</div>
+          </div>
+
+          <aside class="side-panel right" aria-label="Инвентарь предметов">
+            <h3 class="panel-title">Инвентарь</h3>
+            <div class="items-grid" id="itemsGrid">
+              <button class="item-button active" data-item="🌷" data-name="Тюльпан"><span class="item-emoji">🌷</span><span>Тюльпан</span></button>
+              <button class="item-button" data-item="🌹" data-name="Роза"><span class="item-emoji">🌹</span><span>Роза</span></button>
+              <button class="item-button" data-item="🌼" data-name="Ромашка"><span class="item-emoji">🌼</span><span>Ромашка</span></button>
+              <button class="item-button" data-item="🌻" data-name="Подсолнух"><span class="item-emoji">🌻</span><span>Подсолнух</span></button>
+              <button class="item-button" data-item="🌱" data-name="Росток"><span class="item-emoji">🌱</span><span>Росток</span></button>
+              <button class="item-button" data-item="🪴" data-name="Растение в горшке"><span class="item-emoji">🪴</span><span>В горшке</span></button>
+            </div>
+            <p class="small-help">Выберите растение, затем нажмите на свободное место в игровой сцене.</p>
+          </aside>
+        </div>
+        <div class="action-strip">
+          <div class="action-keys">
+            <span><b class="key">Trigger</b> Разместить / подтвердить</span>
+            <span><b class="key">Grip</b> Переместить / повернуть</span>
+            <span><b class="key">B</b> Инвентарь</span>
+          </div>
+          <button class="reset-button" id="resetScene" type="button">Сбросить размещённые объекты</button>
+        </div>
+      </div>
+      <div class="explanation"><strong>Как проверить прототип:</strong> выберите инструмент слева и растение в инвентаре справа, затем нажмите на игровую сцену. Выбранный предмет появится в месте нажатия. Кнопка сброса удаляет размещённые предметы. Это демонстрация расположения интерфейса и логики выбора, а не подключение к VR-шлему.</div>
+    </section>
+
+    <footer><span>Учебный прототип интерфейса</span><span>Зелёные насаждения в VR</span></footer>
+  </main>
+
+  <script>
+    (() => {
+      const toolButtons = Array.from(document.querySelectorAll('.tool-button'));
+      const itemButtons = Array.from(document.querySelectorAll('.item-button'));
+      const scene = document.getElementById('scene');
+      const sceneHint = document.getElementById('sceneHint');
+      const gameState = document.getElementById('gameState');
+      const resetButton = document.getElementById('resetScene');
+      let selectedTool = 'Клумба';
+      let selectedItem = '🌷';
+      let selectedName = 'Тюльпан';
+
+      function updateHint() {
+        sceneHint.textContent = selectedTool === 'Ластик'
+          ? 'Выбрано: Ластик · нажмите на размещённый предмет, чтобы убрать его'
+          : `Выбрано: ${selectedTool} · ${selectedName} · нажмите на участок, чтобы разместить`;
+        gameState.textContent = `Инструмент: ${selectedTool}`;
+      }
+
+      toolButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          toolButtons.forEach(item => item.classList.remove('active'));
+          button.classList.add('active');
+          selectedTool = button.dataset.tool;
+          updateHint();
+        });
+      });
+
+      itemButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          itemButtons.forEach(item => item.classList.remove('active'));
+          button.classList.add('active');
+          selectedItem = button.dataset.item;
+          selectedName = button.dataset.name;
+          updateHint();
+        });
+      });
+
+      scene.addEventListener('click', event => {
+        if (event.target.closest('.placed-object')) {
+          if (selectedTool === 'Ластик') event.target.closest('.placed-object').remove();
+          return;
+        }
+        if (selectedTool === 'Ластик') {
+          const objects = scene.querySelectorAll('.placed-object');
+          if (objects.length) objects[objects.length - 1].remove();
+          return;
+        }
+        const rect = scene.getBoundingClientRect();
+        const x = Math.min(Math.max(event.clientX - rect.left, 18), rect.width - 18);
+        const y = Math.min(Math.max(event.clientY - rect.top, rect.height * .48), rect.height - 48);
+        const object = document.createElement('span');
+        object.className = 'placed-object';
+        object.textContent = selectedTool === 'Дерево' ? '🌳'
+          : selectedTool === 'Куст' ? '🌿'
+          : selectedTool === 'Газон' ? '🟩'
+          : selectedTool === 'Клумба' ? '🌼'
+          : selectedTool === 'Кисть' ? '🌱'
+          : selectedItem;
+        object.style.left = `${x}px`;
+        object.style.top = `${y}px`;
+        object.title = selectedTool === 'Цветок' ? selectedName : selectedTool;
+        scene.appendChild(object);
+      });
+
+      resetButton.addEventListener('click', () => {
+        scene.querySelectorAll('.placed-object').forEach(object => object.remove());
+      });
+      updateHint();
+    })();
+  </script>
+</body>
+</html>
