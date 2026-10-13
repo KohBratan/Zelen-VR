@@ -19,4 +19,6 @@ UserSettings/
 # Файлы Windows
 Thumbs.db
 .vs/
-.idea/
+
+.vs/
+.vsconfig
