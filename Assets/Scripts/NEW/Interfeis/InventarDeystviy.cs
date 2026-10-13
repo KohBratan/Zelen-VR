@@ -66,16 +66,6 @@ public class InventarDeystviy : MonoBehaviour
         UstanovitTekushiyObyekt(tekushiyObyekt);
     }
 
-    // Панель выключается (закрытие инвентаря любым способом) -
-    // сбрасываем выбор на дереве и очищаем себя.
-    void OnDisable()
-    {
-        if (vybor != null)
-        {
-            vybor.SbrositVydelenie();
-        }
-    }
-
     public void UstanovitTekushiyObyekt(Nasazhdenie novyiObyekt)
     {
         tekushiyObyekt = novyiObyekt;
@@ -166,9 +156,7 @@ public class InventarDeystviy : MonoBehaviour
         }
     }
 
-    // "Зафиксировать" теперь: сбрасываем подсветку и закрываем инвентарь.
-    // Реальный сброс произойдёт через OnDisable, но вызовем явно, чтобы
-    // UI успел обновиться до выключения панели.
+    // "Зафиксировать" теперь: сбрасываем подсветку и закрываем инвентарь
     private void PereklyuchitFiksatsiyu()
     {
         if (tekushiyObyekt == null)
@@ -209,6 +197,7 @@ public class InventarDeystviy : MonoBehaviour
         }
     }
 
+    // "Заменить вид" открывает отдельную панель со списком видов
     private void ZamenitVid()
     {
         if (tekushiyObyekt == null)
