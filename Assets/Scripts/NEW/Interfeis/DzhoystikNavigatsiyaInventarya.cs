@@ -29,11 +29,8 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
     [Header("Шаг изменения слайдера за один наклон влево/вправо")]
     public float shagSlaidera = 0.1f;
 
-    [Header("Компонент поворота камеры, который нужно выключать, пока любое меню открыто")]
-    public Behaviour komponentPovorota;
-
-    [Header("Компонент передвижения персонажа, который нужно выключать, пока любое меню открыто")]
-    public Behaviour komponentPeredvizheniya;
+    [Header("Порог наклона, после которого засчитывается шаг")]
+    public float porogNaklona = 0.5f;
 
     [Header("Весь asset с действиями")]
     public InputActionAsset naborDeistvii;
@@ -46,8 +43,11 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
     public string imyaKartyKlika = "XRI Right Interaction";
     public string imyaDeistviyaKlika = "MenuConfirm";
 
-    [Header("Порог наклона, после которого засчитывается шаг")]
-    public float porogNaklona = 0.5f;
+    [Header("Компонент поворота камеры, который нужно выключать, пока любое меню открыто")]
+    public Behaviour komponentPovorota;
+
+    [Header("Компонент передвижения персонажа, который нужно выключать, пока любое меню открыто")]
+    public Behaviour komponentPeredvizheniya;
 
     [Header("Диагностика: показывать сырые значения джойстика в консоли")]
     public bool pokazyvatSyrieZnacheniya = false;
@@ -68,7 +68,7 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
     [Header("Куда складывать новые объекты после замены (необязательно)")]
     public Transform kontejnerDerevev;
 
-    [Header("Ссылка на панель инвентаря (чтобы обновить выделенный объект после замены)")]
+    [Header("Ссылка на панель инвентаря (для обновления выделенного объекта и сброса режима поворота)")]
     public InventarDeystviy inventar;
 
     private InputAction deistvieDzhoystika;
@@ -87,6 +87,36 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
     private GameObject tekushayaPanelZameny;
     private KnopkaZamenyVida[] tekushieKnopkiZameny;
     private int tekushieKolonkiZameny = 2;
+
+    void OnEnable()
+    {
+        if (deistvieDzhoystika != null)
+        {
+            deistvieDzhoystika.performed += SobytieDzhoystika;
+            deistvieDzhoystika.canceled += SobytieDzhoystikaSbros;
+            deistvieDzhoystika.Enable();
+        }
+
+        if (deistvieKlika != null)
+        {
+            deistvieKlika.performed += NazhatieKlika;
+            deistvieKlika.Enable();
+        }
+    }
+
+    void OnDisable()
+    {
+        if (deistvieDzhoystika != null)
+        {
+            deistvieDzhoystika.performed -= SobytieDzhoystika;
+            deistvieDzhoystika.canceled -= SobytieDzhoystikaSbros;
+        }
+
+        if (deistvieKlika != null)
+        {
+            deistvieKlika.performed -= NazhatieKlika;
+        }
+    }
 
     void Awake()
     {
@@ -124,36 +154,6 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
         else
         {
             Debug.Log("DzhoystikNavigatsiyaInventarya: действие клика '" + imyaDeistviyaKlika + "' найдено успешно.");
-        }
-    }
-
-    void OnEnable()
-    {
-        if (deistvieDzhoystika != null)
-        {
-            deistvieDzhoystika.performed += SobytieDzhoystika;
-            deistvieDzhoystika.canceled += SobytieDzhoystikaSbros;
-            deistvieDzhoystika.Enable();
-        }
-
-        if (deistvieKlika != null)
-        {
-            deistvieKlika.performed += NazhatieKlika;
-            deistvieKlika.Enable();
-        }
-    }
-
-    void OnDisable()
-    {
-        if (deistvieDzhoystika != null)
-        {
-            deistvieDzhoystika.performed -= SobytieDzhoystika;
-            deistvieDzhoystika.canceled -= SobytieDzhoystikaSbros;
-        }
-
-        if (deistvieKlika != null)
-        {
-            deistvieKlika.performed -= NazhatieKlika;
         }
     }
 
@@ -215,6 +215,11 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
         }
     }
 
+    private void SobytieDzhoystikaSbros(InputAction.CallbackContext context)
+    {
+        zhdyomNeytral = false;
+    }
+
     private void SobytieDzhoystika(InputAction.CallbackContext context)
     {
         bool menyuOtkryto = panelMenu != null && panelMenu.activeInHierarchy;
@@ -238,11 +243,6 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
             ObrabotatNaklon(znachenie);
             zhdyomNeytral = true;
         }
-    }
-
-    private void SobytieDzhoystikaSbros(InputAction.CallbackContext context)
-    {
-        zhdyomNeytral = false;
     }
 
     private void ObrabotatNaklon(Vector2 napravlenie)
@@ -319,6 +319,12 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
         if (elementyMenu == null || elementyMenu.Length == 0)
         {
             return;
+        }
+
+        // Переключение на другую кнопку выключает режим поворота объекта
+        if (inventar != null)
+        {
+            inventar.ZakonchitVrashenie();
         }
 
         int noviyIndeks = tekushiyIndeks;
@@ -494,8 +500,6 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
 
     // ===== Публичное API для панели замены вида =====
 
-    // Открыть панель замены для указанного объекта. Какую именно панель
-    // (деревья или кусты) - определяется по kategoriya.
     public void OtkrytPanelZameny(Nasazhdenie tekushiy)
     {
         if (tekushiy == null)
@@ -504,7 +508,6 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
             return;
         }
 
-        // Выбираем набор по категории
         GameObject vybrannayaPanel = null;
         KnopkaZamenyVida[] vybrannyeKnopki = null;
         int vybrannyeKolonki = 2;
@@ -533,7 +536,6 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
             return;
         }
 
-        // Запоминаем активный набор
         tekushayaPanelZameny = vybrannayaPanel;
         tekushieKnopkiZameny = vybrannyeKnopki;
         tekushieKolonkiZameny = Mathf.Max(1, vybrannyeKolonki);
@@ -542,7 +544,6 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
         rezhimZameny = true;
         tekushayaPanelZameny.SetActive(true);
 
-        // Ищем кнопку с тем же префабом, что и у текущего дерева
         int indeksTekushchego = 0;
         if (tekushiy.sourcePrefab != null)
         {
@@ -556,7 +557,6 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
             }
         }
 
-        // Галочка - только на текущем виде
         for (int i = 0; i < tekushieKnopkiZameny.Length; i++)
         {
             if (tekushieKnopkiZameny[i] != null)
@@ -585,7 +585,6 @@ public class DzhoystikNavigatsiyaInventarya : MonoBehaviour
             tekushayaPanelZameny.SetActive(false);
         }
 
-        // На случай, если вторая панель осталась включённой (подстраховка)
         if (panelZamenyDerevya != null && panelZamenyDerevya != tekushayaPanelZameny)
         {
             panelZamenyDerevya.SetActive(false);

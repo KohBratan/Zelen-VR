@@ -5429,14 +5429,14 @@ MonoBehaviour:
   - {fileID: 6852098494612373491}
   - {fileID: 3203485672952574046}
   shagSlaidera: 0.1
-  komponentPovorota: {fileID: 3591098575636633376}
-  komponentPeredvizheniya: {fileID: 6200439542472161514}
+  porogNaklona: 0.5
   naborDeistvii: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   imyaKartyDzhoystika: XRI Right Interaction
   imyaDeistviyaDzhoystika: MenuJoystick
   imyaKartyKlika: XRI Right Interaction
   imyaDeistviyaKlika: MenuConfirm
-  porogNaklona: 0.5
+  komponentPovorota: {fileID: 3591098575636633376}
+  komponentPeredvizheniya: {fileID: 6200439542472161514}
   pokazyvatSyrieZnacheniya: 1
   panelZamenyDerevya: {fileID: 6414217657723000947}
   knopkiZamenyDerevya:
@@ -11460,7 +11460,8 @@ PrefabInstance:
       propertyPath: m_StartingInteractionOverridesMap.Array.size
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7933289559326432081, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
     m_RemovedGameObjects:
     - {fileID: 393207239731357619, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
     m_AddedGameObjects:
