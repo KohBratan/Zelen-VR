@@ -18,3 +18,15 @@ UserSettings/
 
 # Файлы Windows
 Thumbs.db
+
+# Служебные файлы агента и отладки
+agent_debug.log
+network_debug.log
+chats/
+malformed_responses/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.userprefs
+*.pidb
