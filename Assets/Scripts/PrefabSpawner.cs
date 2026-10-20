@@ -27,7 +27,9 @@ public class PrefabSpawner : MonoBehaviour
 
     [Header("Placement (while action held)")]
     public InputActionReference placementActionRef;
+    // Объект, который виден, пока зажат левый триггер (например, сам инструмент).
     public GameObject activeWhileHeldObject;
+    // Прозрачный призрак выбранного префаба, следующий за точкой попадания луча.
     public GameObject placementIndicator;
 
     private InputAction placementAction;
