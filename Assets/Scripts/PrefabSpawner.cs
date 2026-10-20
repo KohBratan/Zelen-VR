@@ -104,6 +104,7 @@ public class PrefabSpawner : MonoBehaviour
         {
             placementAction = placementActionRef.action;
             placementAction.Enable();
+            Debug.Log("PlaceTool: действие найдено в Input Actions и включено.");
         }
 
         // Activate action (trigger) for tool usage
