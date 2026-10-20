@@ -172,12 +172,20 @@ public class PrefabSpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Возвращает true, если действие PlaceTool (левый триггер) сейчас зажато.
+    /// </summary>
+    private bool IsPlacementActive()
+    {
+        return placementAction != null && placementAction.IsPressed();
+    }
+
     void Update()
     {
         // Placement indicator logic – works with the separate placementAction
         if (placementAction != null)
         {
-            bool isActive = placementAction.IsPressed();
+            bool isActive = IsPlacementActive();
             if (activeWhileHeldObject != null)
                 activeWhileHeldObject.SetActive(isActive);
 
