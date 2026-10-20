@@ -181,6 +181,20 @@ public class PrefabSpawner : MonoBehaviour
         return placementAction != null && placementAction.IsPressed();
     }
 
+    /// <summary>
+    /// Пускает луч от левой руки и возвращает первое попадание по слою террейна.
+    /// </summary>
+    private bool RaycastFromHand(out RaycastHit hit)
+    {
+        if (rayOrigin == null)
+        {
+            hit = default(RaycastHit);
+            return false;
+        }
+
+        return Physics.Raycast(rayOrigin.position, rayOrigin.forward, out hit, raycastMaxDistance);
+    }
+
     void Update()
     {
         // Placement indicator logic – works with the separate placementAction
@@ -198,7 +212,7 @@ public class PrefabSpawner : MonoBehaviour
                     if (rayOrigin != null)
                     {
                         RaycastHit hit;
-                        if (Physics.Raycast(rayOrigin.position, rayOrigin.forward, out hit, raycastMaxDistance))
+                        if (RaycastFromHand(out hit))
                         {
                             placementIndicator.transform.position = hit.point;
                             placementIndicator.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
