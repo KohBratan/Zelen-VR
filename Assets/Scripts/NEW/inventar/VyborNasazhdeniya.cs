@@ -182,7 +182,6 @@ public class VyborNasazhdeniya : MonoBehaviour
             if (Physics.Raycast(nachalo, napravlenie, out popadanieTerreina, dlinaLucha, maskaTerreina, QueryTriggerInteraction.Ignore))
             {
                 konets = popadanieTerreina.point;
-                // Меняем только позицию. Rotation и scale не трогаем.
                 peremeshchaemyi.transform.position = popadanieTerreina.point;
             }
 
@@ -217,22 +216,22 @@ public class VyborNasazhdeniya : MonoBehaviour
         SbrositVydelenie();
     }
 
-    // Вызывается снаружи (кнопкой "Зафиксировать" в InventarDeystviy):
-    // снимаем подсветку, забываем выбор и перемещение
+    // Вызывается снаружи (кнопкой "Зафиксировать", OnDisable инвентаря
+    // и при закрытии инвентаря любым способом): снимаем подсветку,
+    // забываем выбор и обнуляем инвентарь.
     public void SbrositVydelenie()
     {
         SnyatPodsvetku(navedennoe);
         SnyatPodsvetku(vybrannoe);
+
         navedennoe = null;
+        vybrannoe = null;
         peremeshchaemyi = null;
 
-        if (vybrannoe != null)
+        // Обнуляем панель инвентаря, если на ней что-то было
+        if (inventar != null && inventar.tekushiyObyekt != null)
         {
-            vybrannoe = null;
-            if (inventar != null)
-            {
-                inventar.UstanovitTekushiyObyekt(null);
-            }
+            inventar.UstanovitTekushiyObyekt(null);
         }
     }
 
