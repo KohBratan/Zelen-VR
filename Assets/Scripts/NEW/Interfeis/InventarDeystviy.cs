@@ -1,45 +1,47 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// Панель контекстных действий над выбранным объектом.
+// РџР°РЅРµР»СЊ РєРѕРЅС‚РµРєСЃС‚РЅС‹С… РґРµР№СЃС‚РІРёР№ РЅР°Рґ РІС‹Р±СЂР°РЅРЅС‹Рј РѕР±СЉРµРєС‚РѕРј.
+// РЎРѕРґРµСЂР¶РёС‚ РєРЅРѕРїРєРё: РџРѕРІРµСЂРЅСѓС‚СЊ / Р Р°СЃС‚СЏРЅСѓС‚СЊ / Р—Р°С„РёРєСЃРёСЂРѕРІР°С‚СЊ / РЈРґР°Р»РёС‚СЊ / Р—Р°РјРµРЅРёС‚СЊ РІРёРґ.
+// РџРѕРєР°Р· РєРЅРѕРїРѕРє Р·Р°РІРёСЃРёС‚ РѕС‚ РєР°С‚РµРіРѕСЂРёРё РѕР±СЉРµРєС‚Р° (Р Р°СЃС‚СЏРЅСѓС‚СЊ - С‚РѕР»СЊРєРѕ РґР»СЏ РіР°Р·РѕРЅР° Рё РєР»СѓРјР±).
 public class InventarDeystviy : MonoBehaviour
 {
-    [Header("Текущий выбранный объект (null, если ничего не выбрано)")]
+    [Header("РўРµРєСѓС‰РёР№ РІС‹Р±СЂР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚ (null, РµСЃР»Рё РЅРёС‡РµРіРѕ РЅРµ РІС‹Р±СЂР°РЅРѕ)")]
     public Nasazhdenie tekushiyObyekt;
 
-    [Header("Текст с названием выбранного объекта")]
+    [Header("РўРµРєСЃС‚ СЃ РЅР°Р·РІР°РЅРёРµРј РІС‹Р±СЂР°РЅРЅРѕРіРѕ РѕР±СЉРµРєС‚Р°")]
     public Text tekstNazvaniyaObyekta;
 
-    [Header("Кнопки действий")]
+    [Header("РљРЅРѕРїРєРё РґРµР№СЃС‚РІРёР№")]
     public Button knopkaPovernut;
     public Button knopkaRastyanut;
     public Button knopkaZafiksirovat;
     public Button knopkaUdalit;
     public Button knopkaZamenitVid;
 
-    [Header("Текст на кнопке фиксации")]
+    [Header("РўРµРєСЃС‚ РЅР° РєРЅРѕРїРєРµ С„РёРєСЃР°С†РёРё")]
     public Text tekstKnopkiZafiksirovat;
 
-    [Header("Панель изменения размера")]
+    [Header("РџР°РЅРµР»СЊ РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂР°")]
     public GameObject panelRazmer;
     public Slider slaiderRazmer;
 
-    [Header("Шаг растягивания за одно нажатие кнопки")]
+    [Header("РЁР°Рі СЂР°СЃС‚СЏРіРёРІР°РЅРёСЏ Р·Р° РѕРґРЅРѕ РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРё")]
     public float shagRastyagivaniya = 0.2f;
 
-    [Header("Во сколько раз можно менять размер в каждую сторону (слайдер по центру = обычный размер)")]
+    [Header("Р’Рѕ СЃРєРѕР»СЊРєРѕ СЂР°Р· РјРѕР¶РЅРѕ РјРµРЅСЏС‚СЊ СЂР°Р·РјРµСЂ РІ РєР°Р¶РґСѓСЋ СЃС‚РѕСЂРѕРЅСѓ (СЃР»Р°Р№РґРµСЂ РїРѕ С†РµРЅС‚СЂСѓ = РѕР±С‹С‡РЅС‹Р№ СЂР°Р·РјРµСЂ)")]
     public float maksimalnoeIzmenenieRazmera = 3f;
 
-    [Header("Текст на кнопке 'Повернуть' (необязательно) - показывает, что режим поворота включён")]
+    [Header("РўРµРєСЃС‚ РЅР° РєРЅРѕРїРєРµ 'РџРѕРІРµСЂРЅСѓС‚СЊ' (РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ) - РїРѕРєР°Р·С‹РІР°РµС‚, С‡С‚Рѕ СЂРµР¶РёРј РїРѕРІРѕСЂРѕС‚Р° РІРєР»СЋС‡С‘РЅ")]
     public Text tekstKnopkiPovernut;
 
-    [Header("Скрипт выбора насаждения (для сброса подсветки)")]
+    [Header("РЎРєСЂРёРїС‚ РІС‹Р±РѕСЂР° РЅР°СЃР°Р¶РґРµРЅРёСЏ (РґР»СЏ СЃР±СЂРѕСЃР° РїРѕРґСЃРІРµС‚РєРё)")]
     public VyborNasazhdeniya vybor;
 
-    [Header("Переключатель панели инвентаря (для закрытия по 'Зафиксировать')")]
+    [Header("РџРµСЂРµРєР»СЋС‡Р°С‚РµР»СЊ РїР°РЅРµР»Рё РёРЅРІРµРЅС‚Р°СЂСЏ (РґР»СЏ Р·Р°РєСЂС‹С‚РёСЏ РїРѕ 'Р—Р°С„РёРєСЃРёСЂРѕРІР°С‚СЊ')")]
     public PanelPereklyuchatel pereklyuchatelInventarya;
 
-    [Header("Навигатор инвентаря (открывает панель замены вида)")]
+    [Header("РќР°РІРёРіР°С‚РѕСЂ РёРЅРІРµРЅС‚Р°СЂСЏ (РѕС‚РєСЂС‹РІР°РµС‚ РїР°РЅРµР»СЊ Р·Р°РјРµРЅС‹ РІРёРґР°)")]
     public DzhoystikNavigatsiyaInventarya navigator;
 
     private bool rezhimVrascheniya = false;
@@ -53,7 +55,7 @@ public class InventarDeystviy : MonoBehaviour
     {
         knopkaPovernut.onClick.AddListener(Povernut);
         knopkaRastyanut.onClick.AddListener(Rastyanut);
-        knopkaZafiksirovat.onClick.AddListener(PereklyuchitFiksatsiyu);
+        knopkaZafiksirovat.onClick.AddListener(Zafiksirovat);
         knopkaUdalit.onClick.AddListener(Udalit);
         knopkaZamenitVid.onClick.AddListener(ZamenitVid);
 
@@ -66,8 +68,8 @@ public class InventarDeystviy : MonoBehaviour
         UstanovitTekushiyObyekt(tekushiyObyekt);
     }
 
-    // Панель выключается (закрытие инвентаря любым способом) -
-    // сбрасываем выбор на дереве и очищаем себя.
+    // РџР°РЅРµР»СЊ РІС‹РєР»СЋС‡Р°РµС‚СЃСЏ (Р·Р°РєСЂС‹С‚РёРµ РёРЅРІРµРЅС‚Р°СЂСЏ Р»СЋР±С‹Рј СЃРїРѕСЃРѕР±РѕРј) -
+    // СЃР±СЂР°СЃС‹РІР°РµРј РІС‹Р±РѕСЂ РЅР° РѕР±СЉРµРєС‚Рµ Рё РѕС‡РёС‰Р°РµРј СЃРµР±СЏ.
     void OnDisable()
     {
         if (vybor != null)
@@ -103,17 +105,19 @@ public class InventarDeystviy : MonoBehaviour
                 }
             }
 
-            bool eto_gazon_ili_klumba = (tekushiyObyekt.kategoriya == "Газон" || tekushiyObyekt.kategoriya == "Клумбы");
+            bool eto_gazon_ili_klumba = (tekushiyObyekt.kategoriya == "Р“Р°Р·РѕРЅ" || tekushiyObyekt.kategoriya == "РљР»СѓРјР±С‹");
             knopkaRastyanut.gameObject.SetActive(eto_gazon_ili_klumba);
 
             ObnovitTekstFiksatsii();
         }
         else
         {
-            tekstNazvaniyaObyekta.text = "Ничего не выбрано";
+            tekstNazvaniyaObyekta.text = "РќРёС‡РµРіРѕ РЅРµ РІС‹Р±СЂР°РЅРѕ";
             knopkaRastyanut.gameObject.SetActive(false);
         }
     }
+
+    // ===== Р”РµР№СЃС‚РІРёСЏ РЅР°Рґ РІС‹Р±СЂР°РЅРЅС‹Рј РѕР±СЉРµРєС‚РѕРј =====
 
     private void Povernut()
     {
@@ -144,7 +148,7 @@ public class InventarDeystviy : MonoBehaviour
     {
         if (tekstKnopkiPovernut != null)
         {
-            tekstKnopkiPovernut.text = rezhimVrascheniya ? "Поворот: стик" : "Повернуть";
+            tekstKnopkiPovernut.text = rezhimVrascheniya ? "РџРѕРІРѕСЂРѕС‚: СЃС‚РёРє" : "РџРѕРІРµСЂРЅСѓС‚СЊ";
         }
     }
 
@@ -166,10 +170,32 @@ public class InventarDeystviy : MonoBehaviour
         }
     }
 
-    // "Зафиксировать" теперь: сбрасываем подсветку и закрываем инвентарь.
-    // Реальный сброс произойдёт через OnDisable, но вызовем явно, чтобы
-    // UI успел обновиться до выключения панели.
-    private void PereklyuchitFiksatsiyu()
+    // ===== РЈРґР°Р»РµРЅРёРµ РѕР±СЉРµРєС‚Р° =====
+
+    // РЈРґР°Р»СЏРµС‚ С‚РµРєСѓС‰РёР№ РІС‹Р±СЂР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚ СЃРѕ СЃС†РµРЅС‹ Рё РѕС‡РёС‰Р°РµС‚ РїР°РЅРµР»СЊ РёРЅРІРµРЅС‚Р°СЂСЏ.
+    // РџРѕР·РёС†РёСЏ Рё СЃРѕСЃС‚РѕСЏРЅРёРµ РёРЅРІРµРЅС‚Р°СЂСЏ РїРѕСЃР»Рµ СѓРґР°Р»РµРЅРёСЏ - "РќРёС‡РµРіРѕ РЅРµ РІС‹Р±СЂР°РЅРѕ".
+    private void Udalit()
+    {
+        if (tekushiyObyekt == null)
+        {
+            return;
+        }
+
+        GameObject obyektDlyaUdaleniya = tekushiyObyekt.gameObject;
+
+        // РЎРЅР°С‡Р°Р»Р° РѕР±РЅСѓР»СЏРµРј РёРЅРІРµРЅС‚Р°СЂСЊ, С‡С‚РѕР±С‹ РЅРµ РѕСЃС‚Р°Р»РѕСЃСЊ РІРёСЃСЏС‡РёС… СЃСЃС‹Р»РѕРє
+        UstanovitTekushiyObyekt(null);
+
+        Destroy(obyektDlyaUdaleniya);
+        Debug.Log("РћР±СЉРµРєС‚ СѓРґР°Р»С‘РЅ: " + obyektDlyaUdaleniya.name);
+    }
+
+    // ===== "Р—Р°С„РёРєСЃРёСЂРѕРІР°С‚СЊ" =====
+
+    // Р—Р°РІРµСЂС€Р°РµС‚ СЂР°Р±РѕС‚Сѓ СЃ РѕР±СЉРµРєС‚РѕРј: СЃРЅРёРјР°РµС‚ РїРѕРґСЃРІРµС‚РєСѓ, Р·Р°Р±С‹РІР°РµС‚ РІС‹Р±РѕСЂ
+    // Рё Р·Р°РєСЂС‹РІР°РµС‚ РїР°РЅРµР»СЊ РёРЅРІРµРЅС‚Р°СЂСЏ. РЎР»РµРґСѓСЋС‰РёР№ РІС‹Р±РѕСЂ - С‚РѕР»СЊРєРѕ С‡РµСЂРµР· С‚СЂРёРіРіРµСЂ,
+    // РёРіСЂРѕРє РЅРµ РѕСЃС‚Р°С‘С‚СЃСЏ "СЃ РїСЂРѕС€Р»С‹Рј" РѕР±СЉРµРєС‚РѕРј.
+    private void Zafiksirovat()
     {
         if (tekushiyObyekt == null)
         {
@@ -187,27 +213,21 @@ public class InventarDeystviy : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("InventarDeystviy: pereklyuchatelInventarya не назначен - не могу закрыть инвентарь.");
+            Debug.LogWarning("InventarDeystviy: pereklyuchatelInventarya РЅРµ РЅР°Р·РЅР°С‡РµРЅ - РЅРµ РјРѕРіСѓ Р·Р°РєСЂС‹С‚СЊ РёРЅРІРµРЅС‚Р°СЂСЊ.");
         }
+
+        Debug.Log("Р—Р°С„РёРєСЃРёСЂРѕРІР°РЅРѕ Рё Р·Р°РєСЂС‹С‚Рѕ: " + tekushiyObyekt.vidNasazhdeniya);
     }
 
     private void ObnovitTekstFiksatsii()
     {
         if (tekstKnopkiZafiksirovat != null && tekushiyObyekt != null)
         {
-            tekstKnopkiZafiksirovat.text = tekushiyObyekt.zafiksirovano ? "Открепить" : "Зафиксировать";
+            tekstKnopkiZafiksirovat.text = tekushiyObyekt.zafiksirovano ? "РћС‚РєСЂРµРїРёС‚СЊ" : "Р—Р°С„РёРєСЃРёСЂРѕРІР°С‚СЊ";
         }
     }
 
-    private void Udalit()
-    {
-        if (tekushiyObyekt != null)
-        {
-            GameObject obyektDlyaUdaleniya = tekushiyObyekt.gameObject;
-            UstanovitTekushiyObyekt(null);
-            Destroy(obyektDlyaUdaleniya);
-        }
-    }
+    // ===== "Р—Р°РјРµРЅРёС‚СЊ РІРёРґ" =====
 
     private void ZamenitVid()
     {
@@ -218,7 +238,7 @@ public class InventarDeystviy : MonoBehaviour
 
         if (navigator == null)
         {
-            Debug.LogWarning("InventarDeystviy: navigator не назначен - не могу открыть панель замены.");
+            Debug.LogWarning("InventarDeystviy: navigator РЅРµ РЅР°Р·РЅР°С‡РµРЅ - РЅРµ РјРѕРіСѓ РѕС‚РєСЂС‹С‚СЊ РїР°РЅРµР»СЊ Р·Р°РјРµРЅС‹.");
             return;
         }
 
