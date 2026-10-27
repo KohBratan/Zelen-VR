@@ -22,3 +22,9 @@ Thumbs.db
 
 .vs/
 .vsconfig
+
+# Временные рабочие материалы агента
+.kimi-input/
+
+# Отчёты обновления Unity
+UpgradeLog.htm

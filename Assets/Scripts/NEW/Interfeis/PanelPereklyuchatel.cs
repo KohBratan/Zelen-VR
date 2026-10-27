@@ -1,23 +1,23 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// Открывает/закрывает панель UI по нажатию кнопки на контроллере.
-// ВАЖНО: вешать этот скрипт нужно на отдельный объект, который сам
-// никогда не выключается (например, ToolsMenuManager или InventoryManager),
-// а не на саму панель — иначе скрипт перестанет слышать нажатия кнопки,
-// когда панель скрыта.
+// РћС‚РєСЂС‹РІР°РµС‚/Р·Р°РєСЂС‹РІР°РµС‚ РїР°РЅРµР»СЊ UI РїРѕ РЅР°Р¶Р°С‚РёСЋ РєРЅРѕРїРєРё РЅР° РєРѕРЅС‚СЂРѕР»Р»РµСЂРµ.
+// Р’РђР–РќРћ: РІРµС€Р°С‚СЊ СЌС‚РѕС‚ СЃРєСЂРёРїС‚ РЅСѓР¶РЅРѕ РЅР° РѕС‚РґРµР»СЊРЅС‹Р№ РѕР±СЉРµРєС‚, РєРѕС‚РѕСЂС‹Р№ СЃР°Рј
+// РЅРёРєРѕРіРґР° РЅРµ РІС‹РєР»СЋС‡Р°РµС‚СЃСЏ (РЅР°РїСЂРёРјРµСЂ, ToolsMenuManager РёР»Рё InventoryManager),
+// Р° РЅРµ РЅР° СЃР°РјСѓ РїР°РЅРµР»СЊ вЂ” РёРЅР°С‡Рµ СЃРєСЂРёРїС‚ РїРµСЂРµСЃС‚Р°РЅРµС‚ СЃР»С‹С€Р°С‚СЊ РЅР°Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё,
+// РєРѕРіРґР° РїР°РЅРµР»СЊ СЃРєСЂС‹С‚Р°.
 public class PanelPereklyuchatel : MonoBehaviour
 {
-    [Header("Панель, которую нужно показывать/прятать")]
+    [Header("РџР°РЅРµР»СЊ, РєРѕС‚РѕСЂСѓСЋ РЅСѓР¶РЅРѕ РїРѕРєР°Р·С‹РІР°С‚СЊ/РїСЂСЏС‚Р°С‚СЊ")]
     public GameObject panel;
 
-    [Header("Весь asset с действиями (например, XRI Default Input Actions)")]
+    [Header("Р’РµСЃСЊ asset СЃ РґРµР№СЃС‚РІРёСЏРјРё (РЅР°РїСЂРёРјРµСЂ, XRI Default Input Actions)")]
     public InputActionAsset naborDeistvii;
 
-    [Header("Имя карты действий, как оно написано в asset'е")]
+    [Header("РРјСЏ РєР°СЂС‚С‹ РґРµР№СЃС‚РІРёР№, РєР°Рє РѕРЅРѕ РЅР°РїРёСЃР°РЅРѕ РІ asset'Рµ")]
     public string imyaKarty = "XRI LeftHand Interaction";
 
-    [Header("Имя самого действия, как оно написано в asset'е")]
+    [Header("РРјСЏ СЃР°РјРѕРіРѕ РґРµР№СЃС‚РІРёСЏ, РєР°Рє РѕРЅРѕ РЅР°РїРёСЃР°РЅРѕ РІ asset'Рµ")]
     public string imyaDeistviya = "OpenToolsMenu";
 
     private InputAction deistvieOtkrytiya;
@@ -27,25 +27,25 @@ public class PanelPereklyuchatel : MonoBehaviour
     {
         if (naborDeistvii == null)
         {
-            Debug.LogWarning("PanelPereklyuchatel: naborDeistvii не назначен в инспекторе!");
+            Debug.LogWarning("PanelPereklyuchatel: naborDeistvii РЅРµ РЅР°Р·РЅР°С‡РµРЅ РІ РёРЅСЃРїРµРєС‚РѕСЂРµ!");
             return;
         }
 
         var karta = naborDeistvii.FindActionMap(imyaKarty);
         if (karta == null)
         {
-            Debug.LogWarning("PanelPereklyuchatel: карта действий с именем '" + imyaKarty + "' не найдена. Проверь точное написание в asset'е.");
+            Debug.LogWarning("PanelPereklyuchatel: РєР°СЂС‚Р° РґРµР№СЃС‚РІРёР№ СЃ РёРјРµРЅРµРј '" + imyaKarty + "' РЅРµ РЅР°Р№РґРµРЅР°. РџСЂРѕРІРµСЂСЊ С‚РѕС‡РЅРѕРµ РЅР°РїРёСЃР°РЅРёРµ РІ asset'Рµ.");
             return;
         }
 
         deistvieOtkrytiya = karta.FindAction(imyaDeistviya);
         if (deistvieOtkrytiya == null)
         {
-            Debug.LogWarning("PanelPereklyuchatel: действие с именем '" + imyaDeistviya + "' не найдено в карте '" + imyaKarty + "'. Проверь точное написание.");
+            Debug.LogWarning("PanelPereklyuchatel: РґРµР№СЃС‚РІРёРµ СЃ РёРјРµРЅРµРј '" + imyaDeistviya + "' РЅРµ РЅР°Р№РґРµРЅРѕ РІ РєР°СЂС‚Рµ '" + imyaKarty + "'. РџСЂРѕРІРµСЂСЊ С‚РѕС‡РЅРѕРµ РЅР°РїРёСЃР°РЅРёРµ.");
         }
         else
         {
-            Debug.Log("PanelPereklyuchatel: действие '" + imyaDeistviya + "' найдено успешно.");
+            Debug.Log("PanelPereklyuchatel: РґРµР№СЃС‚РІРёРµ '" + imyaDeistviya + "' РЅР°Р№РґРµРЅРѕ СѓСЃРїРµС€РЅРѕ.");
         }
     }
 
@@ -77,7 +77,13 @@ public class PanelPereklyuchatel : MonoBehaviour
 
     private void NazhatieKnopki(InputAction.CallbackContext context)
     {
-        Debug.Log("PanelPereklyuchatel: нажатие кнопки '" + imyaDeistviya + "' сработало!");
+        // Р’Рѕ РІСЂРµРјСЏ РёРіСЂРѕРІРѕРіРѕ РјРµРЅСЋ Р·Р°РїСЂРµС‰РµРЅРѕ РѕС‚РєСЂС‹РІР°С‚СЊ РёРЅСЃС‚СЂСѓРјРµРЅС‚С‹ Рё РёРЅРІРµРЅС‚Р°СЂСЊ.
+        if (SostoyanieMenyu.GameMenuOpen)
+        {
+            return;
+        }
+
+        Debug.Log("PanelPereklyuchatel: РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРё '" + imyaDeistviya + "' СЃСЂР°Р±РѕС‚Р°Р»Рѕ!");
         panelOtkryta = !panelOtkryta;
         if (panel != null)
         {
