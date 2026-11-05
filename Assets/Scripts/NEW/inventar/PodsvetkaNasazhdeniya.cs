@@ -1,60 +1,78 @@
 using UnityEngine;
+using System.Collections.Generic;
 
-// Добавляется на посаженное насаждение автоматически (из VyborNasazhdeniya).
-// Запоминает исходные материалы и по команде подменяет их на материал подсветки.
+// Подсветка насаждения через подмену материалов.
 public class PodsvetkaNasazhdeniya : MonoBehaviour
 {
-    private Renderer[] otrisovshiki;
-    private Material[][] ishodnyeMaterialy;
+    private Material materialPodsvetki;
     private bool podsvecheno = false;
+    private Dictionary<Renderer, Material[]> ishodnye = new Dictionary<Renderer, Material[]>();
 
-    void Awake()
+    public void Vkluchit(Material mat)
     {
-        otrisovshiki = GetComponentsInChildren<Renderer>(true);
-        ishodnyeMaterialy = new Material[otrisovshiki.Length][];
+        if (mat == null) return;
 
-        for (int i = 0; i < otrisovshiki.Length; i++)
-        {
-            ishodnyeMaterialy[i] = otrisovshiki[i].sharedMaterials;
-        }
-    }
+        materialPodsvetki = mat;
+        podsvecheno = true;
 
-    public void Vkluchit(Material materialPodsvetki)
-    {
-        if (podsvecheno || materialPodsvetki == null)
+        Renderer[] all = GetComponentsInChildren<Renderer>();
+        foreach (var r in all)
         {
-            return;
-        }
+            if (r == null) continue;
 
-        for (int i = 0; i < otrisovshiki.Length; i++)
-        {
-            Material[] novye = new Material[ishodnyeMaterialy[i].Length];
-            for (int j = 0; j < novye.Length; j++)
+            if (!ishodnye.ContainsKey(r))
             {
-                novye[j] = materialPodsvetki;
+                ishodnye[r] = r.sharedMaterials;
             }
 
-            otrisovshiki[i].sharedMaterials = novye;
+            Material[] cur = new Material[r.sharedMaterials.Length];
+            for (int j = 0; j < cur.Length; j++) cur[j] = materialPodsvetki;
+            r.sharedMaterials = cur;
         }
-
-        podsvecheno = true;
     }
 
     public void Vyklyuchit()
     {
-        if (!podsvecheno)
-        {
-            return;
-        }
+        if (!podsvecheno) return;
+        podsvecheno = false;
 
-        for (int i = 0; i < otrisovshiki.Length; i++)
+        foreach (var kvp in ishodnye)
         {
-            if (otrisovshiki[i] != null)
+            if (kvp.Key != null)
             {
-                otrisovshiki[i].sharedMaterials = ishodnyeMaterialy[i];
+                kvp.Key.sharedMaterials = kvp.Value;
             }
         }
+        ishodnye.Clear();
+    }
 
-        podsvecheno = false;
+    public void ObnovitPodsvetku()
+    {
+        if (podsvecheno && materialPodsvetki != null)
+        {
+            Vkluchit(materialPodsvetki);
+        }
+    }
+
+    // ИСПРАВЛЕНИЕ: Теперь принимает массив рендереров, чтобы не трогать подложку
+    public void ObnovitKesh(Renderer[] celRenderery, Material noviyMat)
+    {
+        if (!podsvecheno || noviyMat == null || celRenderery == null) return;
+
+        foreach (var r in celRenderery)
+        {
+            if (r != null && ishodnye.ContainsKey(r))
+            {
+                // Запоминаем новый материал как оригинальный
+                Material[] mats = new Material[r.sharedMaterials.Length];
+                for (int i = 0; i < mats.Length; i++) mats[i] = noviyMat;
+                ishodnye[r] = mats;
+
+                // И возвращаем желтую подсветку
+                Material[] yellow = new Material[r.sharedMaterials.Length];
+                for (int i = 0; i < yellow.Length; i++) yellow[i] = materialPodsvetki;
+                r.sharedMaterials = yellow;
+            }
+        }
     }
 }
