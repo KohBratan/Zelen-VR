@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: MenuVkladki.cs
+// Vkladki menyu.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;

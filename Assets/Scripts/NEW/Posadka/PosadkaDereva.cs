@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: PosadkaDereva.cs
+// Posadka dereva.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.InputSystem;
 
