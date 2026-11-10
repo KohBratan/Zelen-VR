@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: InstrukciyaPanel.cs
+// Panel instruktsii.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
