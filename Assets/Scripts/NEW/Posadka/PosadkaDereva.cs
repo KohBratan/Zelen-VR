@@ -1,40 +1,48 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// Р’РµС€Р°РµС‚СЃСЏ РЅР° РїСѓСЃС‚РѕР№ РѕР±СЉРµРєС‚ РІРЅСѓС‚СЂРё Left Controller (LineRenderer РґРѕР±Р°РІРёС‚СЃСЏ СЃР°Рј).
-// РљРѕРіРґР° РІ РјРµРЅСЋ РІС‹Р±СЂР°РЅРѕ РґРµСЂРµРІРѕ: СЂРёСЃСѓРµС‚ Р»СѓС‡ РѕС‚ Р»РµРІРѕР№ СЂСѓРєРё, Рё РµСЃР»Рё Р»СѓС‡ РїРѕРїР°Р»
-// РЅР° С‚РµСЂСЂРµР№РЅ - РїРѕРєР°Р·С‹РІР°РµС‚ С‚Р°Рј РїСЂРѕР·СЂР°С‡РЅС‹Р№ "РїСЂРёР·СЂР°Рє" РґРµСЂРµРІР°.
-// Р›РµРІС‹Р№ С‚СЂРёРіРіРµСЂ - РїРѕСЃР°РґРёС‚СЊ РґРµСЂРµРІРѕ РІ СЌС‚РѕР№ С‚РѕС‡РєРµ.
 [RequireComponent(typeof(LineRenderer))]
 public class PosadkaDereva : MonoBehaviour
 {
-    [Header("РћС‚РєСѓРґР° РёРґС‘С‚ Р»СѓС‡ (РµСЃР»Рё РїСѓСЃС‚Рѕ - СЃР°Рј СЌС‚РѕС‚ РѕР±СЉРµРєС‚)")]
+    [Header("Откуда идёт луч (если пусто - сам этот объект)")]
     public Transform tochkaStarta;
 
-    [Header("РЎР»РѕР№ С‚РµСЂСЂРµР№РЅР°, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ СЃС‚СЂРµР»СЏРµС‚ Р»СѓС‡")]
+    [Header("Слой террейна, по которому стреляет луч")]
     public LayerMask maskaTerreina;
 
-    [Header("Р”Р»РёРЅР° Р»СѓС‡Р°")]
+    [Header("Длина луча")]
     public float dlinaLucha = 30f;
 
-    [Header("РњР°С‚РµСЂРёР°Р» Р»СѓС‡Р° (РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, Р»СѓС‡С€Рµ URP/Unlit) Рё РјР°С‚РµСЂРёР°Р» РїСЂРёР·СЂР°РєР° (РїСЂРѕР·СЂР°С‡РЅС‹Р№)")]
+    [Header("Материал луча и материал призрака (прозрачный)")]
     public Material materialLucha;
     public Material materialPrizraka;
 
-    [Header("Р¦РІРµС‚ Р»СѓС‡Р°: РїРѕРїР°Р» РЅР° С‚РµСЂСЂРµР№РЅ / РЅРµ РїРѕРїР°Р»")]
+    [Header("Цвет луча: попал / не попал или занято")]
     public Color tsvetPopal = Color.green;
     public Color tsvetNePopal = Color.red;
 
-    [Header("РљСѓРґР° СЃРєР»Р°РґС‹РІР°С‚СЊ РїРѕСЃР°Р¶РµРЅРЅС‹Рµ РґРµСЂРµРІСЊСЏ (РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅРѕ)")]
+    [Header("Куда складывать посаженные объекты")]
     public Transform kontejnerDerevev;
 
-    [Header("Р Р°Р±РѕС‚Р°С‚СЊ, РїРѕРєР° РјРµРЅСЋ РѕС‚РєСЂС‹С‚Рѕ (РЅСѓР¶РЅРѕ, РµСЃР»Рё РІС‹Р±РѕСЂ СЃР±СЂР°СЃС‹РІР°РµС‚СЃСЏ РїСЂРё Р·Р°РєСЂС‹С‚РёРё РјРµРЅСЋ)")]
+    [Header("Работать, пока меню открыто")]
     public bool rabotatPriOtkrytomMenyu = true;
 
-    [Header("Р’РµСЃСЊ asset СЃ РґРµР№СЃС‚РІРёСЏРјРё")]
+    [Header("Радиус проверки для деревьев (метры)")]
+    public float radiusProverkiDerevya = 2.5f;
+
+    [Header("Радиус проверки для кустов (метры)")]
+    public float radiusProverkiKusty = 0.5f;
+
+    [Header("Радиус проверки для секций (метры)")]
+    public float radiusProverkiSekcii = 5f;
+
+    [Header("Радиус проверки для клумб (метры)")]
+    public float radiusProverkiKlumby = 0.5f; // Добавили радиус для клумб
+
+    [Header("Весь asset с действиями")]
     public InputActionAsset naborDeistvii;
 
-    [Header("РљР°СЂС‚Р° Рё РёРјСЏ РґРµР№СЃС‚РІРёСЏ С‚СЂРёРіРіРµСЂР° (Button)")]
+    [Header("Карта и имя действия триггера")]
     public string imyaKarty = "XRI Left Interaction";
     public string imyaDeistviya = "PlaceTool";
 
@@ -47,6 +55,7 @@ public class PosadkaDereva : MonoBehaviour
 
     private bool luchAktiven = false;
     private bool popalNaTerrein = false;
+    private bool mestoSvobodno = false;
     private Vector3 tochkaPopadaniya;
 
     void Awake()
@@ -60,46 +69,13 @@ public class PosadkaDereva : MonoBehaviour
         luch.endColor = Color.white;
         luch.enabled = false;
 
-        if (materialLucha != null)
-        {
-            luch.material = materialLucha;
-        }
-        else
-        {
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader != null)
-            {
-                luch.material = new Material(shader);
-            }
-        }
-
+        if (materialLucha != null) luch.material = materialLucha;
+        else { Shader shader = Shader.Find("Universal Render Pipeline/Unlit"); if (shader != null) luch.material = new Material(shader); }
         materialLuchaKopiya = luch.material;
 
-        if (materialPrizraka == null)
-        {
-            Debug.LogWarning("PosadkaDereva: materialPrizraka РЅРµ РЅР°Р·РЅР°С‡РµРЅ - РїСЂРёР·СЂР°Рє Р±СѓРґРµС‚ РЅРµРїСЂРѕР·СЂР°С‡РЅС‹Рј.");
-        }
-
-        if (naborDeistvii == null)
-        {
-            Debug.LogWarning("PosadkaDereva: naborDeistvii РЅРµ РЅР°Р·РЅР°С‡РµРЅ!");
-            return;
-        }
-
+        if (naborDeistvii == null) return;
         var karta = naborDeistvii.FindActionMap(imyaKarty);
-        if (karta != null)
-        {
-            deistvieTriggera = karta.FindAction(imyaDeistviya);
-        }
-
-        if (deistvieTriggera == null)
-        {
-            Debug.LogWarning("PosadkaDereva: РґРµР№СЃС‚РІРёРµ '" + imyaDeistviya + "' РЅРµ РЅР°Р№РґРµРЅРѕ РІ РєР°СЂС‚Рµ '" + imyaKarty + "'.");
-        }
-        else
-        {
-            Debug.Log("PosadkaDereva: РґРµР№СЃС‚РІРёРµ '" + imyaDeistviya + "' РЅР°Р№РґРµРЅРѕ СѓСЃРїРµС€РЅРѕ.");
-        }
+        if (karta != null) deistvieTriggera = karta.FindAction(imyaDeistviya);
     }
 
     void OnEnable()
@@ -113,33 +89,27 @@ public class PosadkaDereva : MonoBehaviour
 
     void OnDisable()
     {
-        if (deistvieTriggera != null)
-        {
-            deistvieTriggera.performed -= NazhatieTriggera;
-        }
-
-        if (luch != null)
-        {
-            luch.enabled = false;
-        }
-
+        if (deistvieTriggera != null) deistvieTriggera.performed -= NazhatieTriggera;
+        if (luch != null) luch.enabled = false;
         SpryatPrizrak();
     }
 
-    void OnDestroy()
-    {
-        UnichtozhitPrizrak();
-    }
+    void OnDestroy() { UnichtozhitPrizrak(); }
 
-    // LateUpdate - С‡С‚РѕР±С‹ РїРѕР·РёС†РёСЏ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° СѓР¶Рµ РѕР±РЅРѕРІРёР»Р°СЃСЊ РІ СЌС‚РѕРј РєР°РґСЂРµ
     void LateUpdate()
     {
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
-        bool menyuMeshaet = SostoyanieMenyu.GameMenuOpen ||
-                            (SostoyanieMenyu.AnyMenuOpen && !rabotatPriOtkrytomMenyu);
 
-        luchAktiven = (prefab != null) && !menyuMeshaet;
+        // Проверяем, что это не газон и не цветок (для них свои скрипты)
+        bool etoGazon = prefab != null && prefab.GetComponent<GazonTile>() != null;
+        Nasazhdenie nas = prefab != null ? prefab.GetComponent<Nasazhdenie>() : null;
+        bool etoCvetok = nas != null && nas.kategoriya == "Цветы";
+
+        bool menyuMeshaet = SostoyanieMenyu.AnyMenuOpen && !rabotatPriOtkrytomMenyu;
+
+        luchAktiven = (prefab != null) && !menyuMeshaet && !etoGazon && !etoCvetok;
         popalNaTerrein = false;
+        mestoSvobodno = false;
 
         if (!luchAktiven)
         {
@@ -148,118 +118,94 @@ public class PosadkaDereva : MonoBehaviour
             return;
         }
 
+        // Определяем радиус и категорию
+        float radius = radiusProverkiKusty;
+        string kategoriyaStavim = "";
+
+        if (nas != null)
+        {
+            kategoriyaStavim = nas.kategoriya;
+            if (nas.kategoriya == "Деревья") radius = radiusProverkiDerevya;
+            else if (nas.kategoriya == "Секции") radius = radiusProverkiSekcii;
+            else if (nas.kategoriya == "Клумбы") radius = radiusProverkiKlumby;
+        }
+
         Transform start = tochkaStarta != null ? tochkaStarta : transform;
-        Vector3 nachalo = start.position;
-        Vector3 napravlenie = start.forward;
+        Vector3 nachalo = start.position, napravlenie = start.forward;
         Vector3 konets = nachalo + napravlenie * dlinaLucha;
 
-        RaycastHit popadanie;
-        if (Physics.Raycast(nachalo, napravlenie, out popadanie, dlinaLucha, maskaTerreina, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(nachalo, napravlenie, out RaycastHit popadanie, dlinaLucha, maskaTerreina, QueryTriggerInteraction.Ignore))
         {
             popalNaTerrein = true;
             tochkaPopadaniya = popadanie.point;
             konets = popadanie.point;
-            PokazatPrizrak(prefab, popadanie.point);
+
+            // Передаем категорию в проверку
+            mestoSvobodno = MestoSvobodno(tochkaPopadaniya, radius, kategoriyaStavim);
+
+            if (mestoSvobodno) PokazatPrizrak(prefab, popadanie.point);
+            else SpryatPrizrak();
         }
-        else
-        {
-            SpryatPrizrak();
-        }
+        else SpryatPrizrak();
 
         luch.enabled = true;
         luch.SetPosition(0, nachalo);
         luch.SetPosition(1, konets);
-        UstanovitTsvetLucha(popalNaTerrein ? tsvetPopal : tsvetNePopal);
+        UstanovitTsvetLucha(popalNaTerrein && mestoSvobodno ? tsvetPopal : tsvetNePopal);
+    }
+
+    // ОБНОВЛЕННЫЙ МЕТОД ПРОВЕРКИ
+    private bool MestoSvobodno(Vector3 pozitsiya, float radius, string kategoriyaStavim)
+    {
+        Collider[] kollajdery = Physics.OverlapSphere(pozitsiya, radius);
+        foreach (var col in kollajdery)
+        {
+            Nasazhdenie nas = col.GetComponentInParent<Nasazhdenie>();
+            if (nas != null)
+            {
+                // Если это газон
+                if (nas.kategoriya == "Газон")
+                {
+                    // Клумбу на газон ставить НЕЛЬЗЯ
+                    if (kategoriyaStavim == "Клумбы") return false;
+
+                    // Деревья и кусты на газон ставить МОЖНО
+                    continue;
+                }
+
+                // Цветы не мешают ставить ничего
+                if (nas.kategoriya == "Цветы") continue;
+
+                // Всё остальное (деревья, кусты, клумбы, секции) считается препятствием
+                return false;
+            }
+        }
+        return true;
     }
 
     private void NazhatieTriggera(InputAction.CallbackContext context)
     {
-        if (!luchAktiven || !popalNaTerrein)
-        {
-            return;
-        }
+        if (!luchAktiven || !popalNaTerrein || !mestoSvobodno) return;
 
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
-        if (prefab == null)
-        {
-            return;
-        }
+        if (prefab == null || prefab.GetComponent<GazonTile>() != null) return;
+
+        Nasazhdenie nasPrefab = prefab.GetComponent<Nasazhdenie>();
+        if (nasPrefab != null && nasPrefab.kategoriya == "Цветы") return;
 
         GameObject novoe = Instantiate(prefab, tochkaPopadaniya, Quaternion.identity, kontejnerDerevev);
-        PostavitVertikalno(novoe, tochkaPopadaniya);
 
-        // Р—Р°РїРѕРјРёРЅР°РµРј, РёР· РєР°РєРѕРіРѕ РїСЂРµС„Р°Р±Р° РІС‹СЂР°С‰РµРЅРѕ РґРµСЂРµРІРѕ - РїСЂРёРіРѕРґРёС‚СЃСЏ РґР»СЏ "Р—Р°РјРµРЅРёС‚СЊ РІРёРґ"
         Nasazhdenie nasazhdenie = novoe.GetComponent<Nasazhdenie>();
-        if (nasazhdenie != null)
-        {
-            nasazhdenie.sourcePrefab = prefab;
-        }
+        if (nasazhdenie != null) nasazhdenie.sourcePrefab = prefab;
 
-        Debug.Log("РџРѕСЃР°Р¶РµРЅРѕ: " + novoe.name);
-    }
-
-    // РЎС‚Р°РІРёС‚ РѕР±СЉРµРєС‚ СЃС‚СЂРѕРіРѕ РІРµСЂС‚РёРєР°Р»СЊРЅРѕ. Yaw СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ, pitch Рё roll РѕР±РЅСѓР»СЏСЋС‚СЃСЏ.
-    public static void PostavitVertikalno(GameObject obyekt, Vector3 tochkaPoverhnosti)
-    {
-        if (obyekt == null)
-        {
-            return;
-        }
-
-        float yaw = obyekt.transform.eulerAngles.y;
-        obyekt.transform.rotation = Quaternion.Euler(0f, yaw, 0f);
-        Prizemlit(obyekt, tochkaPoverhnosti);
-    }
-
-    // РЎРѕРІРјРµС‰Р°РµС‚ РЅРёР¶РЅСЋСЋ РіСЂР°РЅРёС†Сѓ РјРѕРґРµР»Рё СЃ С‚РµСЂСЂРµР№РЅРѕРј РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ pivot РїСЂРµС„Р°Р±Р°.
-    // Rotation Рё РјР°СЃС€С‚Р°Р± РѕР±СЉРµРєС‚Р° РЅРµ РёР·РјРµРЅСЏСЋС‚СЃСЏ.
-    public static void Prizemlit(GameObject obyekt, Vector3 tochkaPoverhnosti)
-    {
-        if (obyekt == null)
-        {
-            return;
-        }
-
-        Transform preobrazovanie = obyekt.transform;
-        preobrazovanie.position = tochkaPoverhnosti;
-
-        Renderer[] otrisovshiki = obyekt.GetComponentsInChildren<Renderer>(false);
-        float nizhnyayaGranitsa = float.PositiveInfinity;
-        bool granitsaNaydena = false;
-
-        for (int i = 0; i < otrisovshiki.Length; i++)
-        {
-            Renderer otrisovshik = otrisovshiki[i];
-            if (otrisovshik == null || !otrisovshik.enabled)
-            {
-                continue;
-            }
-
-            nizhnyayaGranitsa = Mathf.Min(nizhnyayaGranitsa, otrisovshik.bounds.min.y);
-            granitsaNaydena = true;
-        }
-
-        if (granitsaNaydena)
-        {
-            preobrazovanie.position += Vector3.up * (tochkaPoverhnosti.y - nizhnyayaGranitsa);
-        }
+        Debug.Log("Посажено: " + novoe.name);
     }
 
     private void UstanovitTsvetLucha(Color tsvet)
     {
-        if (materialLuchaKopiya == null)
-        {
-            return;
-        }
-
-        if (materialLuchaKopiya.HasProperty("_BaseColor"))
-        {
-            materialLuchaKopiya.SetColor("_BaseColor", tsvet);
-        }
-        else if (materialLuchaKopiya.HasProperty("_Color"))
-        {
-            materialLuchaKopiya.SetColor("_Color", tsvet);
-        }
+        if (materialLuchaKopiya == null) return;
+        if (materialLuchaKopiya.HasProperty("_BaseColor")) materialLuchaKopiya.SetColor("_BaseColor", tsvet);
+        else if (materialLuchaKopiya.HasProperty("_Color")) materialLuchaKopiya.SetColor("_Color", tsvet);
     }
 
     private void PokazatPrizrak(GameObject prefab, Vector3 pozitsiya)
@@ -269,21 +215,14 @@ public class PosadkaDereva : MonoBehaviour
             UnichtozhitPrizrak();
             SozdatPrizrak(prefab);
         }
-
         if (prizrak != null)
         {
             prizrak.SetActive(true);
-            PostavitVertikalno(prizrak, pozitsiya);
+            prizrak.transform.position = pozitsiya;
         }
     }
 
-    private void SpryatPrizrak()
-    {
-        if (prizrak != null)
-        {
-            prizrak.SetActive(false);
-        }
-    }
+    private void SpryatPrizrak() { if (prizrak != null) prizrak.SetActive(false); }
 
     private void SozdatPrizrak(GameObject prefab)
     {
@@ -291,11 +230,10 @@ public class PosadkaDereva : MonoBehaviour
         prizrak = Instantiate(prefab);
         prizrak.name = prefab.name + " (prizrak)";
 
+        if (prizrak.TryGetComponent<SekciyaNasazhdeniy>(out var sek)) sek.etoPrizrak = true;
+
         Collider[] kollajdery = prizrak.GetComponentsInChildren<Collider>(true);
-        for (int i = 0; i < kollajdery.Length; i++)
-        {
-            kollajdery[i].enabled = false;
-        }
+        for (int i = 0; i < kollajdery.Length; i++) kollajdery[i].enabled = false;
 
         if (materialPrizraka != null)
         {
@@ -303,11 +241,7 @@ public class PosadkaDereva : MonoBehaviour
             for (int i = 0; i < otrisovshiki.Length; i++)
             {
                 Material[] novyeMaterialy = new Material[otrisovshiki[i].sharedMaterials.Length];
-                for (int j = 0; j < novyeMaterialy.Length; j++)
-                {
-                    novyeMaterialy[j] = materialPrizraka;
-                }
-
+                for (int j = 0; j < novyeMaterialy.Length; j++) novyeMaterialy[j] = materialPrizraka;
                 otrisovshiki[i].sharedMaterials = novyeMaterialy;
             }
         }
@@ -315,11 +249,7 @@ public class PosadkaDereva : MonoBehaviour
 
     private void UnichtozhitPrizrak()
     {
-        if (prizrak != null)
-        {
-            Destroy(prizrak);
-        }
-
+        if (prizrak != null) Destroy(prizrak);
         prizrak = null;
         prefabPrizraka = null;
     }

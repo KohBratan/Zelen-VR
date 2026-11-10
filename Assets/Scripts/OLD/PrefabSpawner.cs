@@ -86,18 +86,14 @@ public class PrefabSpawner : MonoBehaviour
 
     void OnEnable()
     {
-        // Подписываемся только на команды старого инструмента. Подписка на все
-        // действия XR создавала поток логов на каждое движение шлема и контроллеров.
+        // Subscribe to ALL actions in the asset and filter by map/control name
         if (inputActionAsset != null)
         {
             foreach (var map in inputActionAsset.actionMaps)
             {
                 foreach (var action in map.actions)
                 {
-                    if (IsToolAction(action))
-                    {
-                        action.performed += OnActionPerformed;
-                    }
+                    action.performed += OnActionPerformed;
                 }
             }
             inputActionAsset.Enable();
@@ -131,13 +127,10 @@ public class PrefabSpawner : MonoBehaviour
             {
                 foreach (var action in map.actions)
                 {
-                    if (IsToolAction(action))
-                    {
-                        action.performed -= OnActionPerformed;
-                    }
+                    action.performed -= OnActionPerformed;
                 }
             }
-            // Не выключаем весь общий asset: его действия используют другие скрипты.
+            inputActionAsset.Disable();
         }
 
         if (placementAction != null)
@@ -155,13 +148,6 @@ public class PrefabSpawner : MonoBehaviour
         }
     }
 
-    private static bool IsToolAction(InputAction action)
-    {
-        string mapName = action.actionMap != null ? action.actionMap.name : null;
-        return (mapName == "XRI Right Locomotion" && action.name == "Grab Move") ||
-               (mapName == "XRI Right" && action.name == "Haptic Device");
-    }
-
     /// <summary>
     /// Called whenever ANY action in the asset is performed.
     /// Only reacts to cycle and tool switch inputs.
@@ -172,7 +158,7 @@ public class PrefabSpawner : MonoBehaviour
         string controlName = ctx.control?.displayName;
         string actionName = ctx.action.name;
 
-        if (debugMode) Debug.Log($"Action performed: {actionName} (map: {mapName}) | control: {controlName}");
+        Debug.Log($"Action performed: {actionName} (map: {mapName}) | control: {controlName}");
 
         // Cycle tools: right grip press (Grab Move from XRI Right Locomotion)
         if (mapName == "XRI Right Locomotion" && controlName == "grippressed" && actionName == "Grab Move" && ctx.ReadValueAsButton())

@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// Вешается на каждую кнопку-картинку в списке (дерево, куст и т.д.).
-// Когда выбор подтверждён (клик стика), запоминает, какой префаб выбран,
-// и показывает на этой кнопке метку "выбрано".
+// Вешается на каждую кнопку-картинку в списке (дерево, куст, газон и т.д.).
+// Клик по кнопке выбирает префаб. Повторный клик по уже выбранной кнопке
+// снимает выбор (инструмент убирается из руки).
 public class KnopkaNasazhdeniya : MonoBehaviour
 {
     [Header("Префаб, который будет ставиться на сцену, когда выбрана эта кнопка")]
@@ -37,8 +37,6 @@ public class KnopkaNasazhdeniya : MonoBehaviour
         ObnovitMetku();
     }
 
-    // Вызывается, когда кнопка выключается: например, ушли в другую категорию
-    // (панель "Деревья" спряталась) или закрыли всё меню
     void OnDisable()
     {
         bool eto_vybrannoe = prefabNasazhdeniya != null && VyborInstrumenta.TekushiyPrefab == prefabNasazhdeniya;
@@ -52,15 +50,39 @@ public class KnopkaNasazhdeniya : MonoBehaviour
 
     private void Vybrat()
     {
-        VyborInstrumenta.TekushiyPrefab = prefabNasazhdeniya;
-
-        if (prefabNasazhdeniya != null)
+        if (prefabNasazhdeniya == null)
         {
-            Debug.Log("Выбрано насаждение: " + prefabNasazhdeniya.name);
+            Debug.LogWarning("У кнопки '" + gameObject.name + "' не назначен prefabNasazhdeniya!");
+            return;
+        }
+
+        if (VyborInstrumenta.TekushiyPrefab == prefabNasazhdeniya)
+        {
+            // Уже выбрано - снимаем выбор
+            VyborInstrumenta.TekushiyPrefab = null;
+            Debug.Log("Выбор сброшен (повторный клик): " + prefabNasazhdeniya.name);
         }
         else
         {
-            Debug.LogWarning("У кнопки '" + gameObject.name + "' не назначен prefabNasazhdeniya!");
+            // Не выбрано - выбираем
+            VyborInstrumenta.TekushiyPrefab = prefabNasazhdeniya;
+            Debug.Log("Выбрано насаждение: " + prefabNasazhdeniya.name);
+            ZakrytMenyuInstrumentov();
+        }
+    }
+
+    // После выбора прячем меню инструментов, чтобы сразу можно было ставить.
+    private void ZakrytMenyuInstrumentov()
+    {
+        PanelPereklyuchatel[] vse = FindObjectsOfType<PanelPereklyuchatel>(true);
+        for (int i = 0; i < vse.Length; i++)
+        {
+            PanelPereklyuchatel p = vse[i];
+            if (p != null && p.panel != null && transform.IsChildOf(p.panel.transform))
+            {
+                p.Zakryt();
+                return;
+            }
         }
     }
 
