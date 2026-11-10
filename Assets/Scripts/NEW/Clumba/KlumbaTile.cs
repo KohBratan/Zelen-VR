@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: KlumbaTile.cs
+// Yacheyka klumby.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using System.Collections.Generic;
 
