@@ -551,13 +551,15 @@ public static class SostoyanieMenyu
 {
     public static bool InventoryOpen;
     public static bool ToolsMenuOpen;
+    public static bool GameMenuOpen;
 
-    public static bool AnyMenuOpen => InventoryOpen || ToolsMenuOpen;
+    public static bool AnyMenuOpen => InventoryOpen || ToolsMenuOpen || GameMenuOpen;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Sbrosit()
     {
         InventoryOpen = false;
         ToolsMenuOpen = false;
+        GameMenuOpen = false;
     }
 }

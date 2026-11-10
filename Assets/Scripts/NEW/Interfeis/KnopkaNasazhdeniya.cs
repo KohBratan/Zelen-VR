@@ -67,6 +67,22 @@ public class KnopkaNasazhdeniya : MonoBehaviour
             // Ќе выбрано - выбираем
             VyborInstrumenta.TekushiyPrefab = prefabNasazhdeniya;
             Debug.Log("¬ыбрано насаждение: " + prefabNasazhdeniya.name);
+            ZakrytMenyuInstrumentov();
+        }
+    }
+
+    // ѕосле выбора пр€чем меню инструментов, чтобы сразу можно было ставить.
+    private void ZakrytMenyuInstrumentov()
+    {
+        PanelPereklyuchatel[] vse = FindObjectsOfType<PanelPereklyuchatel>(true);
+        for (int i = 0; i < vse.Length; i++)
+        {
+            PanelPereklyuchatel p = vse[i];
+            if (p != null && p.panel != null && transform.IsChildOf(p.panel.transform))
+            {
+                p.Zakryt();
+                return;
+            }
         }
     }
 

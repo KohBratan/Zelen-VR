@@ -1,8 +1,3 @@
-// ---------------------------------------------------------------------------
-// Zelen-VR
-// File: PosadkaCvetov.cs
-// Posadka tsvetov na klumbe.
-// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -71,6 +66,13 @@ public class PosadkaCvetov : MonoBehaviour
             return;
         }
 
+        if (SostoyanieMenyu.AnyMenuOpen)
+        {
+            if (luch.enabled) luch.enabled = false;
+            SpryatatPrizrak();
+            return;
+        }
+
         if (!luch.enabled) luch.enabled = true;
 
         Transform start = tochkaStarta != null ? tochkaStarta : transform;
@@ -117,6 +119,7 @@ public class PosadkaCvetov : MonoBehaviour
 
     private void Posadit(InputAction.CallbackContext ctx)
     {
+        if (SostoyanieMenyu.AnyMenuOpen) return;
         if (VyborInstrumenta.TekushiyPrefab != null && tekushayaKlumba != null)
         {
             GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaPopadaniya, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);

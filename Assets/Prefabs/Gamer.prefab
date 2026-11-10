@@ -386,7 +386,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 8982523223230737014, guid: c72a9dbfde4fa314d88f293f46d53553, type: 3}
   metkaVybrano: {fileID: 5766519589637266715}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &257291244885714507
 GameObject:
   m_ObjectHideFlags: 0
@@ -1824,7 +1824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 4831029385353770467, guid: 4157a656b7de4664288bdba7733850b9, type: 3}
   metkaVybrano: {fileID: 1169237934809887911}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &1047938867621854396
 GameObject:
   m_ObjectHideFlags: 0
@@ -2752,7 +2752,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 2308330282160614979, guid: ecc4b6992e9c3944692b36e42369ccf0, type: 3}
   metkaVybrano: {fileID: 6042072447220465924}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &1781058264735715559
 GameObject:
   m_ObjectHideFlags: 0
@@ -3440,7 +3440,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 4375503527111477233, guid: 3598ecbfb9c50f64e94f7e9e4db3f6b7, type: 3}
   metkaVybrano: {fileID: 519403422338401277}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!114 &8543915957392408878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3455,7 +3455,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 4712193269228013357, guid: 321c27e00df63994d999c729f8a72f5d, type: 3}
   metkaVybrano: {fileID: 519403422338401277}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &2202106969152761657
 GameObject:
   m_ObjectHideFlags: 0
@@ -3615,7 +3615,7 @@ MonoBehaviour:
   tsvetPopal: {r: 0, g: 1, b: 0, a: 1}
   tsvetNePopal: {r: 1, g: 0, b: 0, a: 1}
   kontejnerDerevev: {fileID: 0}
-  rabotatPriOtkrytomMenyu: 1
+  rabotatPriOtkrytomMenyu: 0
   radiusProverkiDerevya: 2.5
   radiusProverkiKusty: 0.5
   radiusProverkiSekcii: 5
@@ -4606,7 +4606,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 277862369306619786, guid: 064cd2b609555e2499f6361286ba8953, type: 3}
   metkaVybrano: {fileID: 1883461067140969509}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &2878483556992562696
 GameObject:
   m_ObjectHideFlags: 0
@@ -6633,7 +6633,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 87160808941203766, guid: d794299f3b4906344b674cea7868d733, type: 3}
   metkaVybrano: {fileID: 9055835372659250145}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &4128208830352824560
 GameObject:
   m_ObjectHideFlags: 0
@@ -7080,7 +7080,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 4375503527111477233, guid: 3598ecbfb9c50f64e94f7e9e4db3f6b7, type: 3}
   metkaVybrano: {fileID: 7400593577446714311}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &4536368955806678951
 GameObject:
   m_ObjectHideFlags: 0
@@ -7623,7 +7623,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 531274147501087087, guid: f263d8ceedd527449ba2da544fd819ad, type: 3}
   metkaVybrano: {fileID: 4892254826199937289}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &4839050554512677216
 GameObject:
   m_ObjectHideFlags: 0
@@ -8349,7 +8349,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 920622854391424263, guid: 2880ae63d7bf76043b71bc62be815f5e, type: 3}
   metkaVybrano: {fileID: 8159273621777552052}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &5623474297148250215
 GameObject:
   m_ObjectHideFlags: 0
@@ -9029,7 +9029,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 4375503527111477233, guid: 3598ecbfb9c50f64e94f7e9e4db3f6b7, type: 3}
   metkaVybrano: {fileID: 6333462324882418334}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!114 &8101617001361986557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9044,7 +9044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 4712193269228013357, guid: 53ced5a4407a3d84f98f3219f164e3db, type: 3}
   metkaVybrano: {fileID: 6333462324882418334}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &6042072447220465924
 GameObject:
   m_ObjectHideFlags: 0
@@ -11012,7 +11012,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 8643846565916105885, guid: b17ed4d17b53af349806cc9b29e46381, type: 3}
   metkaVybrano: {fileID: 8483053173838290709}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &6827028236082810879
 GameObject:
   m_ObjectHideFlags: 0
@@ -11232,7 +11232,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 2945449235464250264, guid: 2145bab0449ad764db1c5248418d665b, type: 3}
   metkaVybrano: {fileID: 6153191538611794761}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &6884520188602478127
 GameObject:
   m_ObjectHideFlags: 0
@@ -12454,7 +12454,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 9024239456129376596, guid: b2e97852eb67e5c439c84ee7e46e5c04, type: 3}
   metkaVybrano: {fileID: 2275609943473869340}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &7643084017659863203
 GameObject:
   m_ObjectHideFlags: 0
@@ -12761,7 +12761,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 2455748928451717727, guid: 52bcfd2f78e8d314ebfd13f97704087e, type: 3}
   metkaVybrano: {fileID: 8230950826978343047}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &7864235167113699196
 GameObject:
   m_ObjectHideFlags: 0
@@ -13239,7 +13239,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 2147888317724812742, guid: 7c81df8ef84bcf54d861fcb86063c8af, type: 3}
   metkaVybrano: {fileID: 5162870974505923297}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &7988564476380515177
 GameObject:
   m_ObjectHideFlags: 0
@@ -13581,7 +13581,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabNasazhdeniya: {fileID: 4782266828888180893, guid: c807d2f1b7aa41b4f84b4b0b86623fcc, type: 3}
   metkaVybrano: {fileID: 9160713391601605991}
-  sbrasyvatPriSkrytii: 1
+  sbrasyvatPriSkrytii: 0
 --- !u!1 &8060142407204522455
 GameObject:
   m_ObjectHideFlags: 0

@@ -82,6 +82,12 @@ public class PanelPereklyuchatel : MonoBehaviour
 
     private void NazhatieKnopki(InputAction.CallbackContext context)
     {
+        // Во время игрового меню запрещено открывать инструменты и инвентарь.
+        if (SostoyanieMenyu.GameMenuOpen)
+        {
+            return;
+        }
+
         Debug.Log("PanelPereklyuchatel: нажатие кнопки '" + imyaDeistviya + "' сработало!");
         panelOtkryta = !panelOtkryta;
         if (panel != null)

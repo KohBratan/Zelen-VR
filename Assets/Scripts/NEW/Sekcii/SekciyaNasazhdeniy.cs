@@ -1,8 +1,3 @@
-// ---------------------------------------------------------------------------
-// Zelen-VR
-// File: SekciyaNasazhdeniy.cs
-// Sektsiya nasazhdeniy.
-// ---------------------------------------------------------------------------
 using UnityEngine;
 using System.Collections.Generic;
 

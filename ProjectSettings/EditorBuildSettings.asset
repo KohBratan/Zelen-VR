@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 96b153fc30dd6274ba01b4f0ae40e47b
+  - enabled: 1
     path: Assets/Others/Supercyan Free Forest Sample/Scenes/BrightDay.unity
     guid: c9e30e1e40e5f6a47aa6053500404e37
   m_configObjects:

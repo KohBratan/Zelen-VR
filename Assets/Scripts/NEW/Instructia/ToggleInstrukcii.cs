@@ -1,8 +1,3 @@
-// ---------------------------------------------------------------------------
-// Zelen-VR
-// File: ToggleInstrukcii.cs
-// Pereklyuchenie instruktsii.
-// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.InputSystem;
 

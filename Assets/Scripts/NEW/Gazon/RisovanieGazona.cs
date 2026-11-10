@@ -121,6 +121,13 @@ public class RisovanieGazona : MonoBehaviour
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
         bool etoGazon = prefab != null && prefab.GetComponent<GazonTile>() != null;
 
+        if (SostoyanieMenyu.AnyMenuOpen)
+        {
+            luch.enabled = false;
+            SpryatatPrizrak();
+            return;
+        }
+
         if (!etoGazon)
         {
             if (luch.enabled)
@@ -183,6 +190,7 @@ public class RisovanieGazona : MonoBehaviour
 
     private void NachatRisovanie(InputAction.CallbackContext context)
     {
+        if (SostoyanieMenyu.AnyMenuOpen) { risuem = false; return; }
         risuem = true;
     }
 
