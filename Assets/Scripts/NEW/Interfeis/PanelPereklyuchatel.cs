@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: PanelPereklyuchatel.cs
+// Pereklyuchatel paneley.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.InputSystem;
 

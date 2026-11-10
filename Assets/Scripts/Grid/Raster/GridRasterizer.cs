@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GridRasterizer.cs
+// Rasterizator setki.
+// ---------------------------------------------------------------------------
 using System.Collections.Generic;
 using UnityEngine;
 

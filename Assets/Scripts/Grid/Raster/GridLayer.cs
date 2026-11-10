@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GridLayer.cs
+// Sloy setki.
+// ---------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using UnityEngine;

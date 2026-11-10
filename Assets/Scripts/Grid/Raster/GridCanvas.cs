@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GridCanvas.cs
+// Kanvas setki.
+// ---------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using UnityEngine;

@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: VyborNasazhdeniya.cs
+// Vybor nasazhdeniya.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.InputSystem;
 

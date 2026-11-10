@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GridValidation.cs
+// Validatsiya setki.
+// ---------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Text;

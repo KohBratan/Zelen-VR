@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GridUtils.cs
+// Utility setki.
+// ---------------------------------------------------------------------------
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
