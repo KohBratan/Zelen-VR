@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GridRenderer.cs
+// Render setki.
+// ---------------------------------------------------------------------------
 using System.Collections.Generic;
 using UnityEngine;
 

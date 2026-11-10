@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GridSnapProvider.cs
+// Provayder privyazki.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 
 namespace ZelenVR.Grid

@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GridManager.cs
+// Menedzher setki.
+// ---------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using UnityEngine;

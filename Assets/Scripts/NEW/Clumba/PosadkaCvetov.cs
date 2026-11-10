@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: PosadkaCvetov.cs
+// Posadka tsvetov na klumbe.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.InputSystem;
 

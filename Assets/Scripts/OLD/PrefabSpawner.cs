@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: PrefabSpawner.cs
+// Spavner prefabov.
+// ---------------------------------------------------------------------------
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;

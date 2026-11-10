@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: DebugAllActions.cs
+// Otladka vsekh deystviy.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.InputSystem;
 

@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: DrawStroke.cs
+// Shtrikh risovaniya.
+// ---------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using UnityEngine;
