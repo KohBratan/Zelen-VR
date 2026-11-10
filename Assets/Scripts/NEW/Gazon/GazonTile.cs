@@ -1,3 +1,8 @@
+// ---------------------------------------------------------------------------
+// Zelen-VR
+// File: GazonTile.cs
+// Yacheyka gazona.
+// ---------------------------------------------------------------------------
 using UnityEngine;
 using System.Collections.Generic;
 
