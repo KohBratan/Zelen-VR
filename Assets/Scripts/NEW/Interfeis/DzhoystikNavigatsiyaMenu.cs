@@ -329,6 +329,12 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
 
     private void NazhatieKlika(InputAction.CallbackContext context)
     {
+        bool menyuOtkryto = panelMenu != null && panelMenu.activeInHierarchy;
+        if (!menyuOtkryto)
+        {
+            return;
+        }
+
         if (vnutriKategorii)
         {
             MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();

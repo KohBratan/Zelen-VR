@@ -1011,6 +1011,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PaintGazon",
+                    "type": "Button",
+                    "id": "37b18e2e-67d3-4ffe-aa63-568f6abb5ebc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PlaceFlower",
+                    "type": "Button",
+                    "id": "b88e6b75-e7b9-47b1-a08e-d6497ff0b1fa",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleHelp",
+                    "type": "Button",
+                    "id": "51f67d53-15e2-44b5-9817-e674b4292835",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1073,6 +1100,17 @@
                     "name": "",
                     "id": "87d9a1e7-704b-43bb-be2a-f2d8ecfde8b7",
                     "path": "<KHRSimpleController>{LeftHand}/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5cb8fb97-76b2-489a-94b2-d3dc515cd381",
+                    "path": "",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -1407,6 +1445,94 @@
                     "processors": "",
                     "groups": "",
                     "action": "PlaceTool",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "15ab9363-1bed-4cf7-8277-2e2a1691b663",
+                    "path": "<XRController>{LeftHand}/{TriggerButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PaintGazon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "18320053-5494-4f68-8ff6-02e10a84cd83",
+                    "path": "<XRSimulatedController>{LeftHand}/{TriggerButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PaintGazon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e01d444c-e518-46e6-a547-8d22b1365ef6",
+                    "path": "<XRController>{LeftHand}/{TriggerButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PlaceFlower",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "86c7c6ae-3689-4325-819b-c795bd071b8c",
+                    "path": "<XRSimulatedController>{LeftHand}/{TriggerButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PlaceFlower",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5e4dd7e7-edf8-4624-b825-d604d6d08f4c",
+                    "path": "<XRController>{LeftHand}/{MenuButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleHelp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f5320737-7d57-4e33-a3fc-aa08d85af6ef",
+                    "path": "<XRSimulatedController>{LeftHand}/menuButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleHelp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2fbf6db6-0a28-4862-9798-498a90d3f867",
+                    "path": "<XRController>{RightHand}/{MenuButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleHelp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d4d24332-9db5-4433-b741-98560c194b42",
+                    "path": "<XRSimulatedController>{RightHand}/menuButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleHelp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
