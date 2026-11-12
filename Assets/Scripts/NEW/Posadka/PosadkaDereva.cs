@@ -1,53 +1,42 @@
-// ---------------------------------------------------------------------------
-// Zelen-VR
-// File: PosadkaDereva.cs
-// Posadka dereva.
-// ---------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(LineRenderer))]
 public class PosadkaDereva : MonoBehaviour
 {
-    [Header("Откуда идёт луч (если пусто - сам этот объект)")]
+    [Header("РћС‚РєСѓРґР° РёРґС‘С‚ Р»СѓС‡ (РµСЃР»Рё РїСѓСЃС‚Рѕ - СЃР°Рј СЌС‚РѕС‚ РѕР±СЉРµРєС‚)")]
     public Transform tochkaStarta;
 
-    [Header("Слой террейна, по которому стреляет луч")]
+    [Header("РЎР»РѕР№ С‚РµСЂСЂРµР№РЅР°, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ СЃС‚СЂРµР»СЏРµС‚ Р»СѓС‡")]
     public LayerMask maskaTerreina;
 
-    [Header("Длина луча")]
+    [Header("Р”Р»РёРЅР° Р»СѓС‡Р°")]
     public float dlinaLucha = 30f;
 
-    [Header("Материал луча и материал призрака (прозрачный)")]
+    [Header("РњР°С‚РµСЂРёР°Р» Р»СѓС‡Р° Рё РјР°С‚РµСЂРёР°Р» РїСЂРёР·СЂР°РєР° (РїСЂРѕР·СЂР°С‡РЅС‹Р№)")]
     public Material materialLucha;
     public Material materialPrizraka;
 
-    [Header("Цвет луча: попал / не попал или занято")]
+    [Header("Р¦РІРµС‚ Р»СѓС‡Р°: РїРѕРїР°Р» / РЅРµ РїРѕРїР°Р» РёР»Рё Р·Р°РЅСЏС‚Рѕ")]
     public Color tsvetPopal = Color.green;
     public Color tsvetNePopal = Color.red;
 
-    [Header("Куда складывать посаженные объекты")]
+    [Header("РљСѓРґР° СЃРєР»Р°РґС‹РІР°С‚СЊ РїРѕСЃР°Р¶РµРЅРЅС‹Рµ РѕР±СЉРµРєС‚С‹")]
     public Transform kontejnerDerevev;
 
-    [Header("Работать, пока меню открыто")]
+    [Header("Р Р°Р±РѕС‚Р°С‚СЊ, РїРѕРєР° РјРµРЅСЋ РѕС‚РєСЂС‹С‚Рѕ")]
     public bool rabotatPriOtkrytomMenyu = true;
 
-    [Header("Радиус проверки для деревьев (метры)")]
+    [Header("Р Р°РґРёСѓСЃС‹ РїСЂРѕРІРµСЂРєРё РїСЂРµРїСЏС‚СЃС‚РІРёР№")]
     public float radiusProverkiDerevya = 2.5f;
-
-    [Header("Радиус проверки для кустов (метры)")]
     public float radiusProverkiKusty = 0.5f;
-
-    [Header("Радиус проверки для секций (метры)")]
     public float radiusProverkiSekcii = 5f;
+    public float radiusProverkiKlumby = 0.5f;
 
-    [Header("Радиус проверки для клумб (метры)")]
-    public float radiusProverkiKlumby = 0.5f; // Добавили радиус для клумб
-
-    [Header("Весь asset с действиями")]
+    [Header("Р’РµСЃСЊ asset СЃ РґРµР№СЃС‚РІРёСЏРјРё")]
     public InputActionAsset naborDeistvii;
 
-    [Header("Карта и имя действия триггера")]
+    [Header("РљР°СЂС‚Р° Рё РёРјСЏ РґРµР№СЃС‚РІРёСЏ С‚СЂРёРіРіРµСЂР°")]
     public string imyaKarty = "XRI Left Interaction";
     public string imyaDeistviya = "PlaceTool";
 
@@ -70,8 +59,6 @@ public class PosadkaDereva : MonoBehaviour
         luch.useWorldSpace = true;
         luch.startWidth = 0.01f;
         luch.endWidth = 0.01f;
-        luch.startColor = Color.white;
-        luch.endColor = Color.white;
         luch.enabled = false;
 
         if (materialLucha != null) luch.material = materialLucha;
@@ -104,11 +91,10 @@ public class PosadkaDereva : MonoBehaviour
     void LateUpdate()
     {
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
-
-        // Проверяем, что это не газон и не цветок (для них свои скрипты)
+        
         bool etoGazon = prefab != null && prefab.GetComponent<GazonTile>() != null;
         Nasazhdenie nas = prefab != null ? prefab.GetComponent<Nasazhdenie>() : null;
-        bool etoCvetok = nas != null && nas.kategoriya == "Цветы";
+        bool etoCvetok = nas != null && nas.kategoriya == "Р¦РІРµС‚С‹"; 
 
         bool menyuMeshaet = SostoyanieMenyu.AnyMenuOpen && !rabotatPriOtkrytomMenyu;
 
@@ -123,16 +109,15 @@ public class PosadkaDereva : MonoBehaviour
             return;
         }
 
-        // Определяем радиус и категорию
         float radius = radiusProverkiKusty;
         string kategoriyaStavim = "";
 
         if (nas != null)
         {
             kategoriyaStavim = nas.kategoriya;
-            if (nas.kategoriya == "Деревья") radius = radiusProverkiDerevya;
-            else if (nas.kategoriya == "Секции") radius = radiusProverkiSekcii;
-            else if (nas.kategoriya == "Клумбы") radius = radiusProverkiKlumby;
+            if (nas.kategoriya == "Р”РµСЂРµРІСЊСЏ") radius = radiusProverkiDerevya;
+            else if (nas.kategoriya == "РЎРµРєС†РёРё") radius = radiusProverkiSekcii;
+            else if (nas.kategoriya == "РљР»СѓРјР±С‹") radius = radiusProverkiKlumby;
         }
 
         Transform start = tochkaStarta != null ? tochkaStarta : transform;
@@ -145,8 +130,13 @@ public class PosadkaDereva : MonoBehaviour
             tochkaPopadaniya = popadanie.point;
             konets = popadanie.point;
 
-            // Передаем категорию в проверку
             mestoSvobodno = MestoSvobodno(tochkaPopadaniya, radius, kategoriyaStavim);
+            
+            // РќРћР’РђРЇ РџР РћР’Р•Р РљРђ: Р•СЃР»Рё РїС‹С‚Р°РµРјСЃСЏ РїРѕСЃС‚Р°РІРёС‚СЊ С‡С‚Рѕ-С‚Рѕ РІ РєР»СѓРјР±Сѓ - Р·Р°РїСЂРµС‰Р°РµРј
+            if (mestoSvobodno && EstLiKlumba(tochkaPopadaniya))
+            {
+                mestoSvobodno = false; // Р’РЅСѓС‚СЂСЊ РєР»СѓРјР±С‹ РЅРµР»СЊР·СЏ!
+            }
 
             if (mestoSvobodno) PokazatPrizrak(prefab, popadanie.point);
             else SpryatPrizrak();
@@ -159,7 +149,18 @@ public class PosadkaDereva : MonoBehaviour
         UstanovitTsvetLucha(popalNaTerrein && mestoSvobodno ? tsvetPopal : tsvetNePopal);
     }
 
-    // ОБНОВЛЕННЫЙ МЕТОД ПРОВЕРКИ
+    // РџСЂРѕРІРµСЂРєР°, РµСЃС‚СЊ Р»Рё РІ СЌС‚РѕР№ С‚РѕС‡РєРµ РєР»СѓРјР±Р°
+    private bool EstLiKlumba(Vector3 tochka)
+    {
+        // РЎРєР°РЅРёСЂСѓРµРј СЃС„РµСЂСѓ С‡СѓС‚СЊ РІС‹С€Рµ Р·РµРјР»Рё, С‡С‚РѕР±С‹ РїРѕР№РјР°С‚СЊ РєРѕР»Р»Р°Р№РґРµСЂ РєР»СѓРјР±С‹
+        Collider[] kollajdery = Physics.OverlapSphere(tochka + Vector3.up * 0.2f, 0.2f);
+        foreach (var col in kollajdery)
+        {
+            if (col.GetComponentInParent<KlumbaTile>() != null) return true;
+        }
+        return false;
+    }
+
     private bool MestoSvobodno(Vector3 pozitsiya, float radius, string kategoriyaStavim)
     {
         Collider[] kollajdery = Physics.OverlapSphere(pozitsiya, radius);
@@ -168,20 +169,12 @@ public class PosadkaDereva : MonoBehaviour
             Nasazhdenie nas = col.GetComponentInParent<Nasazhdenie>();
             if (nas != null)
             {
-                // Если это газон
-                if (nas.kategoriya == "Газон")
+                if (nas.kategoriya == "Р“Р°Р·РѕРЅ")
                 {
-                    // Клумбу на газон ставить НЕЛЬЗЯ
-                    if (kategoriyaStavim == "Клумбы") return false;
-
-                    // Деревья и кусты на газон ставить МОЖНО
-                    continue;
+                    if (kategoriyaStavim == "РљР»СѓРјР±С‹") return false;
+                    continue; 
                 }
-
-                // Цветы не мешают ставить ничего
-                if (nas.kategoriya == "Цветы") continue;
-
-                // Всё остальное (деревья, кусты, клумбы, секции) считается препятствием
+                if (nas.kategoriya == "Р¦РІРµС‚С‹") continue;
                 return false;
             }
         }
@@ -194,16 +187,16 @@ public class PosadkaDereva : MonoBehaviour
 
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
         if (prefab == null || prefab.GetComponent<GazonTile>() != null) return;
-
+        
         Nasazhdenie nasPrefab = prefab.GetComponent<Nasazhdenie>();
-        if (nasPrefab != null && nasPrefab.kategoriya == "Цветы") return;
+        if (nasPrefab != null && nasPrefab.kategoriya == "Р¦РІРµС‚С‹") return;
 
         GameObject novoe = Instantiate(prefab, tochkaPopadaniya, Quaternion.identity, kontejnerDerevev);
 
         Nasazhdenie nasazhdenie = novoe.GetComponent<Nasazhdenie>();
         if (nasazhdenie != null) nasazhdenie.sourcePrefab = prefab;
 
-        Debug.Log("Посажено: " + novoe.name);
+        Debug.Log("РџРѕСЃР°Р¶РµРЅРѕ: " + novoe.name);
     }
 
     private void UstanovitTsvetLucha(Color tsvet)
