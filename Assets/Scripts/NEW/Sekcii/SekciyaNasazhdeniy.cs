@@ -6,33 +6,33 @@ public class SekciyaNasazhdeniy : MonoBehaviour
 {
     public enum GranRastyagivaniya { Net, Pered, Zad, Levo, Pravo }
 
-    [Header("Контейнеры внутри префаба (положи туда по 1 объекту для шаблона)")]
+    [Header("РљРѕРЅС‚РµР№РЅРµСЂС‹ РІРЅСѓС‚СЂРё РїСЂРµС„Р°Р±Р° (РїРѕР»РѕР¶Рё С‚СѓРґР° РїРѕ 1 РѕР±СЉРµРєС‚Сѓ РґР»СЏ С€Р°Р±Р»РѕРЅР°)")]
     public Transform containerDerevya;
     public Transform containerKusty;
 
-    [Header("Шаг сетки (расстояние между объектами)")]
+    [Header("РЁР°Рі СЃРµС‚РєРё (СЂР°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ РѕР±СЉРµРєС‚Р°РјРё)")]
     public float shagX = 2f;
     public float shagZ = 2f;
 
-    [Header("Текущие размеры секции")]
+    [Header("РўРµРєСѓС‰РёРµ СЂР°Р·РјРµСЂС‹ СЃРµРєС†РёРё")]
     public float shirina = 4f;
     public float dlinaDerevya = 2f;
     public float dlinaKusty = 2f;
 
-    [Header("Минимальные размеры")]
+    [Header("РњРёРЅРёРјР°Р»СЊРЅС‹Рµ СЂР°Р·РјРµСЂС‹")]
     public float minShirina = 2f;
     public float minDlina = 1f;
 
-    [Header("Слой террейна")]
+    [Header("РЎР»РѕР№ С‚РµСЂСЂРµР№РЅР°")]
     public LayerMask maskaTerreina;
 
-    [Header("Сколько подквадратов по каждой оси (для подложки)")]
+    [Header("РЎРєРѕР»СЊРєРѕ РїРѕРґРєРІР°РґСЂР°С‚РѕРІ РїРѕ РєР°Р¶РґРѕР№ РѕСЃРё (РґР»СЏ РїРѕРґР»РѕР¶РєРё)")]
     public int podrazbienie = 4;
 
-    [Header("Толщина коллайдера (тонкий, чтобы можно было ходить)")]
+    [Header("РўРѕР»С‰РёРЅР° РєРѕР»Р»Р°Р№РґРµСЂР° (С‚РѕРЅРєРёР№, С‡С‚РѕР±С‹ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ С…РѕРґРёС‚СЊ)")]
     public float vysotaKollaydera = 0.03f;
 
-    // Флаг для призрака (предпросмотра)
+    // Р¤Р»Р°Рі РґР»СЏ РїСЂРёР·СЂР°РєР° (РїСЂРµРґРїСЂРѕСЃРјРѕС‚СЂР°)
     public bool etoPrizrak = false;
 
     private Mesh mesh;
@@ -48,7 +48,10 @@ public class SekciyaNasazhdeniy : MonoBehaviour
 
     private Vector3 ishodnayaPozitsiya;
     private Quaternion ishodnyyRotation;
+
+    // Р’РћРў РћРќР, РќРђРЁР РЇРљРћР РЇ
     private float yakorLokalnyyX;
+    private float yakorLokalnyyZ;
 
     public bool Rastyagivaetsya => rastyagivaem;
 
@@ -86,7 +89,6 @@ public class SekciyaNasazhdeniy : MonoBehaviour
     {
         if (etoPrizrak)
         {
-            // Если это призрак - строим только подложку, растения не спавним
             PostroitMesh();
             ObnovitKollayder();
         }
@@ -209,7 +211,7 @@ public class SekciyaNasazhdeniy : MonoBehaviour
         {
             float x = startX + col * shagX;
 
-            // Деревья
+            // Р”РµСЂРµРІСЊСЏ
             int treeIndex = col * kolvoRyadovDerevya;
             for (int row = 0; row < kolvoRyadovDerevya; row++)
             {
@@ -221,7 +223,7 @@ public class SekciyaNasazhdeniy : MonoBehaviour
                 spisokDerevya[treeIndex + row].transform.position = worldPos;
             }
 
-            // Кусты
+            // РљСѓСЃС‚С‹
             int bushIndex = col * kolvoRyadovKusty;
             for (int row = 0; row < kolvoRyadovKusty; row++)
             {
@@ -246,7 +248,6 @@ public class SekciyaNasazhdeniy : MonoBehaviour
             novoe.SetActive(true);
             novoe.name = prefab.name + "_" + pul.Count;
 
-            // ВКЛЮЧАЕМ КОЛЛАЙДЕРЫ У СОЗДАННЫХ КОПИЙ
             Collider[] colls = novoe.GetComponentsInChildren<Collider>(true);
             foreach (var c in colls) c.enabled = true;
 
@@ -285,8 +286,11 @@ public class SekciyaNasazhdeniy : MonoBehaviour
         ishodnayaPozitsiya = transform.position;
         ishodnyyRotation = transform.rotation;
 
+        // РРЎРџР РђР’Р›Р•РќРР•: Р”РѕР±Р°РІРёР»Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёСЋ СЏРєРѕСЂРµР№ РґР»СЏ РІСЃРµС… СЃС‚РѕСЂРѕРЅ
         if (gran == GranRastyagivaniya.Pravo) yakorLokalnyyX = -shirina / 2f;
         else if (gran == GranRastyagivaniya.Levo) yakorLokalnyyX = shirina / 2f;
+        else if (gran == GranRastyagivaniya.Pered) yakorLokalnyyZ = dlinaDerevya;
+        else if (gran == GranRastyagivaniya.Zad) yakorLokalnyyZ = -dlinaKusty;
 
         rastyagivaem = true;
         return true;
@@ -301,33 +305,80 @@ public class SekciyaNasazhdeniy : MonoBehaviour
         Vector3 lokalnaya = Quaternion.Inverse(ishodnyyRotation) * smeshchenie;
         Vector3 novyyLokalnyyCentr = Vector3.zero;
 
+        float tmpShirina = shirina;
+        float tmpDlinaDerevya = dlinaDerevya;
+        float tmpDlinaKusty = dlinaKusty;
+
         switch (gran)
         {
             case GranRastyagivaniya.Pravo:
-                shirina = Mathf.Clamp(lokalnaya.x - yakorLokalnyyX, minShirina, 50f);
-                novyyLokalnyyCentr = new Vector3(yakorLokalnyyX + shirina / 2f, 0f, 0f);
+                tmpShirina = Mathf.Clamp(lokalnaya.x - yakorLokalnyyX, minShirina, 50f);
+                novyyLokalnyyCentr = new Vector3(yakorLokalnyyX + tmpShirina / 2f, 0f, 0f);
                 break;
             case GranRastyagivaniya.Levo:
-                shirina = Mathf.Clamp(yakorLokalnyyX - lokalnaya.x, minShirina, 50f);
-                novyyLokalnyyCentr = new Vector3(yakorLokalnyyX - shirina / 2f, 0f, 0f);
+                tmpShirina = Mathf.Clamp(yakorLokalnyyX - lokalnaya.x, minShirina, 50f);
+                novyyLokalnyyCentr = new Vector3(yakorLokalnyyX - tmpShirina / 2f, 0f, 0f);
                 break;
             case GranRastyagivaniya.Pered:
-                dlinaKusty = Mathf.Clamp(-lokalnaya.z, minDlina, 50f);
-                novyyLokalnyyCentr = new Vector3(0f, 0f, 0f);
+                float obshayaDlina1 = Mathf.Clamp(yakorLokalnyyZ - lokalnaya.z, minDlina * 2, 50f);
+                tmpDlinaKusty = Mathf.Max(minDlina, obshayaDlina1 - tmpDlinaDerevya);
+                novyyLokalnyyCentr = new Vector3(0f, 0f, yakorLokalnyyZ - (tmpDlinaDerevya + tmpDlinaKusty) / 2f);
                 break;
             case GranRastyagivaniya.Zad:
-                dlinaDerevya = Mathf.Clamp(lokalnaya.z, minDlina, 50f);
-                novyyLokalnyyCentr = new Vector3(0f, 0f, 0f);
+                float obshayaDlina2 = Mathf.Clamp(lokalnaya.z - yakorLokalnyyZ, minDlina * 2, 50f);
+                tmpDlinaDerevya = Mathf.Max(minDlina, obshayaDlina2 - tmpDlinaKusty);
+                novyyLokalnyyCentr = new Vector3(0f, 0f, yakorLokalnyyZ + (tmpDlinaDerevya + tmpDlinaKusty) / 2f);
                 break;
         }
 
         Vector3 novayaMirovayaPozitsiya = ishodnayaPozitsiya + ishodnyyRotation * novyyLokalnyyCentr;
         novayaMirovayaPozitsiya.y = ishodnayaPozitsiya.y;
+
+        float novayaObshayaDlina = tmpDlinaDerevya + tmpDlinaKusty;
+        float starayaObshayaDlina = dlinaDerevya + dlinaKusty;
+
+        if (tmpShirina > shirina || novayaObshayaDlina > starayaObshayaDlina)
+        {
+            // РРЎРџР РђР’Р›Р•РќРР•: Р’С‹С‡РёСЃР»СЏРµРј СЂРµР°Р»СЊРЅС‹Р№ С†РµРЅС‚СЂ РјРµС€Р° (СЃРѕ СЃРјРµС‰РµРЅРёРµРј centerZ), Р° РЅРµ РїСЂРѕСЃС‚Рѕ РїРѕР·РёС†РёСЋ Transform
+            float newCenterZ = (tmpDlinaDerevya - tmpDlinaKusty) / 2f;
+            Vector3 realCenter = novayaMirovayaPozitsiya + ishodnyyRotation * new Vector3(0f, 0f, newCenterZ);
+
+            // РџРµСЂРµРґР°РµРј СЂРµР°Р»СЊРЅС‹Р№ С†РµРЅС‚СЂ РІ РїСЂРѕРІРµСЂРєСѓ
+            if (ProveritKolliziyu(realCenter, tmpShirina, novayaObshayaDlina))
+            {
+                return;
+            }
+        }
+
+        shirina = tmpShirina;
+        dlinaDerevya = tmpDlinaDerevya;
+        dlinaKusty = tmpDlinaKusty;
         transform.position = novayaMirovayaPozitsiya;
 
         PostroitMesh();
         ObnovitKollayder();
         RassaditObekty();
+    }
+    private bool ProveritKolliziyu(Vector3 centr, float sh, float dl)
+    {
+        float checkSh = Mathf.Max(0.1f, sh - 0.2f);
+        float checkDl = Mathf.Max(0.1f, dl - 0.2f);
+        Vector3 halfExtents = new Vector3(checkSh / 2f, 1f, checkDl / 2f);
+
+        Vector3 checkCenter = centr + Vector3.up * 1f;
+
+        Collider[] hits = Physics.OverlapBox(checkCenter, halfExtents, ishodnyyRotation, ~0, QueryTriggerInteraction.Ignore);
+        foreach (var hit in hits)
+        {
+            if (hit.transform.IsChildOf(transform) || hit.transform == transform) continue;
+
+            SekciyaNasazhdeniy drugayaSekciya = hit.GetComponentInParent<SekciyaNasazhdeniy>();
+            if (drugayaSekciya != null && drugayaSekciya != this)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void ZakonchitRastyagivanie()
