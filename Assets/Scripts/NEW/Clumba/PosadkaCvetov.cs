@@ -40,6 +40,8 @@ public class PosadkaCvetov : MonoBehaviour
     private GameObject kandidatVybor;
     private GameObject vybrannoe;
 
+    // Для индикатора круга (Task 3.2)
+    private LineRenderer krugIndikator;
     private const string KATEGORIYA_CVETY = "\u0426\u0432\u0435\u0442\u044b";
 
     void Awake()
@@ -55,6 +57,8 @@ public class PosadkaCvetov : MonoBehaviour
         else { Shader s = Shader.Find("Universal Render Pipeline/Unlit"); if (s != null) luch.material = new Material(s); }
         matLuchKopiya = luch.material;
 
+        SozdatKrugIndikator();
+
         if (naborDeistvii != null)
         {
             var k = naborDeistvii.FindActionMap(imyaKarty);
@@ -67,8 +71,25 @@ public class PosadkaCvetov : MonoBehaviour
         radiusKisti = Mathf.Clamp(radiusKisti + delta, minRadius, maxRadius);
     }
 
+    private void SozdatKrugIndikator()
+    {
+        GameObject go = new GameObject("KrugKisti_Indikator");
+        go.transform.SetParent(transform, false);
+        krugIndikator = go.AddComponent<LineRenderer>();
+        krugIndikator.positionCount = 36;
+        krugIndikator.useWorldSpace = true;
+        krugIndikator.startWidth = 0.02f;
+        krugIndikator.endWidth = 0.02f;
+        krugIndikator.loop = true;
+        
+        if (materialLucha != null) krugIndikator.material = materialLucha;
+        else krugIndikator.material = luch.material;
+        
+        krugIndikator.enabled = false;
+    }
+
     void OnEnable() { if (deistvie != null) { deistvie.performed += ObrabotatNazhatie; deistvie.Enable(); } }
-    void OnDisable() { if (deistvie != null) deistvie.performed -= ObrabotatNazhatie; if (luch != null) luch.enabled = false; SpryatatPrizrak(); }
+    void OnDisable() { if (deistvie != null) deistvie.performed -= ObrabotatNazhatie; if (luch != null) luch.enabled = false; SpryatatPrizrak(); if(krugIndikator != null) krugIndikator.enabled = false; }
 
     void LateUpdate()
     {
@@ -106,14 +127,27 @@ public class PosadkaCvetov : MonoBehaviour
                     GameObject uzheEst = NaytiTsvetok(klumba, hit.point, radiusSushchestvuyushchego);
                     moznoPosadit = (uzheEst == null);
 
-                    if (moznoPosadit) PokazatPrizrak(prefab, hit.point);
-                    else SpryatatPrizrak();
+                    if (moznoPosadit) 
+                    {
+                        PokazatPrizrak(prefab, hit.point);
+                        PokazatKrug(hit.point);
+                    }
+                    else 
+                    {
+                        SpryatatPrizrak();
+                        SpryatatKrug();
+                    }
                 }
-                else { popal = false; SpryatatPrizrak(); }
+                else
+                {
+                    popal = false;
+                    SpryatatPrizrak();
+                    SpryatatKrug();
+                }
             }
-            else SpryatatPrizrak();
+            else { SpryatatPrizrak(); SpryatatKrug(); }
         }
-        else SpryatatPrizrak();
+        else { SpryatatPrizrak(); SpryatatKrug(); }
 
         luch.SetPosition(0, nachalo);
         luch.SetPosition(1, konets);
@@ -124,6 +158,7 @@ public class PosadkaCvetov : MonoBehaviour
     {
         if (luch.enabled) luch.enabled = false;
         SpryatatPrizrak();
+        SpryatatKrug();
     }
 
     private void ObrabotatNazhatie(InputAction.CallbackContext ctx)
@@ -164,14 +199,41 @@ public class PosadkaCvetov : MonoBehaviour
             if (Mathf.Abs(localPos.x) <= maxX && Mathf.Abs(localPos.z) <= maxZ)
             {
                 tochkaSpavna.y = tochkaPopadaniya.y; 
+                
                 GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaSpavna, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
                 novoe.name = VyborInstrumenta.TekushiyPrefab.name;
+                
                 Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
                 if (nas != null) nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
             }
         }
+        
         moznoPosadit = false;
         SpryatatPrizrak();
+        SpryatatKrug();
+    }
+
+    private void PokazatKrug(Vector3 centr)
+    {
+        if (krugIndikator == null) return;
+        krugIndikator.enabled = true;
+        
+        int segments = krugIndikator.positionCount;
+        float angle = 0f;
+        float step = 360f / segments;
+
+        for (int i = 0; i < segments; i++)
+        {
+            float x = Mathf.Sin(Mathf.Deg2Rad * angle) * radiusKisti;
+            float z = Mathf.Cos(Mathf.Deg2Rad * angle) * radiusKisti;
+            krugIndikator.SetPosition(i, centr + new Vector3(x, 0.02f, z));
+            angle += step;
+        }
+    }
+
+    private void SpryatatKrug()
+    {
+        if (krugIndikator != null) krugIndikator.enabled = false;
     }
 
     private void Vybrat(GameObject tsvetok)
@@ -179,7 +241,9 @@ public class PosadkaCvetov : MonoBehaviour
         SnatPodsvetku();
         vybrannoe = tsvetok;
         if (vybrannoe == null) return;
+
         vybrannoe.transform.localScale = vybrannoe.transform.localScale * mnozhitelPodsvetki;
+        Debug.Log("[Vybor] Selected flower: " + vybrannoe.name);
     }
 
     private void SnatPodsvetku()
