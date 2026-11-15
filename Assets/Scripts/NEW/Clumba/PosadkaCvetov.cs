@@ -11,21 +11,22 @@ public class PosadkaCvetov : MonoBehaviour
     public Color tsvetPopal = Color.green;
     public Color tsvetNePopal = Color.red;
 
-    [Header("Ввод")]
+    [Header("Input")]
     public InputActionAsset naborDeistvii;
     public string imyaKarty = "XRI Left Interaction";
     public string imyaDeistviya = "PlaceFlower";
 
-<<<<<<< HEAD
-    [Header("Радиус поиска уже посаженного цветка (м)")]
-    public float radiusSushchestvuyushchego = 0.4f;
+    [Header("Brush Settings (Task 3.1)")]
+    public float radiusKisti = 0.5f;
+    public int kolichestvoCvetov = 5;
+    public float minRadius = 0.2f;
+    public float maxRadius = 2.0f;
 
-    [Header("Двойной клик для выбора (сек)")]
+    [Header("Double Click (Task 3.3)")]
+    public float radiusSushchestvuyushchego = 0.3f;
     public float oknoDvoynogoKlika = 0.35f;
     public float mnozhitelPodsvetki = 1.15f;
 
-=======
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
     private LineRenderer luch;
     private Material matLuchKopiya;
     private InputAction deistvie;
@@ -33,15 +34,15 @@ public class PosadkaCvetov : MonoBehaviour
     private GameObject prefabPrizrak;
     private KlumbaTile tekushayaKlumba;
     private Vector3 tochkaPopadaniya;
-<<<<<<< HEAD
     private bool moznoPosadit = false;
 
-    // Для дабл-клика
     private float vremyaPoslednegoKlika = -10f;
     private GameObject kandidatVybor;
     private GameObject vybrannoe;
-=======
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
+
+    // Р”Р»СЏ РёРЅРґРёРєР°С‚РѕСЂР° РєСЂСѓРіР° (Task 3.2)
+    private LineRenderer krugIndikator;
+    private const string KATEGORIYA_CVETY = "\u0426\u0432\u0435\u0442\u044b";
 
     void Awake()
     {
@@ -56,6 +57,8 @@ public class PosadkaCvetov : MonoBehaviour
         else { Shader s = Shader.Find("Universal Render Pipeline/Unlit"); if (s != null) luch.material = new Material(s); }
         matLuchKopiya = luch.material;
 
+        SozdatKrugIndikator();
+
         if (naborDeistvii != null)
         {
             var k = naborDeistvii.FindActionMap(imyaKarty);
@@ -63,125 +66,107 @@ public class PosadkaCvetov : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
+    public void IzmenitRadius(float delta)
+    {
+        radiusKisti = Mathf.Clamp(radiusKisti + delta, minRadius, maxRadius);
+    }
+
+    private void SozdatKrugIndikator()
+    {
+        GameObject go = new GameObject("KrugKisti_Indikator");
+        go.transform.SetParent(transform, false);
+        krugIndikator = go.AddComponent<LineRenderer>();
+        krugIndikator.positionCount = 36;
+        krugIndikator.useWorldSpace = true;
+        krugIndikator.startWidth = 0.02f;
+        krugIndikator.endWidth = 0.02f;
+        krugIndikator.loop = true;
+        
+        if (materialLucha != null) krugIndikator.material = materialLucha;
+        else krugIndikator.material = luch.material;
+        
+        krugIndikator.enabled = false;
+    }
+
     void OnEnable() { if (deistvie != null) { deistvie.performed += ObrabotatNazhatie; deistvie.Enable(); } }
-    void OnDisable() { if (deistvie != null) deistvie.performed -= ObrabotatNazhatie; if (luch != null) luch.enabled = false; SpryatatPrizrak(); }
-=======
-    void OnEnable() { if (deistvie != null) { deistvie.performed += Posadit; deistvie.Enable(); } }
-    void OnDisable() { if (deistvie != null) deistvie.performed -= Posadit; if (luch != null) luch.enabled = false; SpryatatPrizrak(); }
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
+    void OnDisable() { if (deistvie != null) deistvie.performed -= ObrabotatNazhatie; if (luch != null) luch.enabled = false; SpryatatPrizrak(); if(krugIndikator != null) krugIndikator.enabled = false; }
 
     void LateUpdate()
     {
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
 
-<<<<<<< HEAD
-        if (prefab == null) { if (luch.enabled) luch.enabled = false; SpryatatPrizrak(); return; }
+        if (prefab == null) { Otklonit(); return; }
 
         Nasazhdenie nas = prefab.GetComponent<Nasazhdenie>();
-        if (nas == null || nas.kategoriya != "Цветы") { if (luch.enabled) luch.enabled = false; SpryatatPrizrak(); return; }
-=======
-        if (prefab == null)
-        {
-            if (luch.enabled) luch.enabled = false;
-            SpryatatPrizrak();
-            return;
-        }
-
-        Nasazhdenie nas = prefab.GetComponent<Nasazhdenie>();
-        if (nas == null || nas.kategoriya != "Цветы")
-        {
-            if (luch.enabled) luch.enabled = false;
-            SpryatatPrizrak();
-            return;
-        }
-
-        if (SostoyanieMenyu.AnyMenuOpen)
-        {
-            if (luch.enabled) luch.enabled = false;
-            SpryatatPrizrak();
-            return;
-        }
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
+        if (nas == null || nas.kategoriya != KATEGORIYA_CVETY) { Otklonit(); return; }
 
         if (!luch.enabled) luch.enabled = true;
 
         Transform start = tochkaStarta != null ? tochkaStarta : transform;
         Vector3 nachalo = start.position, napravlenie = start.forward, konets = nachalo + napravlenie * dlinaLucha;
         bool popal = false;
-<<<<<<< HEAD
         moznoPosadit = false;
-=======
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
 
         if (Physics.Raycast(nachalo, napravlenie, out RaycastHit hit, dlinaLucha, ~0, QueryTriggerInteraction.Ignore))
         {
             KlumbaTile klumba = hit.collider.GetComponentInParent<KlumbaTile>();
             if (klumba != null)
             {
-<<<<<<< HEAD
                 Vector3 localHit = klumba.transform.InverseTransformPoint(hit.point);
-                // Учитываем реальную толщину забора (кладка из кубиков)
                 float otstup = Mathf.Max(klumba.tolshinaZabora, klumba.razmerKubika * 0.5f) + 0.02f;
-=======
-                // ПРОВЕРКА: не попали ли мы в заборчик
-                Vector3 localHit = klumba.transform.InverseTransformPoint(hit.point);
-
-                // Оставляем отступ от края (толщина забора + 2 см)
-                float otstup = klumba.tolshinaZabora + 0.02f;
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
                 float maxX = (klumba.shirina / 2f) - otstup;
                 float maxZ = (klumba.dlina / 2f) - otstup;
 
                 if (Mathf.Abs(localHit.x) <= maxX && Mathf.Abs(localHit.z) <= maxZ)
                 {
-<<<<<<< HEAD
-=======
-                    // Попали внутрь клумбы
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
                     popal = true;
                     tekushayaKlumba = klumba;
                     tochkaPopadaniya = hit.point;
                     konets = hit.point;
-<<<<<<< HEAD
 
                     GameObject uzheEst = NaytiTsvetok(klumba, hit.point, radiusSushchestvuyushchego);
                     moznoPosadit = (uzheEst == null);
 
-                    if (moznoPosadit) PokazatPrizrak(prefab, hit.point);
-                    else SpryatatPrizrak();
+                    if (moznoPosadit) 
+                    {
+                        PokazatPrizrak(prefab, hit.point);
+                        PokazatKrug(hit.point);
+                    }
+                    else 
+                    {
+                        SpryatatPrizrak();
+                        SpryatatKrug();
+                    }
                 }
                 else
                 {
-=======
-                    PokazatPrizrak(prefab, hit.point);
-                }
-                else
-                {
-                    // Попали в заборчик или слишком близко к краю
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
                     popal = false;
                     SpryatatPrizrak();
+                    SpryatatKrug();
                 }
             }
-            else SpryatatPrizrak();
+            else { SpryatatPrizrak(); SpryatatKrug(); }
         }
-        else SpryatatPrizrak();
+        else { SpryatatPrizrak(); SpryatatKrug(); }
 
         luch.SetPosition(0, nachalo);
         luch.SetPosition(1, konets);
-<<<<<<< HEAD
         UstanovitTsvetLucha((popal && moznoPosadit) ? tsvetPopal : tsvetNePopal);
     }
 
-    // Обработка нажатия: либо сажаем, либо ловим дабл-клик на выбор
+    private void Otklonit()
+    {
+        if (luch.enabled) luch.enabled = false;
+        SpryatatPrizrak();
+        SpryatatKrug();
+    }
+
     private void ObrabotatNazhatie(InputAction.CallbackContext ctx)
     {
         if (VyborInstrumenta.TekushiyPrefab == null || tekushayaKlumba == null) return;
 
         GameObject uzheEst = NaytiTsvetok(tekushayaKlumba, tochkaPopadaniya, radiusSushchestvuyushchego);
 
-        // Если попали в уже существующий цветок — логика выбора (дабл-клик)
         if (uzheEst != null)
         {
             float now = Time.time;
@@ -196,19 +181,59 @@ public class PosadkaCvetov : MonoBehaviour
                 kandidatVybor = uzheEst;
                 vremyaPoslednegoKlika = now;
             }
-            return; // На существующий цветок новый не сажаем
+            return;
         }
 
-        // Если попали на пустое место — сажаем
         if (!moznoPosadit) return;
 
-        GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaPopadaniya, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
-        novoe.name = VyborInstrumenta.TekushiyPrefab.name;
+        for (int i = 0; i < kolichestvoCvetov; i++)
+        {
+            Vector2 sluchaynayaTochka = Random.insideUnitCircle * radiusKisti;
+            Vector3 tochkaSpavna = tochkaPopadaniya + new Vector3(sluchaynayaTochka.x, 0, sluchaynayaTochka.y);
 
-        Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
-        if (nas != null) nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
+            Vector3 localPos = tekushayaKlumba.transform.InverseTransformPoint(tochkaSpavna);
+            float otstup = Mathf.Max(tekushayaKlumba.tolshinaZabora, tekushayaKlumba.razmerKubika * 0.5f) + 0.02f;
+            float maxX = (tekushayaKlumba.shirina / 2f) - otstup;
+            float maxZ = (tekushayaKlumba.dlina / 2f) - otstup;
 
+            if (Mathf.Abs(localPos.x) <= maxX && Mathf.Abs(localPos.z) <= maxZ)
+            {
+                tochkaSpavna.y = tochkaPopadaniya.y; 
+                
+                GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaSpavna, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
+                novoe.name = VyborInstrumenta.TekushiyPrefab.name;
+                
+                Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
+                if (nas != null) nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
+            }
+        }
+        
         moznoPosadit = false;
+        SpryatatPrizrak();
+        SpryatatKrug();
+    }
+
+    private void PokazatKrug(Vector3 centr)
+    {
+        if (krugIndikator == null) return;
+        krugIndikator.enabled = true;
+        
+        int segments = krugIndikator.positionCount;
+        float angle = 0f;
+        float step = 360f / segments;
+
+        for (int i = 0; i < segments; i++)
+        {
+            float x = Mathf.Sin(Mathf.Deg2Rad * angle) * radiusKisti;
+            float z = Mathf.Cos(Mathf.Deg2Rad * angle) * radiusKisti;
+            krugIndikator.SetPosition(i, centr + new Vector3(x, 0.02f, z));
+            angle += step;
+        }
+    }
+
+    private void SpryatatKrug()
+    {
+        if (krugIndikator != null) krugIndikator.enabled = false;
     }
 
     private void Vybrat(GameObject tsvetok)
@@ -218,7 +243,7 @@ public class PosadkaCvetov : MonoBehaviour
         if (vybrannoe == null) return;
 
         vybrannoe.transform.localScale = vybrannoe.transform.localScale * mnozhitelPodsvetki;
-        Debug.Log("[Vybor] Выбран цветок: " + vybrannoe.name);
+        Debug.Log("[Vybor] Selected flower: " + vybrannoe.name);
     }
 
     private void SnatPodsvetku()
@@ -240,22 +265,6 @@ public class PosadkaCvetov : MonoBehaviour
             if (d < minSqr) { minSqr = d; blizhayshiy = t.gameObject; }
         }
         return blizhayshiy;
-=======
-        UstanovitTsvetLucha(popal ? tsvetPopal : tsvetNePopal);
-    }
-
-    private void Posadit(InputAction.CallbackContext ctx)
-    {
-        if (SostoyanieMenyu.AnyMenuOpen) return;
-        if (VyborInstrumenta.TekushiyPrefab != null && tekushayaKlumba != null)
-        {
-            GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaPopadaniya, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
-            novoe.name = VyborInstrumenta.TekushiyPrefab.name;
-
-            Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
-            if (nas != null) nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
-        }
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
     }
 
     private void UstanovitTsvetLucha(Color c)
