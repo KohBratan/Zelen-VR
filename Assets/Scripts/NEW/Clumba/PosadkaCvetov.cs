@@ -11,21 +11,13 @@ public class PosadkaCvetov : MonoBehaviour
     public Color tsvetPopal = Color.green;
     public Color tsvetNePopal = Color.red;
 
-    [Header("Input")]
+    [Header("����������� ���������� ����� ������� (0 - ��� ��������)")]
+    public float minimalnoeRasstoyanieMezhduCvetami = 0.1f;
+
+    [Header("����")]
     public InputActionAsset naborDeistvii;
     public string imyaKarty = "XRI Left Interaction";
     public string imyaDeistviya = "PlaceFlower";
-
-    [Header("Brush Settings (Task 3.1)")]
-    public float radiusKisti = 0.5f;
-    public int kolichestvoCvetov = 5;
-    public float minRadius = 0.2f;
-    public float maxRadius = 2.0f;
-
-    [Header("Double Click (Task 3.3)")]
-    public float radiusSushchestvuyushchego = 0.3f;
-    public float oknoDvoynogoKlika = 0.35f;
-    public float mnozhitelPodsvetki = 1.15f;
 
     private LineRenderer luch;
     private Material matLuchKopiya;
@@ -34,15 +26,7 @@ public class PosadkaCvetov : MonoBehaviour
     private GameObject prefabPrizrak;
     private KlumbaTile tekushayaKlumba;
     private Vector3 tochkaPopadaniya;
-    private bool moznoPosadit = false;
-
-    private float vremyaPoslednegoKlika = -10f;
-    private GameObject kandidatVybor;
-    private GameObject vybrannoe;
-
-    // Для индикатора круга (Task 3.2)
-    private LineRenderer krugIndikator;
-    private const string KATEGORIYA_CVETY = "\u0426\u0432\u0435\u0442\u044b";
+    private bool mozhnoPosadit;
 
     void Awake()
     {
@@ -57,8 +41,6 @@ public class PosadkaCvetov : MonoBehaviour
         else { Shader s = Shader.Find("Universal Render Pipeline/Unlit"); if (s != null) luch.material = new Material(s); }
         matLuchKopiya = luch.material;
 
-        SozdatKrugIndikator();
-
         if (naborDeistvii != null)
         {
             var k = naborDeistvii.FindActionMap(imyaKarty);
@@ -66,205 +48,110 @@ public class PosadkaCvetov : MonoBehaviour
         }
     }
 
-    public void IzmenitRadius(float delta)
-    {
-        radiusKisti = Mathf.Clamp(radiusKisti + delta, minRadius, maxRadius);
-    }
-
-    private void SozdatKrugIndikator()
-    {
-        GameObject go = new GameObject("KrugKisti_Indikator");
-        go.transform.SetParent(transform, false);
-        krugIndikator = go.AddComponent<LineRenderer>();
-        krugIndikator.positionCount = 36;
-        krugIndikator.useWorldSpace = true;
-        krugIndikator.startWidth = 0.02f;
-        krugIndikator.endWidth = 0.02f;
-        krugIndikator.loop = true;
-        
-        if (materialLucha != null) krugIndikator.material = materialLucha;
-        else krugIndikator.material = luch.material;
-        
-        krugIndikator.enabled = false;
-    }
-
-    void OnEnable() { if (deistvie != null) { deistvie.performed += ObrabotatNazhatie; deistvie.Enable(); } }
-    void OnDisable() { if (deistvie != null) deistvie.performed -= ObrabotatNazhatie; if (luch != null) luch.enabled = false; SpryatatPrizrak(); if(krugIndikator != null) krugIndikator.enabled = false; }
+    void OnEnable() { if (deistvie != null) { deistvie.performed += Posadit; deistvie.Enable(); } }
+    void OnDisable() { if (deistvie != null) deistvie.performed -= Posadit; if (luch != null) luch.enabled = false; SpryatatPrizrak(); }
 
     void LateUpdate()
     {
+        // ���������� ��������� ������������ �� ������ �����. ����� �����
+        // ������� ��������� �� ������ ������ ���������� ������ ����� �
+        // ���������� �����, ���� ����� ��� ��� ������ �� ��������.
+        mozhnoPosadit = false;
+        tekushayaKlumba = null;
+
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
 
-        if (prefab == null) { Otklonit(); return; }
+        if (prefab == null)
+        {
+            if (luch.enabled) luch.enabled = false;
+            SpryatatPrizrak();
+            return;
+        }
 
         Nasazhdenie nas = prefab.GetComponent<Nasazhdenie>();
-        if (nas == null || nas.kategoriya != KATEGORIYA_CVETY) { Otklonit(); return; }
+        if (nas == null || nas.kategoriya != "�����")
+        {
+            if (luch.enabled) luch.enabled = false;
+            SpryatatPrizrak();
+            return;
+        }
 
         if (!luch.enabled) luch.enabled = true;
 
         Transform start = tochkaStarta != null ? tochkaStarta : transform;
         Vector3 nachalo = start.position, napravlenie = start.forward, konets = nachalo + napravlenie * dlinaLucha;
         bool popal = false;
-        moznoPosadit = false;
 
         if (Physics.Raycast(nachalo, napravlenie, out RaycastHit hit, dlinaLucha, ~0, QueryTriggerInteraction.Ignore))
         {
             KlumbaTile klumba = hit.collider.GetComponentInParent<KlumbaTile>();
             if (klumba != null)
             {
+                // ��������: �� ������ �� �� � ��������
                 Vector3 localHit = klumba.transform.InverseTransformPoint(hit.point);
-                float otstup = Mathf.Max(klumba.tolshinaZabora, klumba.razmerKubika * 0.5f) + 0.02f;
+
+                // ��������� ������ �� ���� (������� ������ + 2 ��)
+                float otstup = klumba.tolshinaZabora + 0.02f;
                 float maxX = (klumba.shirina / 2f) - otstup;
                 float maxZ = (klumba.dlina / 2f) - otstup;
 
                 if (Mathf.Abs(localHit.x) <= maxX && Mathf.Abs(localHit.z) <= maxZ)
                 {
+                    // ������ ������ ������
                     popal = true;
+                    mozhnoPosadit = true;
                     tekushayaKlumba = klumba;
                     tochkaPopadaniya = hit.point;
                     konets = hit.point;
-
-                    GameObject uzheEst = NaytiTsvetok(klumba, hit.point, radiusSushchestvuyushchego);
-                    moznoPosadit = (uzheEst == null);
-
-                    if (moznoPosadit) 
-                    {
-                        PokazatPrizrak(prefab, hit.point);
-                        PokazatKrug(hit.point);
-                    }
-                    else 
-                    {
-                        SpryatatPrizrak();
-                        SpryatatKrug();
-                    }
+                    PokazatPrizrak(prefab, hit.point);
                 }
                 else
                 {
+                    // ������ � �������� ��� ������� ������ � ����
                     popal = false;
                     SpryatatPrizrak();
-                    SpryatatKrug();
                 }
             }
-            else { SpryatatPrizrak(); SpryatatKrug(); }
+            else SpryatatPrizrak();
         }
-        else { SpryatatPrizrak(); SpryatatKrug(); }
+        else SpryatatPrizrak();
 
         luch.SetPosition(0, nachalo);
         luch.SetPosition(1, konets);
-        UstanovitTsvetLucha((popal && moznoPosadit) ? tsvetPopal : tsvetNePopal);
+        UstanovitTsvetLucha(popal ? tsvetPopal : tsvetNePopal);
     }
 
-    private void Otklonit()
+    private void Posadit(InputAction.CallbackContext ctx)
     {
-        if (luch.enabled) luch.enabled = false;
-        SpryatatPrizrak();
-        SpryatatKrug();
-    }
-
-    private void ObrabotatNazhatie(InputAction.CallbackContext ctx)
-    {
+        // ������ ������ ���� � ������� ����� ��� ������������� ����� ������
+        // ������. ��� ����� ����� ����� ������� ��������� ����� �������������
+        // � ����� � ��� �� ����� ��� ������ ������� ��������.
+        if (!mozhnoPosadit) return;
         if (VyborInstrumenta.TekushiyPrefab == null || tekushayaKlumba == null) return;
 
-        GameObject uzheEst = NaytiTsvetok(tekushayaKlumba, tochkaPopadaniya, radiusSushchestvuyushchego);
+        if (EstCvetRyadom()) return;
 
-        if (uzheEst != null)
+        GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaPopadaniya, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
+        novoe.name = VyborInstrumenta.TekushiyPrefab.name;
+
+        Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
+        if (nas != null) nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
+    }
+
+    // ���������, ��� �� ��� ����������� ������ ������� ������ � ����� �������.
+    // �������������� ������ �� ��������� ���������� ������ � ����� �����.
+    private bool EstCvetRyadom()
+    {
+        if (minimalnoeRasstoyanieMezhduCvetami <= 0f) return false;
+
+        Collider[] kollajdery = Physics.OverlapSphere(tochkaPopadaniya, minimalnoeRasstoyanieMezhduCvetami);
+        foreach (var col in kollajdery)
         {
-            float now = Time.time;
-            if (kandidatVybor == uzheEst && now - vremyaPoslednegoKlika <= oknoDvoynogoKlika)
-            {
-                Vybrat(uzheEst);
-                vremyaPoslednegoKlika = -10f;
-                kandidatVybor = null;
-            }
-            else
-            {
-                kandidatVybor = uzheEst;
-                vremyaPoslednegoKlika = now;
-            }
-            return;
+            Nasazhdenie sosed = col.GetComponentInParent<Nasazhdenie>();
+            if (sosed != null && sosed.transform.IsChildOf(tekushayaKlumba.kontejnerCvetov))
+                return true;
         }
-
-        if (!moznoPosadit) return;
-
-        for (int i = 0; i < kolichestvoCvetov; i++)
-        {
-            Vector2 sluchaynayaTochka = Random.insideUnitCircle * radiusKisti;
-            Vector3 tochkaSpavna = tochkaPopadaniya + new Vector3(sluchaynayaTochka.x, 0, sluchaynayaTochka.y);
-
-            Vector3 localPos = tekushayaKlumba.transform.InverseTransformPoint(tochkaSpavna);
-            float otstup = Mathf.Max(tekushayaKlumba.tolshinaZabora, tekushayaKlumba.razmerKubika * 0.5f) + 0.02f;
-            float maxX = (tekushayaKlumba.shirina / 2f) - otstup;
-            float maxZ = (tekushayaKlumba.dlina / 2f) - otstup;
-
-            if (Mathf.Abs(localPos.x) <= maxX && Mathf.Abs(localPos.z) <= maxZ)
-            {
-                tochkaSpavna.y = tochkaPopadaniya.y; 
-                
-                GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaSpavna, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
-                novoe.name = VyborInstrumenta.TekushiyPrefab.name;
-                
-                Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
-                if (nas != null) nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
-            }
-        }
-        
-        moznoPosadit = false;
-        SpryatatPrizrak();
-        SpryatatKrug();
-    }
-
-    private void PokazatKrug(Vector3 centr)
-    {
-        if (krugIndikator == null) return;
-        krugIndikator.enabled = true;
-        
-        int segments = krugIndikator.positionCount;
-        float angle = 0f;
-        float step = 360f / segments;
-
-        for (int i = 0; i < segments; i++)
-        {
-            float x = Mathf.Sin(Mathf.Deg2Rad * angle) * radiusKisti;
-            float z = Mathf.Cos(Mathf.Deg2Rad * angle) * radiusKisti;
-            krugIndikator.SetPosition(i, centr + new Vector3(x, 0.02f, z));
-            angle += step;
-        }
-    }
-
-    private void SpryatatKrug()
-    {
-        if (krugIndikator != null) krugIndikator.enabled = false;
-    }
-
-    private void Vybrat(GameObject tsvetok)
-    {
-        SnatPodsvetku();
-        vybrannoe = tsvetok;
-        if (vybrannoe == null) return;
-
-        vybrannoe.transform.localScale = vybrannoe.transform.localScale * mnozhitelPodsvetki;
-        Debug.Log("[Vybor] Selected flower: " + vybrannoe.name);
-    }
-
-    private void SnatPodsvetku()
-    {
-        if (vybrannoe == null) return;
-        vybrannoe.transform.localScale = vybrannoe.transform.localScale / mnozhitelPodsvetki;
-        vybrannoe = null;
-    }
-
-    private GameObject NaytiTsvetok(KlumbaTile klumba, Vector3 tochka, float radius)
-    {
-        if (klumba.kontejnerCvetov == null) return null;
-        GameObject blizhayshiy = null;
-        float minSqr = radius * radius;
-        foreach (Transform t in klumba.kontejnerCvetov)
-        {
-            if (t == null) continue;
-            float d = (t.position - tochka).sqrMagnitude;
-            if (d < minSqr) { minSqr = d; blizhayshiy = t.gameObject; }
-        }
-        return blizhayshiy;
+        return false;
     }
 
     private void UstanovitTsvetLucha(Color c)
