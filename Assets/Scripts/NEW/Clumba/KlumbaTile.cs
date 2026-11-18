@@ -16,18 +16,14 @@ public class KlumbaTile : MonoBehaviour
     public GameObject prefabKub;
     public float vysotaZabora = 0.3f;
     public float tolshinaZabora = 0.05f;
-    [Tooltip("На сколько опустить забор под землю")]
-<<<<<<< HEAD
-    public float pogruzhenieVPochvu = 0.15f;
+    [Tooltip("Фиксированная координата забора по Y")]
+    public float koordinataZaboraY = -100f;
 
     [Header("Кладка забора из кубиков")]
     [Tooltip("Размер одного кубика в плане (м). Префаб кубика должен иметь localScale = 1,1,1")]
     public float razmerKubika = 0.2f;
     [Tooltip("Зазор между кубиками (м)")]
     public float shovKladki = 0.005f;
-=======
-    public float pogruzhenieVPochvu = 0.15f; // <--- НОВОЕ ПОЛЕ
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
 
     [Header("Материалы для смены цвета")]
     public Material[] materialyZabora;
@@ -53,12 +49,8 @@ public class KlumbaTile : MonoBehaviour
     private float yakorLokalnyyX;
     private float yakorLokalnyyZ;
 
-<<<<<<< HEAD
     private Transform kontZabora;
     private List<GameObject> kubiki = new List<GameObject>();
-=======
-    private Transform[] steny = new Transform[4];
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
 
     public bool Rastyagivaetsya => rastyagivaem;
 
@@ -76,7 +68,6 @@ public class KlumbaTile : MonoBehaviour
             kontejnerCvetov = go.transform;
         }
 
-<<<<<<< HEAD
         Transform existing = transform.Find("Zabor");
         if (existing != null)
         {
@@ -93,19 +84,6 @@ public class KlumbaTile : MonoBehaviour
             GameObject kont = new GameObject("Zabor");
             kont.transform.SetParent(transform, false);
             kontZabora = kont.transform;
-=======
-        if (prefabKub != null)
-        {
-            GameObject kont = new GameObject("Zabor");
-            kont.transform.SetParent(transform, false);
-
-            for (int i = 0; i < 4; i++)
-            {
-                GameObject stena = Instantiate(prefabKub, kont.transform);
-                stena.name = "Stena_" + i;
-                steny[i] = stena.transform;
-            }
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
         }
     }
 
@@ -177,23 +155,19 @@ public class KlumbaTile : MonoBehaviour
         if (boxCollider == null) return;
         Bounds b = mesh.bounds;
         boxCollider.center = new Vector3(b.center.x, b.center.y + vysotaKollaydera / 2f, b.center.z);
-<<<<<<< HEAD
         boxCollider.size = new Vector3(
             Mathf.Max(b.size.x, 0.1f),
             Mathf.Max(b.size.y + vysotaKollaydera, vysotaKollaydera),
             Mathf.Max(b.size.z, 0.1f)
         );
-=======
-        boxCollider.size = new Vector3(Mathf.Max(b.size.x, 0.1f), Mathf.Max(b.size.y + vysotaKollaydera, vysotaKollaydera), Mathf.Max(b.size.z, 0.1f));
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
     }
 
     private void ObnovitZabor()
     {
-<<<<<<< HEAD
         if (kontZabora == null || prefabKub == null) return;
 
-        float h = (vysotaZabora / 2f) - pogruzhenieVPochvu;
+        // Задача 4 спринта: забор клумбы углубляется в землю до Y = -100.
+        float h = koordinataZaboraY;
         float x = shirina / 2f;
         float z = dlina / 2f;
 
@@ -246,63 +220,21 @@ public class KlumbaTile : MonoBehaviour
             g.transform.localRotation = Quaternion.identity;
             g.transform.localScale = scale;
         }
-=======
-        if (steny[0] == null) return;
-
-        float x = shirina / 2f;
-        float z = dlina / 2f;
-
-        // Опускаем забор под землю
-        float h = (vysotaZabora / 2f) - pogruzhenieVPochvu;
-
-        steny[0].localPosition = new Vector3(0, h, z);
-        steny[0].localScale = new Vector3(shirina, vysotaZabora, tolshinaZabora);
-
-        steny[1].localPosition = new Vector3(0, h, -z);
-        steny[1].localScale = new Vector3(shirina, vysotaZabora, tolshinaZabora);
-
-        steny[2].localPosition = new Vector3(x, h, 0);
-        steny[2].localScale = new Vector3(tolshinaZabora, vysotaZabora, dlina);
-
-        steny[3].localPosition = new Vector3(-x, h, 0);
-        steny[3].localScale = new Vector3(tolshinaZabora, vysotaZabora, dlina);
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
     }
 
     private void UdalitCvetyZaGranitsami()
     {
         if (kontejnerCvetov == null) return;
-<<<<<<< HEAD
         float halfX = shirina / 2f;
         float halfZ = dlina / 2f;
         List<GameObject> udalit = new List<GameObject>();
-=======
-
-        float halfX = shirina / 2f;
-        float halfZ = dlina / 2f;
-
-        List<GameObject> udalit = new List<GameObject>();
-
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
         foreach (Transform child in kontejnerCvetov)
         {
             Vector3 localPos = child.localPosition;
             if (Mathf.Abs(localPos.x) > halfX || Mathf.Abs(localPos.z) > halfZ)
-<<<<<<< HEAD
                 udalit.Add(child.gameObject);
         }
         foreach (var obj in udalit) Destroy(obj);
-=======
-            {
-                udalit.Add(child.gameObject);
-            }
-        }
-
-        foreach (var obj in udalit)
-        {
-            Destroy(obj);
-        }
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
     }
 
     public void SmenitTsvet()
@@ -313,7 +245,6 @@ public class KlumbaTile : MonoBehaviour
         Material noviyMat = materialyZabora[tekushiyTsvetIndex];
 
         List<Renderer> rends = new List<Renderer>();
-<<<<<<< HEAD
         foreach (var k in kubiki)
         {
             if (k == null) continue;
@@ -323,19 +254,6 @@ public class KlumbaTile : MonoBehaviour
                 r.SetPropertyBlock(null);
                 r.material = noviyMat;
                 rends.Add(r);
-=======
-        foreach (var s in steny)
-        {
-            if (s != null)
-            {
-                Renderer[] rs = s.GetComponentsInChildren<Renderer>();
-                foreach (var r in rs)
-                {
-                    r.SetPropertyBlock(null);
-                    r.material = noviyMat;
-                    rends.Add(r);
-                }
->>>>>>> 80acacfca905617c4b4f9a11aa0eea92352ec13c
             }
         }
 
