@@ -16,6 +16,9 @@ public class PosadkaCvetov : MonoBehaviour
     public Color tsvetPopal = Color.green;
     public Color tsvetNePopal = Color.red;
 
+    [Header("Минимальное расстояние между цветами (0 - без проверки)")]
+    public float minimalnoeRasstoyanieMezhduCvetami = 0.1f;
+
     [Header("Ввод")]
     public InputActionAsset naborDeistvii;
     public string imyaKarty = "XRI Left Interaction";
@@ -28,6 +31,7 @@ public class PosadkaCvetov : MonoBehaviour
     private GameObject prefabPrizrak;
     private KlumbaTile tekushayaKlumba;
     private Vector3 tochkaPopadaniya;
+    private bool mozhnoPosadit;
 
     void Awake()
     {
@@ -54,6 +58,12 @@ public class PosadkaCvetov : MonoBehaviour
 
     void LateUpdate()
     {
+        // Сбрасываем состояние прицеливания на каждом кадре. Иначе после
+        // первого наведения на клумбу кнопка продолжает сажать цветы в
+        // устаревшую точку, даже когда луч уже никуда не попадает.
+        mozhnoPosadit = false;
+        tekushayaKlumba = null;
+
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
 
         if (prefab == null)
@@ -94,6 +104,7 @@ public class PosadkaCvetov : MonoBehaviour
                 {
                     // Попали внутрь клумбы
                     popal = true;
+                    mozhnoPosadit = true;
                     tekushayaKlumba = klumba;
                     tochkaPopadaniya = hit.point;
                     konets = hit.point;
@@ -117,14 +128,35 @@ public class PosadkaCvetov : MonoBehaviour
 
     private void Posadit(InputAction.CallbackContext ctx)
     {
-        if (VyborInstrumenta.TekushiyPrefab != null && tekushayaKlumba != null)
-        {
-            GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaPopadaniya, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
-            novoe.name = VyborInstrumenta.TekushiyPrefab.name;
+        // Сажаем только если в текущем кадре луч действительно попал внутрь
+        // клумбы. Без этого флага после первого наведения цветы дублировались
+        // в одной и той же точке при каждом нажатии триггера.
+        if (!mozhnoPosadit) return;
+        if (VyborInstrumenta.TekushiyPrefab == null || tekushayaKlumba == null) return;
 
-            Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
-            if (nas != null) nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
+        if (EstCvetRyadom()) return;
+
+        GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaPopadaniya, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
+        novoe.name = VyborInstrumenta.TekushiyPrefab.name;
+
+        Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
+        if (nas != null) nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
+    }
+
+    // Проверяет, нет ли уже посаженного цветка слишком близко к точке посадки.
+    // Дополнительная защита от появления нескольких цветов в одной точке.
+    private bool EstCvetRyadom()
+    {
+        if (minimalnoeRasstoyanieMezhduCvetami <= 0f) return false;
+
+        Collider[] kollajdery = Physics.OverlapSphere(tochkaPopadaniya, minimalnoeRasstoyanieMezhduCvetami);
+        foreach (var col in kollajdery)
+        {
+            Nasazhdenie sosed = col.GetComponentInParent<Nasazhdenie>();
+            if (sosed != null && sosed.transform.IsChildOf(tekushayaKlumba.kontejnerCvetov))
+                return true;
         }
+        return false;
     }
 
     private void UstanovitTsvetLucha(Color c)
