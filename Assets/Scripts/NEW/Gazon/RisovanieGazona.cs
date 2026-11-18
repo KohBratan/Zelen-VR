@@ -158,11 +158,12 @@ public class RisovanieGazona : MonoBehaviour
                 yacheyki.Remove(klyuch);
             }
 
-            bool yacheykaSvobodna = !yacheyki.ContainsKey(klyuch);
+            Vector3 tsentr = new Vector3((x + 0.5f) * razmerYacheyki, hit.point.y, (z + 0.5f) * razmerYacheyki);
+            bool yacheykaSvobodna = !yacheyki.ContainsKey(klyuch) &&
+                                    !ZapretPosadkiVKlumbu.PryamougolnikVKlumbe(tsentr, razmerYacheyki, razmerYacheyki);
 
             if (yacheykaSvobodna)
             {
-                Vector3 tsentr = new Vector3((x + 0.5f) * razmerYacheyki, hit.point.y, (z + 0.5f) * razmerYacheyki);
                 PokazatPrizrak(tsentr);
                 UstanovitTsvetLucha(tsvetPopal);
             }
@@ -210,6 +211,9 @@ public class RisovanieGazona : MonoBehaviour
         }
 
         Vector3 tsentr = new Vector3((x + 0.5f) * razmerYacheyki, tochka.y, (z + 0.5f) * razmerYacheyki);
+
+        // Проверяем всю ячейку, включая углы, а не только её центр.
+        if (ZapretPosadkiVKlumbu.PryamougolnikVKlumbe(tsentr, razmerYacheyki, razmerYacheyki)) return;
 
         GameObject gazon = Instantiate(VyborInstrumenta.TekushiyPrefab, tsentr, Quaternion.identity, kontejnerGazonov);
         gazon.name = "Gazon_" + x + "_" + z;

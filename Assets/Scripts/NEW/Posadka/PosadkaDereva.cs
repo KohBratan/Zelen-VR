@@ -152,13 +152,7 @@ public class PosadkaDereva : MonoBehaviour
     // Проверка, есть ли в этой точке клумба
     private bool EstLiKlumba(Vector3 tochka)
     {
-        // Сканируем сферу чуть выше земли, чтобы поймать коллайдер клумбы
-        Collider[] kollajdery = Physics.OverlapSphere(tochka + Vector3.up * 0.2f, 0.2f);
-        foreach (var col in kollajdery)
-        {
-            if (col.GetComponentInParent<KlumbaTile>() != null) return true;
-        }
-        return false;
+        return ZapretPosadkiVKlumbu.TochkaVKlumbe(tochka);
     }
 
     private bool MestoSvobodno(Vector3 pozitsiya, float radius, string kategoriyaStavim)
@@ -184,6 +178,14 @@ public class PosadkaDereva : MonoBehaviour
     private void NazhatieTriggera(InputAction.CallbackContext context)
     {
         if (!luchAktiven || !popalNaTerrein || !mestoSvobodno) return;
+
+        // Повторная проверка исключает посадку по устаревшей точке луча.
+        if (EstLiKlumba(tochkaPopadaniya))
+        {
+            mestoSvobodno = false;
+            SpryatPrizrak();
+            return;
+        }
 
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
         if (prefab == null || prefab.GetComponent<GazonTile>() != null) return;
