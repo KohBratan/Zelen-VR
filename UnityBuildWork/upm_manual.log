@@ -1,0 +1,16 @@
+[32minfo[39m:    Command-line: 'C:\\Program Files\\Unity\\Hub\\Editor\\2022.3.4f1\\Editor\\Data\\Resources\\PackageManager\\Server\\UnityPackageManager.exe' -s 1298 -ipc -ipc-path Upm-1298 -cl 4
+[32minfo[39m:    Detected environment variables:
+  GIT_TERMINAL_PROMPT=0
+[Unity Package Manager (Upm)]
+Application terminated due to an uncaught exception:
+  TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:387:5)
+    at validateString (node:internal/validators:162:11)
+    at Object.join (node:path:429:7)
+    at getLocalConfigFolder (C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Data\Resources\PackageManager\Server\server\app.js:226:1447)
+    at Object.readConfig (C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Data\Resources\PackageManager\Server\server\app.js:226:1950)
+    at Object.run (C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Data\Resources\PackageManager\Server\server\app.js:230:542)
+    at Object.<anonymous> (C:\Program Files\Unity\Hub\Editor\2022.3.4f1\Editor\Data\Resources\PackageManager\Server\server\app.js:230:1410)
+    at Module._compile (node:internal/modules/cjs/loader:1191:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1245:10)
+    at Module.load (node:internal/modules/cjs/loader:1069:32)
