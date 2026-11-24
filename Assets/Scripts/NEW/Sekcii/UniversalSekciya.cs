@@ -331,6 +331,44 @@ public class UniversalSekciya : MonoBehaviour
         ZapolnitPustotu();
     }
 
+    // Прижимает все деревья и кусты секции к поверхности земли.
+    // Нужно после масштабирования секции слайдером размера: при увеличении
+    // масштаба локальные координаты растений умножаются, и они начинают
+    // висеть в воздухе.
+    public void PrizhatRasteniyaKZemle()
+    {
+        PrizhatSpisokKZemle(derevya);
+        PrizhatSpisokKZemle(kusty);
+    }
+
+    private void PrizhatSpisokKZemle(List<GameObject> spisok)
+    {
+        foreach (var rastenie in spisok)
+        {
+            if (rastenie == null) continue;
+            Vector3 pos = rastenie.transform.position;
+            float zemlya = PoluchitVisotuZemli(pos);
+            rastenie.transform.position = new Vector3(pos.x, zemlya, pos.z);
+        }
+    }
+
+    // Высота земли под точкой: луч вниз, игнорируя любые насаждения
+    // (чтобы не встать на крону дерева, забор клумбы или подложку секции)
+    private float PoluchitVisotuZemli(Vector3 mirovaya)
+    {
+        RaycastHit[] hits = Physics.RaycastAll(mirovaya + Vector3.up * 100f, Vector3.down, 200f, ~0, QueryTriggerInteraction.Ignore);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (var h in hits)
+        {
+            if (h.collider.GetComponentInParent<Nasazhdenie>() != null) continue;
+            if (h.collider.GetComponentInParent<UniversalSekciya>() != null) continue;
+            if (h.collider.GetComponentInParent<KlumbaTile>() != null) continue;
+            if (h.collider.GetComponentInParent<GazonTile>() != null) continue;
+            return h.point.y;
+        }
+        return mirovaya.y;
+    }
+
     public void ZakonchitRastyagivanie()
     {
         if (!rastyagivaem) return;
@@ -343,5 +381,6 @@ public class UniversalSekciya : MonoBehaviour
 
         PostroitPodlozhku();
         ObnovitKollayder();
+        PrizhatRasteniyaKZemle();
     }
 }

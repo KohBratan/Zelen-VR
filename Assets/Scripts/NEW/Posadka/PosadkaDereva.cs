@@ -182,6 +182,14 @@ public class PosadkaDereva : MonoBehaviour
                     if (popalNaTerrein)
                     {
                         mestoSvobodno = MestoSvobodno(tochkaPopadaniya, radius, kategoriyaStavim, tekushayaKlumba);
+
+                        // Клумбу нельзя ставить на другую клумбу (или внахлёст на неё)
+                        if (mestoSvobodno && kategoriyaStavim == "Клумбы")
+                        {
+                            if (tekushayaKlumba != null) mestoSvobodno = false;
+                            else mestoSvobodno = KlumbaNePeresekaetsya(tochkaPopadaniya, prefab.GetComponent<KlumbaTile>());
+                        }
+
                         if (mestoSvobodno) PokazatPrizrak(prefab, tochkaPopadaniya);
                         else SpryatPrizrak();
                     }
@@ -216,6 +224,20 @@ public class PosadkaDereva : MonoBehaviour
 
                 return false;
             }
+        }
+        return true;
+    }
+
+    // Проверяем, что новая клумба не пересекается с уже посаженными клумбами
+    private bool KlumbaNePeresekaetsya(Vector3 pozitsiya, KlumbaTile stavimaya)
+    {
+        float sh = stavimaya != null ? stavimaya.shirina : 1f;
+        float dl = stavimaya != null ? stavimaya.dlina : 1f;
+        Vector3 half = new Vector3(Mathf.Max(sh, 0.2f) / 2f, 0.5f, Mathf.Max(dl, 0.2f) / 2f);
+        Collider[] hits = Physics.OverlapBox(pozitsiya + Vector3.up * 0.5f, half, Quaternion.identity, ~0, QueryTriggerInteraction.Ignore);
+        foreach (var h in hits)
+        {
+            if (h.GetComponentInParent<KlumbaTile>() != null) return false;
         }
         return true;
     }

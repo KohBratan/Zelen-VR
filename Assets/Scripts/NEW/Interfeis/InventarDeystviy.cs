@@ -131,6 +131,11 @@ public class InventarDeystviy : MonoBehaviour
         {
             float mnozhitel = Mathf.Pow(maksimalnoeIzmenenieRazmera, (znachenie - 0.5f) * 2f);
             tekushiyObyekt.transform.localScale = tekushiyObyekt.ishodnyiRazmer * mnozhitel;
+
+            // Если масштабируем секцию - прижимаем деревья и кусты к земле,
+            // чтобы они не висели в воздухе
+            UniversalSekciya sek = tekushiyObyekt.GetComponent<UniversalSekciya>();
+            if (sek != null) sek.PrizhatRasteniyaKZemle();
         }
     }
 
