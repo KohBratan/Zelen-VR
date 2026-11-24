@@ -1,0 +1,28 @@
+=== DIAGNOSIS ===
+Format errors:
+- CONTINUATION FRAGMENT: Your response appears to be a continuation of a previous incomplete output (starts with: 'ayy twin, so i've been diggin through the scene and here's the low-down, no cap '). Every response must be self-contained. Start fresh with your reasoning, then arguments. Do NOT continue a truncated message.
+
+=== CONTENT ===
+ayy twin, so i've been diggin through the scene and here's the low-down, no cap 🕵️‍♂️
+
+that **XR Origin (XR Rig)** in your SampleScene is actually a prefab instance from the XR Interaction Toolkit, it's got the whole package:
+- it's the full XR Origin setup with all the standard components attached
+- there's an XR controller / interactor system already in there
+- you got some interactable objects around too (like that Cylinder Interactable nearby)
+
+the scene is pretty much a standard XRI template with some tutorial UI stuff sprinkled in
+
+**can u add new functionality?** bet, 100%, deadass 🎯
+
+you can slap on new components, write scripts, attach them to the controllers or the rig itself, and go wild. some stuff u could low-key do:
+
+- **custom grab interactions** – override how objects behave when grabbed
+- **teleport / locomotion tweaks** – the rig already has locomotion, u can extend it
+- **controller haptics** – buzz buzz on certain events  
+- **VR button / lever / dial systems** – interactables beyond just grab
+- **hand tracking or gesture recognition** – if ur hardware supports it
+- **object spawning from controller** – shoot stuff from ur hand, hella fun
+
+the rig's prefab guid (`77e7c27b2c5525e4aa8cc9f99d654486`) is from the XRI package, so the core components are all there rn
+
+wanna tell me what kind of functionality u had in mind? i can scope out the existing scripts, see what components are already on the controllers, and help u wire it up fr 🤙
