@@ -18,6 +18,10 @@ public class MenuVkladki : MonoBehaviour
     [Header("Сколько колонок, если элементы лежат сеткой (0 или 1 = обычный список столбиком)")]
     public int kolonokVSetke = 1;
 
+    // Добавь это поле в самый конец списка переменных перед методами:
+    [Header("Слайдер вертикальный (менять вверх-вниз)?")]
+    public bool etoVertikalnyySlaider = false;
+
     private int tekushayaVkladka;
 
     // Позволяет другим скриптам узнать, какой элемент сейчас выбран
@@ -112,7 +116,7 @@ public class MenuVkladki : MonoBehaviour
     }
 
     // Шаг вниз. В обычном списке - следующий элемент, в сетке - вниз по колонке (по кругу)
-    public void ShagVniz()
+    public virtual void ShagVniz()
     {
         if (!EToSetka())
         {
@@ -124,7 +128,7 @@ public class MenuVkladki : MonoBehaviour
     }
 
     // Шаг вверх. В обычном списке - предыдущий элемент, в сетке - вверх по колонке (по кругу)
-    public void ShagVverkh()
+    public virtual void ShagVverkh()
     {
         if (!EToSetka())
         {
@@ -136,7 +140,7 @@ public class MenuVkladki : MonoBehaviour
     }
 
     // Шаг вправо по ряду. Возвращает true, если курсор реально сдвинулся
-    public bool ShagVpravo()
+    public virtual bool ShagVpravo()
     {
         int vsego = KolichestvoVkladok();
         if (!EToSetka() || vsego == 0)
@@ -157,7 +161,7 @@ public class MenuVkladki : MonoBehaviour
 
     // Шаг влево по ряду. Возвращает true, если курсор реально сдвинулся
     // (false = стоим в левой колонке, сдвигаться некуда - значит, можно выходить из категории)
-    public bool ShagVlevo()
+    public virtual bool ShagVlevo()
     {
         if (!EToSetka() || KolichestvoVkladok() == 0)
         {

@@ -845,6 +845,10 @@ PrefabInstance:
       propertyPath: tochkaStarta
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1177363258618379529, guid: b0a142241d24039428f047000a8b3af6, type: 3}
+      propertyPath: kontejnerCvetovVnezony
+      value: 
+      objectReference: {fileID: 950665086}
     - target: {fileID: 1384967920580665620, guid: b0a142241d24039428f047000a8b3af6, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1279,15 +1283,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4897675220646318853, guid: b0a142241d24039428f047000a8b3af6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 41.22
+      value: 49.284
       objectReference: {fileID: 0}
     - target: {fileID: 4897675220646318853, guid: b0a142241d24039428f047000a8b3af6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.69154596
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 4897675220646318853, guid: b0a142241d24039428f047000a8b3af6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 46.84
+      value: 50.106
       objectReference: {fileID: 0}
     - target: {fileID: 4897675220646318853, guid: b0a142241d24039428f047000a8b3af6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1869,6 +1873,37 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &950665085
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950665086}
+  m_Layer: 0
+  m_Name: Cvety_Na_Zemle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &950665086
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950665085}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 91.23605, y: -20.259022, z: 25.300812}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &960778943
 GameObject:
   m_ObjectHideFlags: 0

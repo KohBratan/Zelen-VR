@@ -2,12 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
-// Вешается на пустой объект внутри Left Controller (LineRenderer добавится сам).
-// Когда в меню выбран газон: рисует луч от левой руки. При наведении на
-// свободную ячейку сетки (1x1 м) - луч зелёный, показывается призрак газона
-// в центре ячейки. При наведении на занятую ячейку, клумбу или мимо террейна -
-// луч красный, призрак скрыт. При зажатом триггере на свободной ячейке
-// создаётся газон.
 [RequireComponent(typeof(LineRenderer))]
 public class RisovanieGazona : MonoBehaviour
 {
@@ -26,10 +20,8 @@ public class RisovanieGazona : MonoBehaviour
     [Header("Контейнер для газонов (необязательно)")]
     public Transform kontejnerGazonov;
 
-    [Header("Материал луча (необязательно, лучше URP/Unlit)")]
+    [Header("Материал луча и материал призрака")]
     public Material materialLucha;
-
-    [Header("Материал призрака (прозрачный зелёный)")]
     public Material materialPrizraka;
 
     [Header("Отдельный префаб-призрак (если пусто - создаётся Quad 1x1)")]
@@ -65,25 +57,9 @@ public class RisovanieGazona : MonoBehaviour
         luch.endColor = Color.white;
         luch.enabled = false;
 
-        if (materialLucha != null)
-        {
-            luch.material = materialLucha;
-        }
-        else
-        {
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader != null)
-            {
-                luch.material = new Material(shader);
-            }
-        }
-
+        if (materialLucha != null) luch.material = materialLucha;
+        else { Shader shader = Shader.Find("Universal Render Pipeline/Unlit"); if (shader != null) luch.material = new Material(shader); }
         materialLuchaKopiya = luch.material;
-
-        if (materialPrizraka == null)
-        {
-            Debug.LogWarning("RisovanieGazona: materialPrizraka не назначен - призрак будет непрозрачным.");
-        }
 
         if (naborDeistvii == null) return;
         var karta = naborDeistvii.FindActionMap(imyaKarty);
@@ -111,10 +87,7 @@ public class RisovanieGazona : MonoBehaviour
         SpryatatPrizrak();
     }
 
-    void OnDestroy()
-    {
-        UnichtozhitPrizrak();
-    }
+    void OnDestroy() { UnichtozhitPrizrak(); }
 
     void LateUpdate()
     {
@@ -134,7 +107,7 @@ public class RisovanieGazona : MonoBehaviour
         Vector3 konets = nachalo + napravlenie * dlinaLucha;
 
         RaycastHit hit;
-        if (Physics.Raycast(nachalo, napravlenie, out hit, dlinaLucha, maskaTerreina, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(nachalo, napravlenie, out hit, dlinaLucha, ~0, QueryTriggerInteraction.Ignore))
         {
             konets = hit.point;
 
@@ -142,20 +115,40 @@ public class RisovanieGazona : MonoBehaviour
             int z = Mathf.FloorToInt(hit.point.z / razmerYacheyki);
             Vector2Int klyuch = new Vector2Int(x, z);
 
-            if (yacheyki.ContainsKey(klyuch) && yacheyki[klyuch] == null)
-            {
-                yacheyki.Remove(klyuch);
-            }
-
+            if (yacheyki.ContainsKey(klyuch) && yacheyki[klyuch] == null) yacheyki.Remove(klyuch);
             bool yacheykaSvobodna = !yacheyki.ContainsKey(klyuch);
 
-            // Вычисляем центр будущей ячейки
             Vector3 tsentr = new Vector3((x + 0.5f) * razmerYacheyki, hit.point.y, (z + 0.5f) * razmerYacheyki);
 
-            // Проверяем, не пытаемся ли мы поставить газон на клумбу
-            bool popaliNaKlumbu = EstLiKlumba(tsentr);
+            bool mozhnoStavit = yacheykaSvobodna;
 
-            if (yacheykaSvobodna && !popaliNaKlumbu)
+            // ПРОВЕРКА: Если навелись на клумбу, проверяем, влезает ли квадрат газона целиком
+            KlumbaTile klumba = hit.collider.GetComponentInParent<KlumbaTile>();
+            if (klumba != null)
+            {
+                float half = razmerYacheyki / 2f;
+                Vector3[] corners = {
+                    tsentr + new Vector3(half, 0, half), tsentr + new Vector3(-half, 0, half),
+                    tsentr + new Vector3(half, 0, -half), tsentr + new Vector3(-half, 0, -half)
+                };
+
+                // ИСПРАВЛЕНИЕ: Увеличили отступ до 20 см (0.2f), чтобы газон не залезал на забор
+                float otstup = klumba.tolshinaZabora + 0.2f;
+                float maxX = (klumba.shirina / 2f) - otstup;
+                float maxZ = (klumba.dlina / 2f) - otstup;
+
+                foreach (var c in corners)
+                {
+                    Vector3 localPos = klumba.transform.InverseTransformPoint(c);
+                    if (Mathf.Abs(localPos.x) > maxX || Mathf.Abs(localPos.z) > maxZ)
+                    {
+                        mozhnoStavit = false; // Газон вылезает за забор - запрещаем!
+                        break;
+                    }
+                }
+            }
+
+            if (mozhnoStavit)
             {
                 PokazatPrizrak(tsentr);
                 UstanovitTsvetLucha(tsvetPopal);
@@ -166,7 +159,7 @@ public class RisovanieGazona : MonoBehaviour
                 UstanovitTsvetLucha(tsvetNePopal);
             }
 
-            if (risuem && yacheykaSvobodna && !popaliNaKlumbu)
+            if (risuem && mozhnoStavit)
             {
                 SozdatYacheyku(x, z, hit.point);
             }
@@ -182,29 +175,8 @@ public class RisovanieGazona : MonoBehaviour
         luch.SetPosition(1, konets);
     }
 
-    // НОВЫЙ МЕТОД: проверяем, есть ли клумба в этой точке
-    private bool EstLiKlumba(Vector3 tochka)
-    {
-        // Проверяем сферу, чтобы наверняка задеть коллайдер клумбы
-        float radius = (razmerYacheyki / 2f) * 0.9f;
-        Collider[] hits = Physics.OverlapSphere(tochka + Vector3.up * 0.5f, radius, ~0, QueryTriggerInteraction.Ignore);
-
-        foreach (var hit in hits)
-        {
-            if (hit.GetComponentInParent<KlumbaTile>() != null) return true;
-        }
-        return false;
-    }
-
-    private void NachatRisovanie(InputAction.CallbackContext context)
-    {
-        risuem = true;
-    }
-
-    private void ZakonchitRisovanie(InputAction.CallbackContext context)
-    {
-        risuem = false;
-    }
+    private void NachatRisovanie(InputAction.CallbackContext context) { risuem = true; }
+    private void ZakonchitRisovanie(InputAction.CallbackContext context) { risuem = false; }
 
     private void SozdatYacheyku(int x, int z, Vector3 tochka)
     {
@@ -234,25 +206,11 @@ public class RisovanieGazona : MonoBehaviour
 
     private void PokazatPrizrak(Vector3 pozitsiya)
     {
-        if (prizrak == null)
-        {
-            SozdatPrizrak();
-        }
-
-        if (prizrak != null)
-        {
-            prizrak.SetActive(true);
-            prizrak.transform.position = pozitsiya + Vector3.up * 0.01f;
-        }
+        if (prizrak == null) SozdatPrizrak();
+        if (prizrak != null) { prizrak.SetActive(true); prizrak.transform.position = pozitsiya + Vector3.up * 0.01f; }
     }
 
-    private void SpryatatPrizrak()
-    {
-        if (prizrak != null)
-        {
-            prizrak.SetActive(false);
-        }
-    }
+    private void SpryatatPrizrak() { if (prizrak != null) prizrak.SetActive(false); }
 
     private void SozdatPrizrak()
     {
@@ -263,10 +221,7 @@ public class RisovanieGazona : MonoBehaviour
             prizrak.transform.localScale = new Vector3(razmerYacheyki, 1f, razmerYacheyki);
 
             Collider[] kollajdery = prizrak.GetComponentsInChildren<Collider>(true);
-            for (int i = 0; i < kollajdery.Length; i++)
-            {
-                kollajdery[i].enabled = false;
-            }
+            for (int i = 0; i < kollajdery.Length; i++) kollajdery[i].enabled = false;
 
             if (materialPrizraka != null)
             {
@@ -274,10 +229,7 @@ public class RisovanieGazona : MonoBehaviour
                 for (int i = 0; i < otrisovshiki.Length; i++)
                 {
                     Material[] novyeMaterialy = new Material[otrisovshiki[i].sharedMaterials.Length];
-                    for (int j = 0; j < novyeMaterialy.Length; j++)
-                    {
-                        novyeMaterialy[j] = materialPrizraka;
-                    }
+                    for (int j = 0; j < novyeMaterialy.Length; j++) novyeMaterialy[j] = materialPrizraka;
                     otrisovshiki[i].sharedMaterials = novyeMaterialy;
                 }
             }
@@ -301,26 +253,12 @@ public class RisovanieGazona : MonoBehaviour
         }
     }
 
-    private void UnichtozhitPrizrak()
-    {
-        if (prizrak != null)
-        {
-            Destroy(prizrak);
-        }
-        prizrak = null;
-    }
+    private void UnichtozhitPrizrak() { if (prizrak != null) Destroy(prizrak); prizrak = null; }
 
     private void UstanovitTsvetLucha(Color tsvet)
     {
         if (materialLuchaKopiya == null) return;
-
-        if (materialLuchaKopiya.HasProperty("_BaseColor"))
-        {
-            materialLuchaKopiya.SetColor("_BaseColor", tsvet);
-        }
-        else if (materialLuchaKopiya.HasProperty("_Color"))
-        {
-            materialLuchaKopiya.SetColor("_Color", tsvet);
-        }
+        if (materialLuchaKopiya.HasProperty("_BaseColor")) materialLuchaKopiya.SetColor("_BaseColor", tsvet);
+        else if (materialLuchaKopiya.HasProperty("_Color")) materialLuchaKopiya.SetColor("_Color", tsvet);
     }
 }

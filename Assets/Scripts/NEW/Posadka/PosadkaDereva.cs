@@ -7,21 +7,21 @@ public class PosadkaDereva : MonoBehaviour
     [Header("Откуда идёт луч (если пусто - сам этот объект)")]
     public Transform tochkaStarta;
 
-    [Header("Слой террейна (на что можно ставить)")]
+    [Header("Слой террейна")]
     public LayerMask maskaTerreina;
 
     [Header("Длина луча")]
     public float dlinaLucha = 30f;
 
-    [Header("Материал луча и материал призрака (прозрачный)")]
+    [Header("Материалы")]
     public Material materialLucha;
     public Material materialPrizraka;
 
-    [Header("Цвет луча: попал / не попал или занято")]
+    [Header("Цвета луча")]
     public Color tsvetPopal = Color.green;
     public Color tsvetNePopal = Color.red;
 
-    [Header("Куда складывать посаженные объекты")]
+    [Header("Куда складывать объекты ВНЕ секций")]
     public Transform kontejnerDerevev;
 
     [Header("Работать, пока меню открыто")]
@@ -30,13 +30,10 @@ public class PosadkaDereva : MonoBehaviour
     [Header("Радиусы проверки препятствий")]
     public float radiusProverkiDerevya = 2.5f;
     public float radiusProverkiKusty = 0.5f;
-    public float radiusProverkiSekcii = 5f;
     public float radiusProverkiKlumby = 0.5f;
 
     [Header("Весь asset с действиями")]
     public InputActionAsset naborDeistvii;
-
-    [Header("Карта и имя действия триггера")]
     public string imyaKarty = "XRI Left Interaction";
     public string imyaDeistviya = "PlaceTool";
 
@@ -51,6 +48,8 @@ public class PosadkaDereva : MonoBehaviour
     private bool popalNaTerrein = false;
     private bool mestoSvobodno = false;
     private Vector3 tochkaPopadaniya;
+
+    private UniversalSekciya tekushayaSekciya = null; // Запоминаем секцию
 
     void Awake()
     {
@@ -86,8 +85,6 @@ public class PosadkaDereva : MonoBehaviour
         SpryatPrizrak();
     }
 
-    void OnDestroy() { UnichtozhitPrizrak(); }
-
     void LateUpdate()
     {
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
@@ -95,13 +92,14 @@ public class PosadkaDereva : MonoBehaviour
         bool etoGazon = prefab != null && prefab.GetComponent<GazonTile>() != null;
         Nasazhdenie nas = prefab != null ? prefab.GetComponent<Nasazhdenie>() : null;
         bool etoCvetok = nas != null && nas.kategoriya == "Цветы";
-        bool etoKlumba = nas != null && nas.kategoriya == "Клумбы";
+        bool etoSekciya = prefab != null && prefab.GetComponent<UniversalSekciya>() != null;
 
         bool menyuMeshaet = SostoyanieMenyu.AnyMenuOpen && !rabotatPriOtkrytomMenyu;
 
-        luchAktiven = (prefab != null) && !menyuMeshaet && !etoGazon && !etoCvetok;
+        luchAktiven = (prefab != null) && !menyuMeshaet && !etoGazon && !etoCvetok && !etoSekciya;
         popalNaTerrein = false;
         mestoSvobodno = false;
+        tekushayaSekciya = null;
 
         if (!luchAktiven)
         {
@@ -117,7 +115,6 @@ public class PosadkaDereva : MonoBehaviour
         {
             kategoriyaStavim = nas.kategoriya;
             if (nas.kategoriya == "Деревья") radius = radiusProverkiDerevya;
-            else if (nas.kategoriya == "Секции") radius = radiusProverkiSekcii;
             else if (nas.kategoriya == "Клумбы") radius = radiusProverkiKlumby;
         }
 
@@ -125,37 +122,72 @@ public class PosadkaDereva : MonoBehaviour
         Vector3 nachalo = start.position, napravlenie = start.forward;
         Vector3 konets = nachalo + napravlenie * dlinaLucha;
 
-        // Стреляем по всем слоям, чтобы точно заметить клумбу
-        if (Physics.Raycast(nachalo, napravlenie, out RaycastHit popadanie, dlinaLucha, ~0, QueryTriggerInteraction.Ignore))
-        {
-            // Если попали в клумбу, а сажаем не клумбу - блокируем!
-            KlumbaTile klumba = popadanie.collider.GetComponentInParent<KlumbaTile>();
-            if (klumba != null && !etoKlumba)
-            {
-                popalNaTerrein = false;
-                SpryatPrizrak();
-                UstanovitTsvetLucha(tsvetNePopal);
-                luch.enabled = true;
-                luch.SetPosition(0, nachalo);
-                luch.SetPosition(1, popadanie.point);
-                return;
-            }
+        KlumbaTile tekushayaKlumba = null;
 
-            // Проверка слоя
-            if (((1 << popadanie.collider.gameObject.layer) & maskaTerreina) == 0)
+        RaycastHit[] hits = Physics.RaycastAll(nachalo, napravlenie, dlinaLucha, ~0, QueryTriggerInteraction.Ignore);
+        if (hits.Length > 0)
+        {
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+            RaycastHit popadanie = hits[0];
+
+            Nasazhdenie hitNas = popadanie.collider.GetComponentInParent<Nasazhdenie>();
+
+            if (hitNas != null && (hitNas.kategoriya == "Деревья" || hitNas.kategoriya == "Кусты"))
             {
                 popalNaTerrein = false;
             }
             else
             {
-                popalNaTerrein = true;
-                tochkaPopadaniya = popadanie.point;
-                konets = popadanie.point;
+                tekushayaKlumba = popadanie.collider.GetComponentInParent<KlumbaTile>();
+                tekushayaSekciya = popadanie.collider.GetComponentInParent<UniversalSekciya>();
+                GazonTile gazon = popadanie.collider.GetComponentInParent<GazonTile>();
 
-                mestoSvobodno = MestoSvobodno(tochkaPopadaniya, radius, kategoriyaStavim);
+                if (tekushayaKlumba != null || tekushayaSekciya != null || gazon != null || ((1 << popadanie.collider.gameObject.layer) & maskaTerreina) != 0)
+                {
+                    popalNaTerrein = true;
+                    tochkaPopadaniya = popadanie.point;
+                    konets = popadanie.point;
 
-                if (mestoSvobodno) PokazatPrizrak(prefab, popadanie.point);
-                else SpryatPrizrak();
+                    if (tekushayaSekciya != null || gazon != null || tekushayaKlumba != null)
+                    {
+                        RaycastHit[] groundHits = Physics.RaycastAll(popadanie.point + Vector3.up * 2f, Vector3.down, 10f, ~0, QueryTriggerInteraction.Ignore);
+                        float minY = float.MaxValue;
+                        bool foundGround = false;
+                        foreach (var gh in groundHits)
+                        {
+                            if (gh.collider.GetComponentInParent<Nasazhdenie>() != null) continue;
+                            if (gh.collider.GetComponentInParent<KlumbaTile>() != null) continue;
+                            if (gh.collider.GetComponentInParent<UniversalSekciya>() != null) continue;
+                            if (gh.collider.GetComponentInParent<GazonTile>() != null) continue;
+
+                            if (gh.point.y < minY) { minY = gh.point.y; foundGround = true; }
+                        }
+                        if (foundGround)
+                        {
+                            tochkaPopadaniya = new Vector3(popadanie.point.x, minY, popadanie.point.z);
+                            konets = tochkaPopadaniya;
+                        }
+                    }
+
+                    if (tekushayaKlumba != null && (kategoriyaStavim == "Деревья" || kategoriyaStavim == "Кусты"))
+                    {
+                        Vector3 localHit = tekushayaKlumba.transform.InverseTransformPoint(tochkaPopadaniya);
+                        float otstup = tekushayaKlumba.tolshinaZabora + 0.13f;
+                        float maxX = (tekushayaKlumba.shirina / 2f) - otstup;
+                        float maxZ = (tekushayaKlumba.dlina / 2f) - otstup;
+
+                        if (Mathf.Abs(localHit.x) > maxX || Mathf.Abs(localHit.z) > maxZ) popalNaTerrein = false;
+                    }
+
+                    if (popalNaTerrein)
+                    {
+                        mestoSvobodno = MestoSvobodno(tochkaPopadaniya, radius, kategoriyaStavim, tekushayaKlumba);
+                        if (mestoSvobodno) PokazatPrizrak(prefab, tochkaPopadaniya);
+                        else SpryatPrizrak();
+                    }
+                    else SpryatPrizrak();
+                }
+                else popalNaTerrein = false;
             }
         }
 
@@ -167,7 +199,7 @@ public class PosadkaDereva : MonoBehaviour
         UstanovitTsvetLucha(popalNaTerrein && mestoSvobodno ? tsvetPopal : tsvetNePopal);
     }
 
-    private bool MestoSvobodno(Vector3 pozitsiya, float radius, string kategoriyaStavim)
+    private bool MestoSvobodno(Vector3 pozitsiya, float radius, string kategoriyaStavim, KlumbaTile ignoreKlumba)
     {
         Collider[] kollajdery = Physics.OverlapSphere(pozitsiya, radius);
         foreach (var col in kollajdery)
@@ -175,12 +207,13 @@ public class PosadkaDereva : MonoBehaviour
             Nasazhdenie nas = col.GetComponentInParent<Nasazhdenie>();
             if (nas != null)
             {
-                if (nas.kategoriya == "Газон")
-                {
-                    if (kategoriyaStavim == "Клумбы") return false;
-                    continue;
-                }
+                if (nas.kategoriya == "Газон") continue;
                 if (nas.kategoriya == "Цветы") continue;
+                if (nas.kategoriya == "Секции") continue;
+
+                KlumbaTile klumba = nas.GetComponent<KlumbaTile>();
+                if (klumba != null && klumba == ignoreKlumba) continue;
+
                 return false;
             }
         }
@@ -192,17 +225,21 @@ public class PosadkaDereva : MonoBehaviour
         if (!luchAktiven || !popalNaTerrein || !mestoSvobodno) return;
 
         GameObject prefab = VyborInstrumenta.TekushiyPrefab;
-        if (prefab == null || prefab.GetComponent<GazonTile>() != null) return;
-
-        Nasazhdenie nasPrefab = prefab.GetComponent<Nasazhdenie>();
-        if (nasPrefab != null && nasPrefab.kategoriya == "Цветы") return;
-
-        Debug.Log($"[PosadkaDereva] Сажаем ОБЪЕКТ: {prefab.name} на землю.");
+        if (prefab == null) return;
 
         GameObject novoe = Instantiate(prefab, tochkaPopadaniya, Quaternion.identity, kontejnerDerevev);
-
         Nasazhdenie nasazhdenie = novoe.GetComponent<Nasazhdenie>();
-        if (nasazhdenie != null) nasazhdenie.sourcePrefab = prefab;
+
+        if (nasazhdenie != null)
+        {
+            nasazhdenie.sourcePrefab = prefab;
+
+            // Если навели на секцию и сажаем дерево/куст - делаем их частью секции
+            if (tekushayaSekciya != null && (nasazhdenie.kategoriya == "Деревья" || nasazhdenie.kategoriya == "Кусты"))
+            {
+                tekushayaSekciya.DobavitRastenie(novoe);
+            }
+        }
     }
 
     private void UstanovitTsvetLucha(Color tsvet)
@@ -214,16 +251,8 @@ public class PosadkaDereva : MonoBehaviour
 
     private void PokazatPrizrak(GameObject prefab, Vector3 pozitsiya)
     {
-        if (prefabPrizraka != prefab)
-        {
-            UnichtozhitPrizrak();
-            SozdatPrizrak(prefab);
-        }
-        if (prizrak != null)
-        {
-            prizrak.SetActive(true);
-            prizrak.transform.position = pozitsiya;
-        }
+        if (prefabPrizraka != prefab) { UnichtozhitPrizrak(); SozdatPrizrak(prefab); }
+        if (prizrak != null) { prizrak.SetActive(true); prizrak.transform.position = pozitsiya; }
     }
 
     private void SpryatPrizrak() { if (prizrak != null) prizrak.SetActive(false); }
@@ -233,8 +262,6 @@ public class PosadkaDereva : MonoBehaviour
         prefabPrizraka = prefab;
         prizrak = Instantiate(prefab);
         prizrak.name = prefab.name + " (prizrak)";
-
-        if (prizrak.TryGetComponent<SekciyaNasazhdeniy>(out var sek)) sek.etoPrizrak = true;
 
         Collider[] kollajdery = prizrak.GetComponentsInChildren<Collider>(true);
         for (int i = 0; i < kollajdery.Length; i++) kollajdery[i].enabled = false;

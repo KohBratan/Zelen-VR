@@ -188,22 +188,44 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
 
     private void ObrabotatNaklon(Vector2 napravlenie)
     {
+        // Определяем, куда сильнее наклонен стик
         bool eto_gorizontalniy_naklon = Mathf.Abs(napravlenie.x) > Mathf.Abs(napravlenie.y);
 
+        if (vnutriKategorii)
+        {
+            MenuVkladki tekushieVidy = PoluchitMenuVidovTekushiyeKategorii();
+            if (tekushieVidy != null && tekushieVidy.TekushiyElementEstSlider())
+            {
+                if (tekushieVidy.etoVertikalnyySlaider)
+                {
+                    // Если вертикальный слайдер - меняем значение ТОЛЬКО при вертикальном наклоне
+                    if (!eto_gorizontalniy_naklon && Mathf.Abs(napravlenie.y) > 0.3f)
+                    {
+                        tekushieVidy.IzmenitSlaiderEsliVybran(napravlenie.y > 0 ? shagSlaidera : -shagSlaidera);
+                        return;
+                    }
+                }
+                else
+                {
+                    // Обычный слайдер - меняем значение ТОЛЬКО при горизонтальном наклоне
+                    if (eto_gorizontalniy_naklon && Mathf.Abs(napravlenie.x) > 0.3f)
+                    {
+                        tekushieVidy.IzmenitSlaiderEsliVybran(napravlenie.x > 0 ? shagSlaidera : -shagSlaidera);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Стандартная навигация (если не попали в условия слайдера)
         if (eto_gorizontalniy_naklon)
         {
             ObrabotatGorizontalniyNaklon(napravlenie.x > 0);
         }
         else
         {
-            if (napravlenie.y > 0)
-            {
-                PredydushiyElement();
-            }
-            else
-            {
-                SleduyuschiyElement();
-            }
+            if (napravlenie.y > 0) PredydushiyElement();
+            else SleduyuschiyElement();
         }
     }
 
@@ -216,8 +238,9 @@ public class DzhoystikNavigatsiyaMenu : MonoBehaviour
 
             if (tekushieVidy != null)
             {
-                // 1. Выбран слайдер - двигаем его значение
-                if (tekushieVidy.TekushiyElementEstSlider())
+                // 1. Если выбран ОБЫЧНЫЙ (горизонтальный) слайдер - двигаем его значение
+                // Добавлено условие !etoVertikalnyySlaider, чтобы вертикальный слайдер не перехватывал влево-вправо
+                if (tekushieVidy.TekushiyElementEstSlider() && !tekushieVidy.etoVertikalnyySlaider)
                 {
                     tekushieVidy.IzmenitSlaiderEsliVybran(vpravo ? shagSlaidera : -shagSlaidera);
                     return;

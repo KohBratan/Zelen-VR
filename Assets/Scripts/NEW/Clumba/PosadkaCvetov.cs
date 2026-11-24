@@ -4,12 +4,23 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(LineRenderer))]
 public class PosadkaCvetov : MonoBehaviour
 {
+    [Header("Настройки луча")]
     public Transform tochkaStarta;
     public float dlinaLucha = 30f;
     public Material materialLucha;
     public Material materialPrizraka;
     public Color tsvetPopal = Color.green;
     public Color tsvetNePopal = Color.red;
+
+    [Header("Настройки кисти (диаметр в метрах)")]
+    [Range(0.1f, 3f)]
+    public float diametrKisti = 0.5f; // Радиус = диаметр / 2
+    public float minimalnoeRasstoyanie = 0.15f; // Чтобы цветы не спавнились друг в друге
+    public float skorostPosadki = 0.05f; // Задержка между спавнами (чтобы не лагало)
+
+    [Header("Визуализация кисти")]
+    public GameObject prefabIndikatoraKisti; // Сюда кидаем Cylinder или Quad с прозрачным материалом
+    private GameObject indikatorKisti;
 
     [Header("Ввод")]
     public InputActionAsset naborDeistvii;
@@ -24,6 +35,9 @@ public class PosadkaCvetov : MonoBehaviour
     private KlumbaTile tekushayaKlumba;
     private Vector3 tochkaPopadaniya;
 
+    private bool risuem = false;
+    private float vremyaSleduyuscheyPosadki = 0f;
+
     void Awake()
     {
         luch = GetComponent<LineRenderer>();
@@ -37,12 +51,41 @@ public class PosadkaCvetov : MonoBehaviour
         if (naborDeistvii != null)
         {
             var k = naborDeistvii.FindActionMap(imyaKarty);
-            if (k != null) deistvie = k.FindAction(imyaDeistviya);
+            if (k != null)
+            {
+                deistvie = k.FindAction(imyaDeistviya);
+            }
+        }
+
+        // Создаем индикатор кисти, если задан префаб
+        if (prefabIndikatoraKisti != null)
+        {
+            indikatorKisti = Instantiate(prefabIndikatoraKisti);
+            indikatorKisti.SetActive(false);
         }
     }
 
-    void OnEnable() { if (deistvie != null) { deistvie.performed += Posadit; deistvie.Enable(); } }
-    void OnDisable() { if (deistvie != null) deistvie.performed -= Posadit; if (luch != null) luch.enabled = false; SpryatatPrizrak(); }
+    void OnEnable()
+    {
+        if (deistvie != null)
+        {
+            deistvie.performed += NachatPosadku;
+            deistvie.canceled += ZakonchitPosadku;
+            deistvie.Enable();
+        }
+    }
+
+    void OnDisable()
+    {
+        if (deistvie != null)
+        {
+            deistvie.performed -= NachatPosadku;
+            deistvie.canceled -= ZakonchitPosadku;
+        }
+        if (luch != null) luch.enabled = false;
+        SpryatatPrizrak();
+        if (indikatorKisti != null) indikatorKisti.SetActive(false);
+    }
 
     void LateUpdate()
     {
@@ -52,6 +95,7 @@ public class PosadkaCvetov : MonoBehaviour
         {
             if (luch.enabled) luch.enabled = false;
             SpryatatPrizrak();
+            if (indikatorKisti != null) indikatorKisti.SetActive(false);
             tekushayaKlumba = null;
             return;
         }
@@ -62,7 +106,8 @@ public class PosadkaCvetov : MonoBehaviour
         {
             if (luch.enabled) luch.enabled = false;
             SpryatatPrizrak();
-            tekushayaKlumba = null; // Забываем клумбу
+            if (indikatorKisti != null) indikatorKisti.SetActive(false);
+            tekushayaKlumba = null;
             return;
         }
 
@@ -100,35 +145,116 @@ public class PosadkaCvetov : MonoBehaviour
                     }
 
                     PokazatPrizrak(prefab, tochkaPopadaniya);
+
+                    // Показываем индикатор кисти на земле
+                    if (indikatorKisti != null)
+                    {
+                        indikatorKisti.SetActive(true);
+                        indikatorKisti.transform.position = tochkaPopadaniya + Vector3.up * 0.02f;
+                        // Масштабируем индикатор под диаметр кисти (предполагается, что базовый цилиндр имеет диаметр 1)
+                        indikatorKisti.transform.localScale = new Vector3(diametrKisti, 0.01f, diametrKisti);
+                    }
+
+                    // Если триггер зажат и мы попали в клумбу - сыплем цветы
+                    if (risuem && Time.time >= vremyaSleduyuscheyPosadki)
+                    {
+                        PosaditKistyu(prefab, tekushayaKlumba);
+                        vremyaSleduyuscheyPosadki = Time.time + skorostPosadki;
+                    }
                 }
-                else SpryatatPrizrak();
+                else
+                {
+                    SpryatatPrizrak();
+                    if (indikatorKisti != null) indikatorKisti.SetActive(false);
+                }
             }
-            else SpryatatPrizrak();
+            else
+            {
+                SpryatatPrizrak();
+                if (indikatorKisti != null) indikatorKisti.SetActive(false);
+            }
         }
-        else SpryatatPrizrak();
+        else
+        {
+            SpryatatPrizrak();
+            if (indikatorKisti != null) indikatorKisti.SetActive(false);
+        }
 
         luch.SetPosition(0, nachalo);
         luch.SetPosition(1, konets);
         UstanovitTsvetLucha(popal ? tsvetPopal : tsvetNePopal);
     }
 
-    private void Posadit(InputAction.CallbackContext ctx)
+    private void NachatPosadku(InputAction.CallbackContext ctx)
     {
-        if (VyborInstrumenta.TekushiyPrefab == null || tekushayaKlumba == null) return;
-
-        Nasazhdenie nas = VyborInstrumenta.TekushiyPrefab.GetComponent<Nasazhdenie>();
-
-        // АБСОЛЮТНАЯ ЗАЩИТА
-        if (nas == null || nas.kategoriya != "Цветы")
+        risuem = true;
+        // Сразу сажаем один цветок при клике
+        if (VyborInstrumenta.TekushiyPrefab != null && tekushayaKlumba != null)
         {
-            Debug.LogError($"[PosadkaCvetov] КРИТИЧЕСКАЯ ОШИБКА! Попытка посадить не цветок ({VyborInstrumenta.TekushiyPrefab.name}) в клумбу. Посадка отменена.");
-            return;
+            Nasazhdenie nas = VyborInstrumenta.TekushiyPrefab.GetComponent<Nasazhdenie>();
+            if (nas != null && nas.kategoriya == "Цветы")
+            {
+                PosaditOdinochno(VyborInstrumenta.TekushiyPrefab, tekushayaKlumba, tochkaPopadaniya);
+            }
         }
+    }
 
-        // Создаем цветок (приписка (Clone) теперь сохранится)
-        GameObject novoe = Instantiate(VyborInstrumenta.TekushiyPrefab, tochkaPopadaniya, Quaternion.Euler(0, Random.Range(0, 360), 0), tekushayaKlumba.kontejnerCvetov);
+    private void ZakonchitPosadku(InputAction.CallbackContext ctx)
+    {
+        risuem = false;
+    }
 
-        nas.sourcePrefab = VyborInstrumenta.TekushiyPrefab;
+    // Посадка одного цветка (при одиночном клике)
+    private void PosaditOdinochno(GameObject prefab, KlumbaTile klumba, Vector3 pos)
+    {
+        GameObject novoe = Instantiate(prefab, pos, Quaternion.Euler(0, Random.Range(0, 360), 0), klumba.kontejnerCvetov);
+        Nasazhdenie nas = novoe.GetComponent<Nasazhdenie>();
+        if (nas != null) nas.sourcePrefab = prefab;
+    }
+
+    // Умная посадка кистью (выбирает точки в радиусе и проверяет, чтобы не спавнить друг в друге)
+    private void PosaditKistyu(GameObject prefab, KlumbaTile klumba)
+    {
+        int popytki = 0;
+        float radius = diametrKisti / 2f;
+
+        while (popytki < 10) // Пытаемся найти свободное место в радиусе кисти
+        {
+            popytki++;
+
+            // Берем случайную точку внутри круга
+            Vector2 sluchaynayaTochka = Random.insideUnitCircle * radius;
+            Vector3 mirovayaTochka = tochkaPopadaniya + new Vector3(sluchaynayaTochka.x, 0, sluchaynayaTochka.y);
+
+            // Проверяем, не вылезли ли мы за пределы клумбы
+            Vector3 localPos = klumba.transform.InverseTransformPoint(mirovayaTochka);
+            float otstup = klumba.tolshinaZabora + 0.02f;
+            if (Mathf.Abs(localPos.x) > (klumba.shirina / 2f) - otstup || Mathf.Abs(localPos.z) > (klumba.dlina / 2f) - otstup)
+                continue; // Вылезли за забор, ищем другую точку
+
+            // Ищем высоту земли в этой точке
+            if (Physics.Raycast(mirovayaTochka + Vector3.up * 2f, Vector3.down, out RaycastHit groundHit, 5f, klumba.maskaTerreina))
+            {
+                mirovayaTochka = groundHit.point;
+            }
+
+            // Проверяем, нет ли слишком близко других цветов
+            bool mestoSvobodno = true;
+            foreach (Transform child in klumba.kontejnerCvetov)
+            {
+                if (Vector3.Distance(child.position, mirovayaTochka) < minimalnoeRasstoyanie)
+                {
+                    mestoSvobodno = false;
+                    break;
+                }
+            }
+
+            if (mestoSvobodno)
+            {
+                PosaditOdinochno(prefab, klumba, mirovayaTochka);
+                break; // Успешно посадили, выходим из цикла
+            }
+        }
     }
 
     private void UstanovitTsvetLucha(Color c)

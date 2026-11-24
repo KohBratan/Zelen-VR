@@ -167,7 +167,6 @@ public class KlumbaTile : MonoBehaviour
     private void ObnovitZabor()
     {
         if (steny[0] == null) return;
-
         float x = shirina / 2f;
         float z = dlina / 2f;
         float glubina = 100f;
@@ -177,13 +176,10 @@ public class KlumbaTile : MonoBehaviour
 
         steny[0].localPosition = new Vector3(0, centerY, z);
         steny[0].localScale = new Vector3(shirina, totalHeight, tolshinaZabora);
-
         steny[1].localPosition = new Vector3(0, centerY, -z);
         steny[1].localScale = new Vector3(shirina, totalHeight, tolshinaZabora);
-
         steny[2].localPosition = new Vector3(x, centerY, 0);
         steny[2].localScale = new Vector3(tolshinaZabora, totalHeight, dlina);
-
         steny[3].localPosition = new Vector3(-x, centerY, 0);
         steny[3].localScale = new Vector3(tolshinaZabora, totalHeight, dlina);
     }
@@ -191,31 +187,22 @@ public class KlumbaTile : MonoBehaviour
     private void UdalitCvetyZaGranitsami()
     {
         if (kontejnerCvetov == null) return;
-
         float halfX = shirina / 2f;
         float halfZ = dlina / 2f;
-
         List<GameObject> udalit = new List<GameObject>();
 
         foreach (Transform child in kontejnerCvetov)
         {
             Vector3 localPos = child.localPosition;
-            if (Mathf.Abs(localPos.x) > halfX || Mathf.Abs(localPos.z) > halfZ)
-            {
-                udalit.Add(child.gameObject);
-            }
+            if (Mathf.Abs(localPos.x) > halfX || Mathf.Abs(localPos.z) > halfZ) udalit.Add(child.gameObject);
         }
 
-        foreach (var obj in udalit)
-        {
-            Destroy(obj);
-        }
+        foreach (var obj in udalit) Destroy(obj);
     }
 
     public void SmenitTsvet()
     {
         if (materialyZabora == null || materialyZabora.Length < 2) return;
-
         tekushiyTsvetIndex = (tekushiyTsvetIndex + 1) % materialyZabora.Length;
         Material noviyMat = materialyZabora[tekushiyTsvetIndex];
 
@@ -281,7 +268,6 @@ public class KlumbaTile : MonoBehaviour
 
         Vector3 starayaPozitsiya = transform.position;
 
-        // Временные значения для проверки коллизий
         float tmpShirina = shirina;
         float tmpDlina = dlina;
 
@@ -308,21 +294,35 @@ public class KlumbaTile : MonoBehaviour
         Vector3 novayaMirovayaPozitsiya = ishodnayaPozitsiya + ishodnyyRotation * novyyLokalnyyCentr;
         novayaMirovayaPozitsiya.y = PoluchitVisotuTerreina(novayaMirovayaPozitsiya);
 
-        // ПРОВЕРКА КОЛЛИЗИЙ: Если расширяемся, проверяем, не влезаем ли в другую клумбу
+        // ПРОВЕРКА НА ПУСТОТУ (СВИСАНИЕ С КРАЯ)
         if (tmpShirina > shirina || tmpDlina > dlina)
         {
-            if (ProveritKolliziyu(novayaMirovayaPozitsiya, tmpShirina, tmpDlina))
+            Vector3 halfSize = new Vector3(tmpShirina / 2f - 0.1f, 1f, tmpDlina / 2f - 0.1f);
+            Vector3[] corners = {
+                novayaMirovayaPozitsiya + ishodnyyRotation * new Vector3(halfSize.x, 0, halfSize.z),
+                novayaMirovayaPozitsiya + ishodnyyRotation * new Vector3(-halfSize.x, 0, halfSize.z),
+                novayaMirovayaPozitsiya + ishodnyyRotation * new Vector3(halfSize.x, 0, -halfSize.z),
+                novayaMirovayaPozitsiya + ishodnyyRotation * new Vector3(-halfSize.x, 0, -halfSize.z)
+            };
+            foreach (var corner in corners)
             {
-                return; // Уперлись в другую клумбу - отменяем
+                if (!Physics.Raycast(corner + Vector3.up * 10f, Vector3.down, out _, 20f, maskaTerreina))
+                    return; // Блокируем, если угол в воздухе
+            }
+
+            // ПРОВЕРКА НА ПЕРЕСЕЧЕНИЕ С ДРУГИМИ ОБЪЕКТАМИ
+            Collider[] hits = Physics.OverlapBox(novayaMirovayaPozitsiya + Vector3.up * 0.5f, new Vector3(tmpShirina / 2f, 0.5f, tmpDlina / 2f), ishodnyyRotation, ~0, QueryTriggerInteraction.Ignore);
+            foreach (var hit in hits)
+            {
+                if (hit.transform.IsChildOf(transform) || hit.transform == transform) continue;
+                if (hit.GetComponentInParent<KlumbaTile>() != null || hit.GetComponentInParent<UniversalSekciya>() != null) return;
             }
         }
 
-        // Применяем новые размеры
         shirina = tmpShirina;
         dlina = tmpDlina;
         transform.position = novayaMirovayaPozitsiya;
 
-        // Компенсация для цветов
         Vector3 delta = novayaMirovayaPozitsiya - starayaPozitsiya;
         if (delta.sqrMagnitude > 0.000001f && kontejnerCvetov != null)
         {
@@ -334,34 +334,9 @@ public class KlumbaTile : MonoBehaviour
         }
 
         UdalitCvetyZaGranitsami();
-
         PostroitMesh();
         ObnovitKollayder();
         ObnovitZabor();
-    }
-
-    // НОВЫЙ МЕТОД: Проверка пересечения с другими клумбами
-    private bool ProveritKolliziyu(Vector3 centr, float sh, float dl)
-    {
-        float checkSh = Mathf.Max(0.1f, sh - 0.1f); // Небольшой отступ
-        float checkDl = Mathf.Max(0.1f, dl - 0.1f);
-        Vector3 halfExtents = new Vector3(checkSh / 2f, 1f, checkDl / 2f);
-        Vector3 checkCenter = centr + Vector3.up * 0.5f;
-
-        Collider[] hits = Physics.OverlapBox(checkCenter, halfExtents, ishodnyyRotation, ~0, QueryTriggerInteraction.Ignore);
-        foreach (var hit in hits)
-        {
-            // Игнорируем коллайдеры самой этой клумбы
-            if (hit.transform.IsChildOf(transform) || hit.transform == transform) continue;
-
-            // Если нашли коллайдер, принадлежащий другой клумбе
-            KlumbaTile drugayaKlumba = hit.GetComponentInParent<KlumbaTile>();
-            if (drugayaKlumba != null && drugayaKlumba != this)
-            {
-                return true; // Уперлись!
-            }
-        }
-        return false;
     }
 
     public void ZakonchitRastyagivanie()

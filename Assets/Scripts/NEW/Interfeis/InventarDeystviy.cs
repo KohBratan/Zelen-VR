@@ -6,15 +6,14 @@ public class InventarDeystviy : MonoBehaviour
     public Nasazhdenie tekushiyObyekt;
     public Text tekstNazvaniyaObyekta;
     public Button knopkaPovernut, knopkaRastyanut, knopkaZafiksirovat, knopkaUdalit, knopkaZamenitVid;
-
-    [Header("Кнопка смены цвета (только для клумб)")]
     public Button knopkaSmenitTsvet;
-
     public Text tekstKnopkiZafiksirovat;
     public GameObject panelRazmer;
     public Slider slaiderRazmer;
     public float maksimalnoeIzmenenieRazmera = 3f;
     public Text tekstKnopkiPovernut, tekstKnopkiRastyanut;
+
+    [Header("Ссылки на скрипты и контроллеры")]
     public VyborNasazhdeniya vybor;
     public PanelPereklyuchatel pereklyuchatelInventarya;
     public DzhoystikNavigatsiyaInventarya navigator;
@@ -51,7 +50,6 @@ public class InventarDeystviy : MonoBehaviour
 
         bool chto_to_vybrano = (tekushiyObyekt != null);
 
-        // Базовые кнопки
         knopkaPovernut.interactable = chto_to_vybrano;
         knopkaZafiksirovat.interactable = chto_to_vybrano;
         knopkaUdalit.interactable = chto_to_vybrano;
@@ -62,7 +60,6 @@ public class InventarDeystviy : MonoBehaviour
         {
             tekstNazvaniyaObyekta.text = tekushiyObyekt.vidNasazhdeniya;
 
-            // Обновляем слайдер размера
             if (tekushiyObyekt.ishodnyiRazmer.x > 0.0001f && maksimalnoeIzmenenieRazmera > 1.0001f)
             {
                 float mnozhitel = tekushiyObyekt.transform.localScale.x / tekushiyObyekt.ishodnyiRazmer.x;
@@ -70,33 +67,23 @@ public class InventarDeystviy : MonoBehaviour
                     slaiderRazmer.SetValueWithoutNotify(Mathf.Clamp01(0.5f + Mathf.Log(mnozhitel, maksimalnoeIzmenenieRazmera) / 2f));
             }
 
-            // Определяем категории
             bool eto_gazon = (tekushiyObyekt.kategoriya == "Газон");
             bool eto_klumba = (tekushiyObyekt.kategoriya == "Клумбы");
             bool eto_sekciya = (tekushiyObyekt.kategoriya == "Секции");
 
-            // Показываем нужные кнопки
             knopkaRastyanut.gameObject.SetActive(eto_gazon || eto_klumba || eto_sekciya);
-
-            // Замену вида прячем для газона, клумбы и секции
             knopkaZamenitVid.gameObject.SetActive(!eto_gazon && !eto_klumba && !eto_sekciya);
 
-            // Кнопку смены цвета показываем ТОЛЬКО для клумбы
-            if (knopkaSmenitTsvet != null)
-                knopkaSmenitTsvet.gameObject.SetActive(eto_klumba);
+            if (knopkaSmenitTsvet != null) knopkaSmenitTsvet.gameObject.SetActive(eto_klumba);
 
             ObnovitTekstFiksatsii();
         }
         else
         {
             tekstNazvaniyaObyekta.text = "Ничего не выбрано";
-
-            // Прячем все контекстные кнопки, если ничего не выбрано
             knopkaRastyanut.gameObject.SetActive(false);
-            knopkaZamenitVid.gameObject.SetActive(true); // Возвращаем в исходное
-
-            if (knopkaSmenitTsvet != null)
-                knopkaSmenitTsvet.gameObject.SetActive(false);
+            knopkaZamenitVid.gameObject.SetActive(true);
+            if (knopkaSmenitTsvet != null) knopkaSmenitTsvet.gameObject.SetActive(false);
         }
     }
 
@@ -111,7 +98,11 @@ public class InventarDeystviy : MonoBehaviour
             if (tekushiyObyekt != null)
             {
                 if (tekushiyObyekt.TryGetComponent<GazonTile>(out var gt)) gt.ZakonchitRastyagivanie();
-                if (tekushiyObyekt.TryGetComponent<SekciyaNasazhdeniy>(out var sn)) sn.ZakonchitRastyagivanie();
+
+                // Ищем UniversalSekciya на самом объекте или его родителях
+                UniversalSekciya sn = tekushiyObyekt.GetComponentInParent<UniversalSekciya>();
+                if (sn != null) sn.ZakonchitRastyagivanie();
+
                 if (tekushiyObyekt.TryGetComponent<KlumbaTile>(out var kt)) kt.ZakonchitRastyagivanie();
             }
         }
@@ -148,7 +139,11 @@ public class InventarDeystviy : MonoBehaviour
         if (tekushiyObyekt == null) return;
 
         bool isGazon = tekushiyObyekt.TryGetComponent<GazonTile>(out var gt);
-        bool isSekciya = tekushiyObyekt.TryGetComponent<SekciyaNasazhdeniy>(out var sn);
+
+        // Ищем UniversalSekciya на самом объекте или его родителях
+        UniversalSekciya sn = tekushiyObyekt.GetComponentInParent<UniversalSekciya>();
+        bool isSekciya = (sn != null);
+
         bool isKlumba = tekushiyObyekt.TryGetComponent<KlumbaTile>(out var kt);
 
         if (!isGazon && !isSekciya && !isKlumba) return;
@@ -183,6 +178,23 @@ public class InventarDeystviy : MonoBehaviour
     }
 
     private void ObnovitTekstFiksatsii() { if (tekstKnopkiZafiksirovat != null && tekushiyObyekt != null) tekstKnopkiZafiksirovat.text = tekushiyObyekt.zafiksirovano ? "Открепить" : "Зафиксировать"; }
-    private void Udalit() { if (tekushiyObyekt != null) { GameObject obj = tekushiyObyekt.gameObject; UstanovitTekushiyObyekt(null); Destroy(obj); } }
+
+    private void Udalit()
+    {
+        if (tekushiyObyekt != null)
+        {
+            if (tekushiyObyekt.kategoriya == "Цветы" && vybor != null)
+            {
+                vybor.VklyuchitRezhimLastika();
+            }
+            else
+            {
+                GameObject obj = tekushiyObyekt.gameObject;
+                UstanovitTekushiyObyekt(null);
+                Destroy(obj);
+            }
+        }
+    }
+
     private void ZamenitVid() { if (tekushiyObyekt != null && navigator != null) navigator.OtkrytPanelZameny(tekushiyObyekt); }
 }

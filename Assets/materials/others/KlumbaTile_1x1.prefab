@@ -146,6 +146,9 @@ MonoBehaviour:
   materialyZabora:
   - {fileID: 2100000, guid: f1791c3b12b69434495d08012760802b, type: 2}
   - {fileID: 2100000, guid: 09dd64c37917ff143af012668fc1867a, type: 2}
+  - {fileID: 2100000, guid: 3a481fee2c8280d4297c07b7ab32ab0b, type: 2}
+  - {fileID: 2100000, guid: 710a4e2d155a63547b96d5625b052fdb, type: 2}
+  - {fileID: 2100000, guid: 3d83f3e9757cce846b3df4ed99e42ad0, type: 2}
   kontejnerCvetov: {fileID: 0}
   maskaTerreina:
     serializedVersion: 2

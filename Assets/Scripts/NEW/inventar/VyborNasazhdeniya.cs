@@ -19,13 +19,20 @@ public class VyborNasazhdeniya : MonoBehaviour
     public string imyaKartyGrip = "XRI Right Interaction";
     public string imyaDeistviyaGrip = "MoveTool";
 
+    [Header("=== Ластик для цветов ===")]
+    public Cveti skriptPosadkiCvetov;
+    public GameObject prefabIndikatoraLastika;
+    private GameObject indikatorLastika;
+    private bool rezhimLastika = false;
+    private float vremyaSleduyuschegoUdaleniya = 0f;
+
     private LineRenderer luch;
     private Material materialLuchaKopiya;
     private InputAction deistvieTriggera, deistvieGrip;
 
     private Nasazhdenie navedennoe, navedennayaChast, vybrannoe, peremeshchaemyi;
     private GazonTile rastyagivaemyiGazon;
-    private SekciyaNasazhdeniy rastyagivaemayaSekciya;
+    private UniversalSekciya rastyagivaemayaSekciya;
     private KlumbaTile rastyagivaemayaKlumba;
 
     private Vector3 poslednyayaTochka, poslednyayaNapravlenie, poslednyayaNachalo;
@@ -43,6 +50,12 @@ public class VyborNasazhdeniya : MonoBehaviour
         if (naborDeistvii == null) return;
         var k = naborDeistvii.FindActionMap(imyaKarty); if (k != null) deistvieTriggera = k.FindAction(imyaDeistviya);
         var kg = naborDeistvii.FindActionMap(imyaKartyGrip); if (kg != null) deistvieGrip = kg.FindAction(imyaDeistviyaGrip);
+
+        if (prefabIndikatoraLastika != null)
+        {
+            indikatorLastika = Instantiate(prefabIndikatoraLastika);
+            indikatorLastika.SetActive(false);
+        }
     }
 
     void OnEnable()
@@ -57,6 +70,19 @@ public class VyborNasazhdeniya : MonoBehaviour
         if (deistvieGrip != null) { deistvieGrip.performed -= NazhatieGrip; deistvieGrip.canceled -= OtpuskanieGrip; }
         luch.enabled = false;
         peremeshchaemyi = null; rastyagivaemyiGazon = null; rastyagivaemayaSekciya = null; rastyagivaemayaKlumba = null;
+        VyklyuchitRezhimLastika();
+    }
+
+    public void VklyuchitRezhimLastika()
+    {
+        rezhimLastika = true;
+        if (indikatorLastika != null) indikatorLastika.SetActive(true);
+    }
+
+    public void VyklyuchitRezhimLastika()
+    {
+        rezhimLastika = false;
+        if (indikatorLastika != null) indikatorLastika.SetActive(false);
     }
 
     void LateUpdate()
@@ -65,6 +91,23 @@ public class VyborNasazhdeniya : MonoBehaviour
 
         Transform start = tochkaStarta != null ? tochkaStarta : transform;
         Vector3 nachalo = start.position, napravlenie = start.forward, konets = nachalo + napravlenie * dlinaLucha;
+
+        if (rezhimLastika)
+        {
+            if (Physics.Raycast(nachalo, napravlenie, out RaycastHit hitLastika, dlinaLucha, ~0, QueryTriggerInteraction.Ignore))
+            {
+                konets = hitLastika.point;
+                float radius = skriptPosadkiCvetov != null ? skriptPosadkiCvetov.diametrKisti : 0.5f;
+                if (indikatorLastika != null)
+                {
+                    indikatorLastika.transform.position = hitLastika.point + Vector3.up * 0.02f;
+                    indikatorLastika.transform.localScale = new Vector3(radius, 0.01f, radius);
+                }
+            }
+            luch.enabled = true; luch.SetPosition(0, nachalo); luch.SetPosition(1, konets);
+            UstanovitTsvetLucha(Color.magenta);
+            return;
+        }
 
         if (rastyagivaemyiGazon != null)
         {
@@ -96,7 +139,6 @@ public class VyborNasazhdeniya : MonoBehaviour
             {
                 Vector3 targetPos = hitT.point;
 
-                // ДЛЯ ЦВЕТОВ - ограничиваем внутри клумбы
                 if (peremeshchaemyi.kategoriya == "Цветы")
                 {
                     KlumbaTile rodKlumba = peremeshchaemyi.GetComponentInParent<KlumbaTile>();
@@ -118,21 +160,29 @@ public class VyborNasazhdeniya : MonoBehaviour
                         }
                     }
                 }
-                else
+                else if (peremeshchaemyi.kategoriya == "Секции")
                 {
-                    // ДЛЯ ВСЕХ ОСТАЛЬНЫХ (деревья, кусты, газоны) - запрещаем заезжать в клумбу
-                    Collider[] cols = Physics.OverlapSphere(targetPos + Vector3.up * 0.2f, 0.2f);
+                    UniversalSekciya sek = peremeshchaemyi.GetComponentInParent<UniversalSekciya>();
+                    float shirinaSek = 1f;
+                    float dlinaSek = 1f;
+                    if (sek != null)
+                    {
+                        shirinaSek = sek.shirina;
+                        dlinaSek = sek.dlina;
+                    }
+
+                    Vector3 halfExtents = new Vector3(shirinaSek / 2f, 1f, dlinaSek / 2f);
+                    Collider[] cols = Physics.OverlapBox(targetPos + Vector3.up * 0.5f, halfExtents, peremeshchaemyi.transform.rotation, ~0, QueryTriggerInteraction.Ignore);
+
                     bool zablokirovano = false;
                     foreach (var c in cols)
                     {
+                        if (c.transform.IsChildOf(peremeshchaemyi.transform) || c.transform == peremeshchaemyi.transform) continue;
+
                         if (c.GetComponentInParent<KlumbaTile>() != null) { zablokirovano = true; break; }
                     }
 
-                    if (zablokirovano)
-                    {
-                        // Если пытаемся затащить в клумбу - оставляем объект на старом месте
-                        targetPos = peremeshchaemyi.transform.position;
-                    }
+                    if (zablokirovano) targetPos = peremeshchaemyi.transform.position;
                 }
 
                 konets = targetPos;
@@ -153,7 +203,7 @@ public class VyborNasazhdeniya : MonoBehaviour
             Nasazhdenie nas = hit.collider.GetComponentInParent<Nasazhdenie>();
             if (nas != null)
             {
-                SekciyaNasazhdeniy sek = nas.GetComponentInParent<SekciyaNasazhdeniy>();
+                UniversalSekciya sek = nas.GetComponentInParent<UniversalSekciya>();
                 if (sek != null)
                 {
                     obshiy = sek.GetComponent<Nasazhdenie>();
@@ -178,6 +228,7 @@ public class VyborNasazhdeniya : MonoBehaviour
         if (rastyagivaemayaKlumba != null) { rastyagivaemayaKlumba.ZakonchitRastyagivanie(); rastyagivaemayaKlumba = null; }
 
         navedennoe = null; navedennayaChast = null; vybrannoe = null; peremeshchaemyi = null;
+        VyklyuchitRezhimLastika();
         if (inventar != null && inventar.tekushiyObyekt != null) inventar.UstanovitTekushiyObyekt(null);
     }
 
@@ -193,7 +244,33 @@ public class VyborNasazhdeniya : MonoBehaviour
 
     private void NazhatieTriggera(InputAction.CallbackContext ctx)
     {
-        if (!SostoyanieMenyu.InventoryOpen || navedennoe == null) return;
+        if (!SostoyanieMenyu.InventoryOpen) return;
+
+        if (rezhimLastika)
+        {
+            if (Time.time >= vremyaSleduyuschegoUdaleniya && Physics.Raycast(tochkaStarta != null ? tochkaStarta.position : transform.position, transform.forward, out RaycastHit hitLast, dlinaLucha, ~0, QueryTriggerInteraction.Ignore))
+            {
+                float radius = skriptPosadkiCvetov != null ? (skriptPosadkiCvetov.diametrKisti / 2f) : 0.25f;
+                Collider[] cols = Physics.OverlapSphere(hitLast.point, radius);
+
+                foreach (var col in cols)
+                {
+                    Nasazhdenie nas = col.GetComponentInParent<Nasazhdenie>();
+                    if (nas != null && nas.kategoriya == "Цветы")
+                    {
+                        Destroy(nas.gameObject);
+                        if (inventar != null && inventar.tekushiyObyekt == nas)
+                        {
+                            inventar.UstanovitTekushiyObyekt(null);
+                        }
+                    }
+                }
+                vremyaSleduyuschegoUdaleniya = Time.time + 0.05f;
+            }
+            return;
+        }
+
+        if (navedennoe == null) return;
         Nasazhdenie vybratChto = navedennoe;
         if (navedennayaChast != null && inventar != null && inventar.tekushiyObyekt == navedennoe) vybratChto = navedennayaChast;
 
@@ -205,12 +282,16 @@ public class VyborNasazhdeniya : MonoBehaviour
 
     private void NazhatieGrip(InputAction.CallbackContext ctx)
     {
-        if (!SostoyanieMenyu.InventoryOpen || navedennoe == null) return;
+        if (!SostoyanieMenyu.InventoryOpen || navedennoe == null || rezhimLastika) return;
 
         if (inventar != null && inventar.RezhimRastyagivaniya && estTochka)
         {
             if (navedennoe.TryGetComponent<GazonTile>(out var gt) && gt.NachatRastyagivanie(poslednyayaTochka)) { rastyagivaemyiGazon = gt; return; }
-            if (navedennoe.TryGetComponent<SekciyaNasazhdeniy>(out var sn) && sn.NachatRastyagivanie(poslednyayaTochka)) { rastyagivaemayaSekciya = sn; return; }
+
+            // Ищем компонент секции
+            UniversalSekciya sn = navedennoe.GetComponentInParent<UniversalSekciya>();
+            if (sn != null && sn.NachatRastyagivanie(poslednyayaTochka)) { rastyagivaemayaSekciya = sn; return; }
+
             if (navedennoe.TryGetComponent<KlumbaTile>(out var kt) && kt.NachatRastyagivanie(poslednyayaTochka)) { rastyagivaemayaKlumba = kt; return; }
         }
         peremeshchaemyi = navedennoe;
