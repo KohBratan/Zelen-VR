@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(LineRenderer))]
 public class PosadkaCvetov : MonoBehaviour
 {
-    [Header("Настройки луча")]
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ Р»СѓС‡Р°")]
     public Transform tochkaStarta;
     public float dlinaLucha = 30f;
     public Material materialLucha;
@@ -12,17 +12,17 @@ public class PosadkaCvetov : MonoBehaviour
     public Color tsvetPopal = Color.green;
     public Color tsvetNePopal = Color.red;
 
-    [Header("Настройки кисти (диаметр в метрах)")]
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ РєРёСЃС‚Рё (СЂРёСЃРѕРІР°РЅРёРµ С‚РѕС‡РєР°РјРё)")]
     [Range(0.1f, 3f)]
-    public float diametrKisti = 0.5f; // Радиус = диаметр / 2
-    public float minimalnoeRasstoyanie = 0.15f; // Чтобы цветы не спавнились друг в друге
-    public float skorostPosadki = 0.05f; // Задержка между спавнами (чтобы не лагало)
+    public float diametrKisti = 0.5f; // РґРёР°РјРµС‚СЂ = С€РёСЂРёРЅР° / 2
+    public float minimalnoeRasstoyanie = 0.15f; // РјРµР¶РґСѓ С‚РѕС‡РєР°РјРё РїСЂРё СЂРёСЃРѕРІР°РЅРёРё
+    public float skorostPosadki = 0.05f; // СЃРєРѕСЂРѕСЃС‚СЊ В«СЂРёСЃРѕРІР°РЅРёСЏВ» РєРёСЃС‚СЊСЋ
 
-    [Header("Визуализация кисти")]
-    public GameObject prefabIndikatoraKisti; // Сюда кидаем Cylinder или Quad с прозрачным материалом
+    [Header("РРЅРґРёРєР°С‚РѕСЂ РєРёСЃС‚Рё")]
+    public GameObject prefabIndikatoraKisti; // Cylinder / Quad СЃ РїСЂРѕР·СЂР°С‡РЅС‹Рј РјР°С‚РµСЂРёР°Р»РѕРј
     private GameObject indikatorKisti;
 
-    [Header("Ввод")]
+    [Header("Р’РІРѕРґ")]
     public InputActionAsset naborDeistvii;
     public string imyaKarty = "XRI Left Interaction";
     public string imyaDeistviya = "PlaceFlower";
@@ -57,7 +57,7 @@ public class PosadkaCvetov : MonoBehaviour
             }
         }
 
-        // Создаем индикатор кисти, если задан префаб
+        // РЎРѕР·РґР°С‘Рј РёРЅРґРёРєР°С‚РѕСЂ РєРёСЃС‚Рё, РµСЃР»Рё РѕРЅ Р·Р°РґР°РЅ
         if (prefabIndikatoraKisti != null)
         {
             indikatorKisti = Instantiate(prefabIndikatoraKisti);
@@ -102,7 +102,9 @@ public class PosadkaCvetov : MonoBehaviour
 
         Nasazhdenie nas = prefab.GetComponent<Nasazhdenie>();
 
-        if (nas == null || nas.kategoriya != "Цветы")
+        // Р Р°Р·СЂРµС€Р°РµРј РїРѕСЃР°РґРєСѓ Р»СЋР±С‹С… РЅР°СЃР°Р¶РґРµРЅРёР№ (РґРµСЂРµРІСЊСЏ, РєСѓСЃС‚С‹, РіР°Р·РѕРЅС‹, С†РІРµС‚С‹),
+        // Р·Р°РїСЂРµС‰Р°РµРј С‚РѕР»СЊРєРѕ СЃРµРєС†РёРё.
+        if (nas == null || nas.kategoriya == "РЎРµРєС†РёРё")
         {
             if (luch.enabled) luch.enabled = false;
             SpryatatPrizrak();
@@ -146,16 +148,16 @@ public class PosadkaCvetov : MonoBehaviour
 
                     PokazatPrizrak(prefab, tochkaPopadaniya);
 
-                    // Показываем индикатор кисти на земле
+                    // РћР±РЅРѕРІР»СЏРµРј РёРЅРґРёРєР°С‚РѕСЂ РєРёСЃС‚Рё РЅР° Р·РµРјР»Рµ
                     if (indikatorKisti != null)
                     {
                         indikatorKisti.SetActive(true);
                         indikatorKisti.transform.position = tochkaPopadaniya + Vector3.up * 0.02f;
-                        // Масштабируем индикатор под диаметр кисти (предполагается, что базовый цилиндр имеет диаметр 1)
+                        // РњР°СЃС€С‚Р°Р±РёСЂСѓРµРј РїСЂРµС„Р°Р±-С†РёР»РёРЅРґСЂ РїРѕРґ РґРёР°РјРµС‚СЂ РєРёСЃС‚Рё (РїСЂРµРґРїРѕР»Р°РіР°РµС‚СЃСЏ, С‡С‚Рѕ Р±Р°Р·РѕРІС‹Р№ РґРёР°РјРµС‚СЂ = 1)
                         indikatorKisti.transform.localScale = new Vector3(diametrKisti, 0.01f, diametrKisti);
                     }
 
-                    // Если триггер зажат и мы попали в клумбу - сыплем цветы
+                    // Р•СЃР»Рё Р·Р°Р¶Р°С‚Р° РєРЅРѕРїРєР° Рё РїСЂРѕС€С‘Р» РёРЅС‚РµСЂРІР°Р» - СЂРёСЃСѓРµРј С‚РѕС‡РєСѓ
                     if (risuem && Time.time >= vremyaSleduyuscheyPosadki)
                     {
                         PosaditKistyu(prefab, tekushayaKlumba);
@@ -188,11 +190,12 @@ public class PosadkaCvetov : MonoBehaviour
     private void NachatPosadku(InputAction.CallbackContext ctx)
     {
         risuem = true;
-        // Сразу сажаем один цветок при клике
+        // РџРµСЂРІР°СЏ С‚РѕС‡РєР° СЃС‚Р°РІРёС‚СЃСЏ СЃСЂР°Р·Сѓ РїСЂРё РЅР°Р¶Р°С‚РёРё
         if (VyborInstrumenta.TekushiyPrefab != null && tekushayaKlumba != null)
         {
             Nasazhdenie nas = VyborInstrumenta.TekushiyPrefab.GetComponent<Nasazhdenie>();
-            if (nas != null && nas.kategoriya == "Цветы")
+            // РЎРµРєС†РёРё РЅРµ СЃР°Р¶Р°РµРј, РІСЃС‘ РѕСЃС‚Р°Р»СЊРЅРѕРµ (РґРµСЂРµРІСЊСЏ/РєСѓСЃС‚С‹/РіР°Р·РѕРЅС‹/С†РІРµС‚С‹) - РјРѕР¶РЅРѕ.
+            if (nas != null && nas.kategoriya != "РЎРµРєС†РёРё")
             {
                 PosaditOdinochno(VyborInstrumenta.TekushiyPrefab, tekushayaKlumba, tochkaPopadaniya);
             }
@@ -204,7 +207,7 @@ public class PosadkaCvetov : MonoBehaviour
         risuem = false;
     }
 
-    // Посадка одного цветка (при одиночном клике)
+    // РћРґРёРЅРѕС‡РЅР°СЏ РїРѕСЃР°РґРєР° (РґР»СЏ РѕРґРёРЅРѕС‡РЅРѕРіРѕ РєР»РёРєР°)
     private void PosaditOdinochno(GameObject prefab, KlumbaTile klumba, Vector3 pos)
     {
         GameObject novoe = Instantiate(prefab, pos, Quaternion.Euler(0, Random.Range(0, 360), 0), klumba.kontejnerCvetov);
@@ -212,33 +215,33 @@ public class PosadkaCvetov : MonoBehaviour
         if (nas != null) nas.sourcePrefab = prefab;
     }
 
-    // Умная посадка кистью (выбирает точки в радиусе и проверяет, чтобы не спавнить друг в друге)
+    // РљРёСЃС‚РµРІР°СЏ РїРѕСЃР°РґРєР° (РЅРµСЃРєРѕР»СЊРєРѕ С‚РѕС‡РµРє РІ СЂР°РґРёСѓСЃРµ СЃ РїСЂРѕРІРµСЂРєРѕР№, С‡С‚РѕР±С‹ РЅРµ СЃС‚Р°РІРёС‚СЊ РґСЂСѓРі РЅР° РґСЂСѓРіР°)
     private void PosaditKistyu(GameObject prefab, KlumbaTile klumba)
     {
         int popytki = 0;
         float radius = diametrKisti / 2f;
 
-        while (popytki < 10) // Пытаемся найти свободное место в радиусе кисти
+        while (popytki < 10) // РЅРµСЃРєРѕР»СЊРєРѕ РїРѕРїС‹С‚РѕРє РЅР°Р№С‚Рё СЃРІРѕР±РѕРґРЅСѓСЋ С‚РѕС‡РєСѓ РІ РїСЏС‚РЅРµ РєРёСЃС‚Рё
         {
             popytki++;
 
-            // Берем случайную точку внутри круга
+            // Р‘РµСЂС‘Рј СЃР»СѓС‡Р°Р№РЅСѓСЋ С‚РѕС‡РєСѓ РІРЅСѓС‚СЂРё РєСЂСѓРіР° РєРёСЃС‚Рё
             Vector2 sluchaynayaTochka = Random.insideUnitCircle * radius;
             Vector3 mirovayaTochka = tochkaPopadaniya + new Vector3(sluchaynayaTochka.x, 0, sluchaynayaTochka.y);
 
-            // Проверяем, не вылезли ли мы за пределы клумбы
+            // РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РІС‹С€Р»Рё Р»Рё РјС‹ Р·Р° СЃС‚РµРЅРєРё РєР»СѓРјР±С‹
             Vector3 localPos = klumba.transform.InverseTransformPoint(mirovayaTochka);
             float otstup = klumba.tolshinaZabora + 0.02f;
             if (Mathf.Abs(localPos.x) > (klumba.shirina / 2f) - otstup || Mathf.Abs(localPos.z) > (klumba.dlina / 2f) - otstup)
-                continue; // Вылезли за забор, ищем другую точку
+                continue; // С‚РѕС‡РєР° Р·Р° Р±РѕСЂС‚РѕРј вЂ” РїСЂРѕРїСѓСЃРєР°РµРј
 
-            // Ищем высоту земли в этой точке
+            // РЎС‚Р°РІРёРј С‚РѕС‡РєСѓ РЅР° Р·РµРјР»СЋ
             if (Physics.Raycast(mirovayaTochka + Vector3.up * 2f, Vector3.down, out RaycastHit groundHit, 5f, klumba.maskaTerreina))
             {
                 mirovayaTochka = groundHit.point;
             }
 
-            // Проверяем, нет ли слишком близко других цветов
+            // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЂСЏРґРѕРј РЅРµС‚ РґСЂСѓРіРёС… С†РІРµС‚РѕРІ
             bool mestoSvobodno = true;
             foreach (Transform child in klumba.kontejnerCvetov)
             {
@@ -252,7 +255,7 @@ public class PosadkaCvetov : MonoBehaviour
             if (mestoSvobodno)
             {
                 PosaditOdinochno(prefab, klumba, mirovayaTochka);
-                break; // Успешно посадили, выходим из цикла
+                break; // С‚РѕС‡РєСѓ РїРѕСЃС‚Р°РІРёР»Рё вЂ” РІС‹С…РѕРґРёРј
             }
         }
     }
