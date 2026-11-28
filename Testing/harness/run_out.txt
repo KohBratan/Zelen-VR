@@ -1,0 +1,145 @@
+=== RESULTS ===
+U-01|unit-replacement|Замена с пустым старым объектом возвращает null|PASS|результат=null
+U-02|unit-replacement|Замена без префаба возвращает null|PASS|результат=null
+U-03|unit-replacement|Предупреждение в лог при отсутствии префаба|PASS|WARN: ZamenaNasazhdeniya: нечего заменять (старый объект не задан).; WARN: ZamenaNasazhdeniya: для вида 'Липа' не назначен префаб.
+U-04|unit-replacement|Успешная замена возвращает паспорт|PASS|результат=Липа
+U-05|unit-replacement|Новый объект создан на позиции старого|PASS|pos=(1, 2, 3)
+U-06|unit-replacement|Сохранён поворот|PASS|rot ok
+U-07|unit-replacement|Сохранён родитель|PASS|parent=container
+U-08|unit-replacement|Сохранён масштаб (не из префаба)|PASS|scale=(2, 2, 2)
+U-09|unit-replacement|Название вида обновлено|PASS|vid=Липа
+U-10|unit-replacement|Категория скопирована|PASS|cat=Деревья
+U-11|unit-replacement|Фиксация скопирована|PASS|fixed=True
+U-12|unit-replacement|Старый объект скрыт до удаления|PASS|active=False
+U-13|unit-replacement|Старый объект помечен на удаление|PASS|destroyed=True
+U-14|unit-replacement|Паспорт добавляется, если в префабе его нет|PASS|pasport=Nasazhdenie
+U-15|unit-replace-panel|Поиск категории без учёта регистра|PASS|cat=Деревья
+U-16|unit-replace-panel|Отсутствующая категория не находится|PASS|cat=null
+U-17|unit-replace-panel|Текущий вид сравнивается без регистра|PASS|сравнение 'ДУБ' vs 'дуб'
+U-18|unit-replace-panel|Недоступная ячейка за пределами каталога|PASS|индекс 3 при 2 видах
+U-19|unit-replace-panel|Отрицательный индекс ячейки недоступен|PASS|индекс -1
+U-20|unit-replace-panel|Клик по недоступной ячейке игнорируется|PASS|событий=0
+U-21|unit-replace-panel|Клик по доступной ячейке выдаёт событие|PASS|событий=1, вид=Липа
+U-22|unit-replace-panel|Движение вправо по сетке|PASS|ячейка=1
+U-23|unit-replace-panel|Движение влево по сетке|PASS|ячейка=0
+U-24|unit-replace-panel|Свайп за левый край закрывает панель|PASS|active=False
+U-25|unit-replace-panel|При запрещённом выходе панель не закрывается|PASS|active=True
+U-26|unit-replace-panel|Повторный наклон до нейтрали игнорируется|PASS|ячейка=0
+U-27|unit-replace-panel|Возврат в нейтраль сбрасывает блокировку|PASS|zhdyom=False
+U-28|unit-replace-panel|Клик в кадре открытия панели игнорируется|PASS|событий=0
+U-29|unit-replace-panel|Клик в следующем кадре подтверждает выбор|PASS|событий=1
+U-30|unit-inventory-nav|AnyMenuOpen=false когда все меню закрыты|PASS|inventory=False, tools=False
+U-31|unit-inventory-nav|AnyMenuOpen=true при открытом меню инструментов|PASS|tools=true
+U-32|unit-inventory-nav|AnyMenuOpen=true при двух открытых меню|PASS|both=true
+U-33|unit-inventory-nav|Переключение пропускает неактивный элемент|PASS|индекс=2
+U-34|unit-inventory-nav|Переключение по кругу возвращает на первый элемент|PASS|индекс=0
+U-35|unit-inventory-nav|Переключение назад с первого уходит на последний доступный|PASS|индекс=2
+U-36|unit-inventory-nav|Слайдер меняется на заданный шаг|PASS|value=0,6
+U-37|unit-inventory-nav|Нажатие на кнопку не меняет слайдер|PASS|value=0,6
+U-38|unit-inventory-nav|Наклон выше порога вызывает обработку|PASS|zhdyom=True
+U-39|unit-inventory-nav|Второй наклон без нейтрали не обрабатывается|PASS|индекс=0
+U-40|unit-inventory-nav|Режим замены включён для категории Деревья|PASS|panel=True
+U-41|unit-inventory-nav|Выбрана кнопка текущего источника|PASS|индекс=0
+U-42|unit-inventory-nav|Галочка стоит на текущем виде|PASS|метки=True,False
+U-43|unit-inventory-nav|Для кустов открыта своя панель|FAIL|bush=True, tree=True
+U-44|unit-inventory-nav|Неподдерживаемая категория не открывает панель|FAIL|rezhim=True
+U-45|unit-inventory-nav|Пустой объект не открывает панель замены|FAIL|rezhim=True
+U-46|unit-inventory-nav|Сдвиг за правый край сетки запрещён|PASS|moved=False
+U-47|unit-inventory-nav|Сдвиг влево внутри сетки разрешён|PASS|index=0
+U-48|unit-inventory-nav|Закрытие панели выключает режим замены|PASS|rezhim=False
+U-49|unit-menu-tabs|Выбор вкладки показывает только нужную панель|PASS|p1=False, p2=True
+U-50|unit-menu-tabs|Текущая вкладка запомнена|PASS|tab=1
+U-51|unit-menu-tabs|Неверный индекс вкладки игнорируется|PASS|tab=1
+U-52|unit-menu-tabs|Следующая вкладка|PASS|tab=2
+U-53|unit-menu-tabs|Переход по кругу на первую вкладку|PASS|tab=0
+U-54|unit-menu-tabs|Предыдущая вкладка по кругу|PASS|tab=2
+U-55|unit-menu-tabs|Слайдер определяется как текущий элемент|PASS|tab=2
+U-56|unit-menu-tabs|Слайдер вкладки меняется на шаг|PASS|value=0,6
+U-57|unit-menu-tabs|Подтверждение на кнопке вызывает клик|PASS|clicks=1
+U-58|unit-menu-tabs|Подтверждение на слайдере ничего не делает|PASS|clicks=1
+U-59|unit-menu-tabs|Шаг вправо в сетке|PASS|tab=1
+U-60|unit-menu-tabs|Шаг вправо на правом краю возвращает false|PASS|tab=1
+U-61|unit-menu-tabs|Шаг влево в сетке|PASS|tab=0
+U-62|unit-menu-tabs|Шаг влево на левом краю возвращает false|PASS|tab=0
+U-63|unit-menu-tabs|Шаг вниз по колонке|PASS|tab=2
+U-64|unit-menu-tabs|Шаг вверх по колонке|PASS|tab=0
+U-65|unit-menu-tabs|Обычный список не считается сеткой|PASS|kolonok=1
+U-66|unit-inventory-actions|Пустой выбор отключает кнопки|PASS|rot=False
+U-67|unit-inventory-actions|Пустой выбор показывает заглушку|PASS|text=Ничего не выбрано
+U-68|unit-inventory-actions|Пустой выбор скрывает панель размера|PASS|panel=False
+U-69|unit-inventory-actions|Имя объекта показано в инвентаре|PASS|text=Дуб
+U-70|unit-inventory-actions|Кнопка растягивания скрыта для дерева|PASS|active=False
+U-71|unit-inventory-actions|Текст фиксации для незафиксированного объекта|PASS|text=Зафиксировать
+U-72|unit-inventory-actions|Кнопка растягирования показана для газона|PASS|active=True
+U-73|unit-inventory-actions|Текст фиксации для зафиксированного объекта|PASS|text=Открепить
+U-74|unit-inventory-actions|Растягивание увеличивает длину на шаг|PASS|z=1,2
+U-75|unit-inventory-actions|Середина слайдера = исходный размер|PASS|scale=(1, 1, 1)
+U-76|unit-inventory-actions|Минимальное значение слайдера уменьшает объект|PASS|scale=0,33333334
+U-77|unit-inventory-actions|Максимальное значение слайдера увеличивает объект|PASS|scale=3
+U-78|unit-inventory-actions|Вращение без режима не применяется|PASS|rot=0
+U-79|unit-inventory-actions|Режим вращения включается|PASS|mode=True
+U-80|unit-inventory-actions|Вращение применяется в режиме|PASS|rot=0,7853982
+U-81|unit-inventory-actions|Режим вращения выключается|PASS|mode=False
+U-82|unit-inventory-actions|Фиксация закрывает инвентарь|PASS|panel=False
+U-83|unit-inventory-actions|Удаление снимает выбор|PASS|object=null
+U-84|unit-inventory-actions|Удалённый объект помечен на уничтожение|PASS|destroyed=True
+U-85|unit-placement|Без попадания луч красный|PASS|color=C(1,0,0)
+U-86|unit-placement|Без попадания конец луча на максимальной длине|PASS|end=(0, 1, 30)
+U-87|unit-placement|Без попадания призрак не создан|PASS|ghost=
+U-88|unit-placement|Триггер без попадания не сажает дерево|PASS|
+U-89|unit-placement|Попадание по террейну создаёт призрак|PASS|ghost=UnityEngine.GameObject
+U-90|unit-placement|Призрак стоит в точке попадания|PASS|pos=(0, 0, 10)
+U-91|unit-placement|Конец луча в точке попадания|PASS|end=(0, 0, 10)
+U-92|unit-placement|При попадании луч зелёный|PASS|color=C(0,1,0)
+U-93|unit-placement|Триггер сажает дерево в точке попадания|PASS|pos=(0, 0, 10)
+U-94|unit-placement|У посаженного дерева запомнен sourcePrefab|PASS|source ok
+U-95|unit-placement|В лог записана посадка|PASS|LOG: Посажено: Дуб(Clone)
+U-96|unit-placement|Открытое меню блокирует луч при настройке|PASS|line=False
+U-97|unit-placement|Наведение на насаждение обнаружено|PASS|hovered=объект
+U-98|unit-placement|Триггер выбирает наведённое насаждение|PASS|selected=Липа
+U-99|unit-placement|Grip приклеивает объект к точке на террейне|PASS|pos=(7, 0, 7)
+U-100|unit-placement|Отпускание Grip прекращает перемещение|PASS|moving=
+U-101|unit-placement|Сброс выделения очищает инвентарь|PASS|object=
+U-102|unit-rotation-misc|Мёртвая зона не крутит объект|PASS|rot=0
+U-103|unit-rotation-misc|Горизонтальный наклон крутит против часовой|PASS|rot=-0,020943953
+U-104|unit-rotation-misc|Вертикальный наклон выключает режим поворота|PASS|mode=False
+U-105|unit-rotation-misc|Otkryt показывает панель|PASS|active=True
+U-106|unit-rotation-misc|Повторный Otkryt ничего не меняет|PASS|active=True
+U-107|unit-rotation-misc|Zakryt скрывает панель|PASS|active=False
+U-108|unit-rotation-misc|Кнопка переключения листает вкладку|PASS|tab=1
+U-109|unit-rotation-misc|Кисть показывает слайдер плотности|PASS|active=True
+U-110|unit-rotation-misc|Ластик скрывает слайдер плотности|PASS|active=False
+U-111|unit-rotation-misc|Выбор кнопки запоминает префаб|PASS|prefab=UnityEngine.GameObject
+U-112|unit-rotation-misc|Скрытие выбранной кнопки сбрасывает выбор|PASS|prefab=
+U-113|unit-rotation-misc|Подсветка меняет материал|PASS|mat=hl
+U-114|unit-rotation-misc|Снятие подсветки возвращает исходный материал|PASS|mat=orig
+U-115|unit-rotation-misc|Повторное снятие подсветки безопасно|PASS|mat=orig
+S-01|scenario|Сценарий 1: панель замены открыта для посаженного дерева|PASS|rezhim=True
+S-02|scenario|Сценарий 1: создано новое насаждение вместо старого|PASS|obj=есть
+S-03|scenario|Сценарий 1: позиция и масштаб сохранены|PASS|pos=(2, 0, 5) scale=(1,5, 1,5, 1,5)
+S-04|scenario|Сценарий 1: старый объект удалён|PASS|destroyed=True
+S-05|scenario|Сценарий 1: источник префаба обновлён|PASS|source ok
+S-06|scenario|Сценарий 1: фиксация перенесена|PASS|fixed=True
+S-07|scenario|Сценарий 1: инвентарь показывает новый объект|PASS|selected ok
+S-08|scenario|Сценарий 1: панель замены закрылась|PASS|rezhim=False
+S-09|scenario|Сценарий 2: выбор того же вида не создаёт объект|PASS|clones=0
+S-10|scenario|Сценарий 2: объект остался на месте|PASS|same ok
+S-11|scenario|Сценарий 3: контроллер выполнил замену|PASS|vid=Липа
+S-12|scenario|Сценарий 3: панель обновлена для нового объекта|PASS|panel updated
+S-13|scenario|Сценарий 4: при открытом инвентаре локомоция выключена|PASS|rot=False move=False
+S-14|scenario|Сценарий 4: после закрытия меню локомоция включена|PASS|rot=True move=True
+S-15|scenario|Сценарий 5: меню инструментов сообщает о своём состоянии|PASS|tools=True
+S-16|scenario|Сценарий 5: свайп вправо входит в категорию|PASS|inside=True
+S-17|scenario|Сценарий 5: свайп вверх листает виды|PASS|tab=1
+S-18|scenario|Сценарий 5: левый свайп возвращает к категориям|PASS|inside=False
+S-19|scenario|Сценарий 6: пустой объект -> warning без исключения|PASS|WARN: DzhoystikNavigatsiyaInventarya: нет объекта для замены вида.
+S-20|scenario|Сценарий 6: неподдерживаемая категория -> warning|PASS|WARN: DzhoystikNavigatsiyaInventarya: замена вида для категории 'Газон' не настроена.
+S-21|scenario|Сценарий 6: отсутствующая категория -> пустой каталог и warning|PASS|WARN: PanelZameny: в каталоге нет категории 'Деревья'.
+S-22|scenario|Сценарий 7: призрак пересоздан при смене префаба|PASS|ghosts different
+S-23|scenario|Сценарий 7: при выключении луч и призрак скрыты|PASS|cleaned
+S-24|scenario|Сценарий 8: объект выбран и подсвечен|PASS|selected ok
+S-25|scenario|Сценарий 8: удаление очищает выбор инвентаря|PASS|selected=
+S-26|scenario|Сценарий 8: объект помечен на удаление|PASS|destroyed=True
+S-27|scenario|Сценарий 9: фокус вернулся на кнопку замены|PASS|selected=replaceBtn
+S-28|scenario|Сценарий 10: размер и растягивание применяются вместе|PASS|scale=(1, 1, 1,2)
+=== SUMMARY total=143 pass=140 fail=3 ===

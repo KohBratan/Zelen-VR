@@ -1,0 +1,198 @@
+[
+  {
+    "id": "S-01",
+    "group": "scenario",
+    "name": "Сценарий 1: панель замены открыта для посаженного дерева",
+    "status": "PASS",
+    "detail": "rezhim=True"
+  },
+  {
+    "id": "S-02",
+    "group": "scenario",
+    "name": "Сценарий 1: создано новое насаждение вместо старого",
+    "status": "PASS",
+    "detail": "obj=есть"
+  },
+  {
+    "id": "S-03",
+    "group": "scenario",
+    "name": "Сценарий 1: позиция и масштаб сохранены",
+    "status": "PASS",
+    "detail": "pos=(2, 0, 5) scale=(1,5, 1,5, 1,5)"
+  },
+  {
+    "id": "S-04",
+    "group": "scenario",
+    "name": "Сценарий 1: старый объект удалён",
+    "status": "PASS",
+    "detail": "destroyed=True"
+  },
+  {
+    "id": "S-05",
+    "group": "scenario",
+    "name": "Сценарий 1: источник префаба обновлён",
+    "status": "PASS",
+    "detail": "source ok"
+  },
+  {
+    "id": "S-06",
+    "group": "scenario",
+    "name": "Сценарий 1: фиксация перенесена",
+    "status": "PASS",
+    "detail": "fixed=True"
+  },
+  {
+    "id": "S-07",
+    "group": "scenario",
+    "name": "Сценарий 1: инвентарь показывает новый объект",
+    "status": "PASS",
+    "detail": "selected ok"
+  },
+  {
+    "id": "S-08",
+    "group": "scenario",
+    "name": "Сценарий 1: панель замены закрылась",
+    "status": "PASS",
+    "detail": "rezhim=False"
+  },
+  {
+    "id": "S-09",
+    "group": "scenario",
+    "name": "Сценарий 2: выбор того же вида не создаёт объект",
+    "status": "PASS",
+    "detail": "clones=0"
+  },
+  {
+    "id": "S-10",
+    "group": "scenario",
+    "name": "Сценарий 2: объект остался на месте",
+    "status": "PASS",
+    "detail": "same ok"
+  },
+  {
+    "id": "S-11",
+    "group": "scenario",
+    "name": "Сценарий 3: контроллер выполнил замену",
+    "status": "PASS",
+    "detail": "vid=Липа"
+  },
+  {
+    "id": "S-12",
+    "group": "scenario",
+    "name": "Сценарий 3: панель обновлена для нового объекта",
+    "status": "PASS",
+    "detail": "panel updated"
+  },
+  {
+    "id": "S-13",
+    "group": "scenario",
+    "name": "Сценарий 4: при открытом инвентаре локомоция выключена",
+    "status": "PASS",
+    "detail": "rot=False move=False"
+  },
+  {
+    "id": "S-14",
+    "group": "scenario",
+    "name": "Сценарий 4: после закрытия меню локомоция включена",
+    "status": "PASS",
+    "detail": "rot=True move=True"
+  },
+  {
+    "id": "S-15",
+    "group": "scenario",
+    "name": "Сценарий 5: меню инструментов сообщает о своём состоянии",
+    "status": "PASS",
+    "detail": "tools=True"
+  },
+  {
+    "id": "S-16",
+    "group": "scenario",
+    "name": "Сценарий 5: свайп вправо входит в категорию",
+    "status": "PASS",
+    "detail": "inside=True"
+  },
+  {
+    "id": "S-17",
+    "group": "scenario",
+    "name": "Сценарий 5: свайп вверх листает виды",
+    "status": "PASS",
+    "detail": "tab=1"
+  },
+  {
+    "id": "S-18",
+    "group": "scenario",
+    "name": "Сценарий 5: левый свайп возвращает к категориям",
+    "status": "PASS",
+    "detail": "inside=False"
+  },
+  {
+    "id": "S-19",
+    "group": "scenario",
+    "name": "Сценарий 6: пустой объект -> warning без исключения",
+    "status": "PASS",
+    "detail": "WARN: DzhoystikNavigatsiyaInventarya: нет объекта для замены вида."
+  },
+  {
+    "id": "S-20",
+    "group": "scenario",
+    "name": "Сценарий 6: неподдерживаемая категория -> warning",
+    "status": "PASS",
+    "detail": "WARN: DzhoystikNavigatsiyaInventarya: замена вида для категории 'Газон' не настроена."
+  },
+  {
+    "id": "S-21",
+    "group": "scenario",
+    "name": "Сценарий 6: отсутствующая категория -> пустой каталог и warning",
+    "status": "PASS",
+    "detail": "WARN: PanelZameny: в каталоге нет категории 'Деревья'."
+  },
+  {
+    "id": "S-22",
+    "group": "scenario",
+    "name": "Сценарий 7: призрак пересоздан при смене префаба",
+    "status": "PASS",
+    "detail": "ghosts different"
+  },
+  {
+    "id": "S-23",
+    "group": "scenario",
+    "name": "Сценарий 7: при выключении луч и призрак скрыты",
+    "status": "PASS",
+    "detail": "cleaned"
+  },
+  {
+    "id": "S-24",
+    "group": "scenario",
+    "name": "Сценарий 8: объект выбран и подсвечен",
+    "status": "PASS",
+    "detail": "selected ok"
+  },
+  {
+    "id": "S-25",
+    "group": "scenario",
+    "name": "Сценарий 8: удаление очищает выбор инвентаря",
+    "status": "PASS",
+    "detail": "selected="
+  },
+  {
+    "id": "S-26",
+    "group": "scenario",
+    "name": "Сценарий 8: объект помечен на удаление",
+    "status": "PASS",
+    "detail": "destroyed=True"
+  },
+  {
+    "id": "S-27",
+    "group": "scenario",
+    "name": "Сценарий 9: фокус вернулся на кнопку замены",
+    "status": "PASS",
+    "detail": "selected=replaceBtn"
+  },
+  {
+    "id": "S-28",
+    "group": "scenario",
+    "name": "Сценарий 10: размер и растягивание применяются вместе",
+    "status": "PASS",
+    "detail": "scale=(1, 1, 1,2)"
+  }
+]
